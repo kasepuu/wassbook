@@ -40,4 +40,5 @@ WebSocket > https://www.youtube.com/watch?v=pKpKv9MKN-E&ab_channel=ProgrammingPe
 ### Audit questions: 
 > https://github.com/01-edu/public/blob/master/subjects/real-time-forum/audit/README.md
 
-### Authors:> [juss](https://01.kood.tech/git/juss) & [kasepuu](https://01.kood.tech/git/kasepuu) & [alavrone](https://01.kood.tech/git/alavrone) & [andreiRedi](https://01.kood.tech/git/andreiRedi) & [laagusra](https://01.kood.tech/git/laagusra) <
+### Authors:
+### > [juss](https://01.kood.tech/git/juss) & [kasepuu](https://01.kood.tech/git/kasepuu) & [alavrone](https://01.kood.tech/git/alavrone) & [andreiRedi](https://01.kood.tech/git/andreiRedi) & [laagusra](https://01.kood.tech/git/laagusra) <
