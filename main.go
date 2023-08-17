@@ -43,7 +43,7 @@ func main() {
 }
 
 func getPort() string {
-	serverPort := "8080" // 8080 port by default
+	serverPort := "8081" // 8081 port by default
 	if len(os.Args) > 1 {
 		port, err := strconv.Atoi(os.Args[1])
 		if err == nil {

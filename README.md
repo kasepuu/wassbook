@@ -1,4 +1,4 @@
-# SOCIAL-NET![Website Icon](https://01.kood.tech/git/kasepuu/real-time-forum/raw/branch/master/forum/images/icon.ico)ORK
+# SOCIAL-NET![Website Icon](https://01.kood.tech/git/kasepuu/social-network/raw/branch/master/frontend/src/logo.svg)ORK
 
 ## ABOUT
 
@@ -11,7 +11,7 @@
 ```
  prepare frontend > npm install --prefix frontend/
  start frontend > npm start --prefix frontend/
- start backend > go run . <port> // port is optional, this will be 8080 by default
+ start backend > go run . <port> // port is optional, this will be 8081 by default
 ```
 
 ### EXISTING USERS
