@@ -33,6 +33,8 @@ CHAT indicators:
 ##### MAIN-REQUIREMENTS
 
 ```
+up to date node verison (v20.5.1)
+up to date npm version (9.8.0)
 sqlite3,
 system with golang support,
 a modern browser with websocket support
