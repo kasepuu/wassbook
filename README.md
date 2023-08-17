@@ -9,6 +9,7 @@
 ## USAGE
 
 ```
+ prepare frontend > npm install --prefix frontend/
  start frontend > npm start --prefix frontend/
  start backend > go run . <port> // port is optional, this will be 8080 by default
 ```
@@ -49,7 +50,7 @@ WebSocket > https://www.youtube.com/watch?v=pKpKv9MKN-E&ab_channel=ProgrammingPe
 
 ### Audit questions:
 
-> https://github.com/01-edu/public/blob/master/subjects/real-time-forum/audit/README.md
+> https://github.com/01-edu/public/blob/master/subjects/social-network/audit/README.md
 
 ### Authors:
 
