@@ -16,7 +16,7 @@ func StartServer(port string) {
 	fsPublic := noDirListing(http.FileServer(http.Dir("./public/"))) // nodirlisting to avoid guest seeing all files stored in /web/images/
 
 	log.Printf("Starting server at port " + port + "\n\n")
-	log.Printf("http://localhost:" + port + "/\n")
+	log.Printf("backend is running at: http://localhost:" + port + "/\n")
 
 	http.Handle("/views/", http.StripPrefix("/views", fsViews))    // handling views folder
 	http.Handle("/public/", http.StripPrefix("/public", fsPublic)) // handling public folder

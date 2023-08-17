@@ -5,6 +5,9 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+	app "01.kood.tech/git/kasepuu/social-network/backend"
+	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
 func main() {

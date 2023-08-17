@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"io/ioutil"
 	"log"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var DataBase *sql.DB
