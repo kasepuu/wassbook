@@ -1,7 +1,5 @@
 # SOCIAL-NET<img src="https://01.kood.tech/git/kasepuu/social-network/raw/branch/master/frontend/src/logo.svg" alt="Website Icon" width="40" height="40" />ORK
 
-## ABOUT
-
 # TODO
 
 - reactist aru saada
@@ -9,6 +7,8 @@
 - reactiga teha ülemine navbar, (search users), home button (nagu facebook noh)
 - lehte külastades luua ws connection backendi
 - ja nii edasi...
+
+## ABOUT
 
 ###### This project must:
 
