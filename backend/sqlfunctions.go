@@ -13,14 +13,17 @@ func getUserId(loginInput string) (userId int) {
 	sqlDB.DataBase.QueryRow("SELECT id FROM users WHERE username = ? OR email = ?", loginInput, loginInput).Scan(&userId)
 	return userId
 }
+
 func getUserName(userId int) (UserName string) {
 	sqlDB.DataBase.QueryRow("SELECT username FROM users WHERE id = ?", userId).Scan(&UserName)
 	return UserName
 }
+
 func getCategoryFromID(id int) (category string) {
 	sqlDB.DataBase.QueryRow("SELECT name FROM category WHERE id = ?", id).Scan(&category)
 	return category
 }
+
 func getCategoryFromName(id string) (category int) {
 	sqlDB.DataBase.QueryRow("SELECT id FROM category WHERE name = ?", id).Scan(&category)
 	return category
@@ -61,7 +64,6 @@ func getOnlineStatus(userId int) (isOnline bool) {
 }
 
 func sortByLastMessage(users []UserResponse, uid int) (sortedUsers []UserResponse) {
-
 	sql := `SELECT messageid FROM chat WHERE (userid = ? AND receiverid = ?) OR
 	(receiverid = ? AND userid = ?) ORDER BY messageid DESC LIMIT 1`
 
@@ -94,7 +96,6 @@ func sortByLastMessage(users []UserResponse, uid int) (sortedUsers []UserRespons
 }
 
 func getOnlineUsers() (onlineUsers []int) {
-
 	rows, _ := sqlDB.DataBase.Query("SELECT userId FROM session")
 
 	defer rows.Close()

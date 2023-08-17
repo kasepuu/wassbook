@@ -74,7 +74,7 @@ func GetOnlineMembersHandler(event Event, c *Client) error {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
 
-	var login = true
+	login := true
 
 	if !strings.Contains(payload, "log-in") {
 		login = false
@@ -151,7 +151,6 @@ func SortUserList(event Event, c *Client) error {
 const EventSendMessage = "send_message"
 
 func SendMessageHandler(event Event, c *Client) error {
-
 	var sendMessage SendMessageEvent
 
 	if err := json.Unmarshal(event.Payload, &sendMessage); err != nil {

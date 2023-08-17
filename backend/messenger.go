@@ -71,7 +71,6 @@ func LoadMessages(sqlSentence string, userName string, receiverName string, limi
 }
 
 func reverse(s []ReturnMessage) []ReturnMessage {
-
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]
 	}
@@ -80,7 +79,6 @@ func reverse(s []ReturnMessage) []ReturnMessage {
 }
 
 func SaveChat(userID int, receiverID int, Message string) {
-
 	DateSent := time.Now().Format(time.RFC3339Nano)
 
 	statement, _ := sqlDB.DataBase.Prepare("INSERT INTO chat (userid, receiverid, datesent, message) VALUES (?,?,?,?)")

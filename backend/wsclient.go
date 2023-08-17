@@ -10,8 +10,10 @@ import (
 )
 
 // used, for keeping active idle connections
-var pongWait = 10 * time.Second
-var pingInterval = (pongWait * 9) / 10
+var (
+	pongWait     = 10 * time.Second
+	pingInterval = (pongWait * 9) / 10
+)
 
 type ClientList map[*Client]bool
 
@@ -50,7 +52,6 @@ func (c *Client) readMessages() {
 
 	for {
 		_, payload, err := c.connection.ReadMessage()
-
 		if err != nil {
 			// if connection is closed
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {

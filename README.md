@@ -2,6 +2,14 @@
 
 ## ABOUT
 
+# TODO
+
+- reactist aru saada
+- reactiga luua 3 veergu, (praegune kasutaja & grupid , feed, online-users/friends) (nagu facebook noh)
+- reactiga teha ülemine navbar, (search users), home button (nagu facebook noh)
+- lehte külastades luua ws connection backendi
+- ja nii edasi...
+
 ###### This project must:
 
 - be similar to facebook
