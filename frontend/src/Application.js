@@ -5,15 +5,22 @@ import Sidebar from "./components/Sidebar";
 import Feed from "./components/Feed";
 import FriendsList from './components/Friends';
 
+import Routing from './router';
 function App() {
+ 
   return (
-    <div className="Application">
-      <Navbar/>
-      <Sidebar/>
-      <Feed/>
-      <FriendsList/>
-      <img src={logo} className="App-logo" alt="logo" />
-    </div>
+  <>
+  <Navbar/>
+  <Routing/>
+  </>
+    // <div className="Application">
+      
+    //   <Sidebar/>
+    //   <Feed/>
+    //   <FriendsList/>
+
+    //   <img src={logo} className="App-logo" alt="logo" />
+    // </div>
   );
 }
 

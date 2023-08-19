@@ -1,14 +1,17 @@
-import './Navbar.css';
+import "../css/Navbar.css";
 import logo from '../logo.svg';
-
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
     return ( 
         <nav className="Navbar">
-            <img src={logo} className='NavbarLogo' alt='logo'></img><textarea placeholder='Search Wassbook'></textarea>
+            <img src={logo} className='NavbarLogo' alt='logo'></img>
+            <textarea placeholder='Search Wassbook'></textarea>
             <div className="links">
-                <a href="/">Home</a>
-                <a href="/about">About</a>
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/about">About</Link></li>
+                <li><Link to="/login">Login</Link></li>
+                <li><Link to="/register">Register</Link></li>
             </div>
         </nav>
      );

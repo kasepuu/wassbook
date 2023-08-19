@@ -21,10 +21,18 @@ connectAndSendEvents() // establishing a connection between frontend & backend
 */
 
 
+
+// router
+import Home from "./components/pages/Home"
+import {BrowserRouter as Router, Route, Routes, BrowserRouter} from "react-router-dom"
+
+
 // rendering starts here
 const root = ReactDOM.createRoot(document.getElementById('app'));
 root.render(
   <React.StrictMode>
+    <BrowserRouter>
     <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
