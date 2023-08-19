@@ -9,21 +9,16 @@ import {
   FaRegAddressCard,
   FaXRay,
 } from "react-icons/fa";
-import SearchBar from "./SearchBar";
-import SearchResults from "./SearchResults";
-import { useState } from "react";
+import SearchContainer from "./SearchContainer";
 
 const Navbar = () => {
-  const [results, setResults] = useState([]);
-
   return (
     <nav className="Navbar">
       <Link to="/">
         <img src={logo} className="NavbarLogo" alt="logo" />
       </Link>
 
-      <SearchBar setResults={setResults} />
-      <SearchResults results={results} />
+      <SearchContainer />
 
       <div className="links">
         <>

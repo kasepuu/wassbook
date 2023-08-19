@@ -1,10 +1,10 @@
 import "../css/SearchResults.css";
-
+import SearchResult from "./SearchResult";
 const SearchResults = ({ results }) => {
   return (
     <div className="results-list">
-      {results.map((result) => {
-        return <div key={result.id}>{result.name}</div>;
+      {results.map((result, id) => {
+        return <SearchResult result={result} key={id} />;
       })}
     </div>
   );
