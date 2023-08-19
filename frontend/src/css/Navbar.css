@@ -1,63 +1,60 @@
 /* Navbar */
 .Navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #1877f2;
-    color: white;
-    height: 60px;
-    width: 100%;
-    position: fixed;
-    top: 0;
-    z-index: 100;
-    padding: 0 20px;
-    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1877f2;
+  color: white;
+  height: 60px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
+}
 
-  .NavbarLogo {
-    max-width: 35px;
-    max-height: 35px;
-    border-radius: 100%;
-  }
-  
+.NavbarLogo {
+  margin-left: 20px;
+  max-width: 40px;
+  max-height: 40px;
+  border-radius: 100%;
+  border: 2px solid black;
+}
+
+.NavbarLogo:hover {
+  border-radius: 10%;
+  border: 2px solid black;
+}
 
 /*LINKS*/
 
-
+a {
+  text-decoration: none;
+  color: white;
+}
 
 .links {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-  }
-  
-  .links a {
-    text-decoration: none;
-    color: white;
-    margin: 0 15px; /* Adjust as needed */
-  }
-  
-/* 
-.link_home{
-    text-align: center;
-    width: 100%;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  right: 20px;
+  display: flex;
+  justify-content: flex-end; /* Align all links to the right */
+  align-items: center;
 }
 
-.link_login{
-    text-align: center;
-    width: 100%;
+.links > a:first-child {
+  margin-right: auto; /* Push the first link to the center */
+  position: absolute;
+  left: 50%; /* Move to the horizontal center */
+  transform: translateX(-10%); /* Center horizontally */
+  white-space: nowrap;
 }
 
-.link_register{
-    text-align: center;
-    width: 100%;
+.links > a:not(:first-child) {
+  margin-right: 20px;
 }
-.link_about{
-    text-align: center;
-    width: 100%;
-} */
 
-.link-group {
-    display: flex;
-    align-items: center;
+.links > a:last-child {
+  margin-right: 0;
 }
