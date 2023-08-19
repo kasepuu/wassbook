@@ -1,0 +1,8 @@
+.Sidebar {
+  flex: 1;
+  background-color: #e7e7e7;
+  color: black;
+}
+.sidebar-container {
+  margin-left: 20px;
+}

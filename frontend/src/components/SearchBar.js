@@ -39,6 +39,7 @@ const SearchBar = ({ setResults }) => {
         type="text"
         placeholder="Search Wassbook"
         value={input}
+        className="search-input"
         onChange={(e) => {
           handleChange(e.target.value);
         }}

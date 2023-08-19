@@ -1,20 +1,21 @@
-import logo from "./logo.svg";
 import "./css/Application.css";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Feed from "./components/Feed";
-import FriendsList from "./components/Friends";
+import FriendsList from "./components/FriendsList";
 
 import Routing from "./router";
 function App() {
   return (
     <>
       <Navbar />
-      <Sidebar />
-      <Feed>
-        <Routing />
-      </Feed>
-      <FriendsList />
+      <div className="MainContainer">
+        <Sidebar />
+        <Feed>
+          <Routing />
+        </Feed>
+        <FriendsList />
+      </div>
     </>
     // <div className="Application">
 

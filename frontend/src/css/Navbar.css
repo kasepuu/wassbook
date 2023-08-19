@@ -58,3 +58,9 @@ a {
 .links > a:last-child {
   margin-right: 0;
 }
+
+/* MainContainer.css */
+.MainContainer {
+  display: flex;
+  margin-top: 60px;
+}
