@@ -14,7 +14,9 @@
 }
 
 .NavbarLogo {
-  margin-left: 20px;
+  position: absolute;
+  left: 20px;
+  top: 7px;
   max-width: 40px;
   max-height: 40px;
   border-radius: 100%;

@@ -9,10 +9,6 @@ import SearchContainer from "./SearchContainer";
 const Navbar = () => {
   return (
     <nav className="Navbar">
-      <Link to="/">
-        <img src={logo} className="NavbarLogo" alt="logo" />
-      </Link>
-
       <div className="links">
         <Link to="/">
           Home <FaHome />
@@ -26,6 +22,10 @@ const Navbar = () => {
           <FaMailBulk /> Register
         </Link>
       </div>
+
+      <Link to="/">
+        <img src={logo} className="NavbarLogo" alt="logo" />
+      </Link>
 
       <SearchContainer />
     </nav>
