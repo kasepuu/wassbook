@@ -19,15 +19,16 @@
     max-width: 35px;
     max-height: 35px;
     border-radius: 100%;
+    
 }
-
 
 /*LINKS*/
 
 
 
 .links{
-    color:white;
+    flex:2;
+    color:#ffffff;
 }
 
 .links a{
@@ -36,24 +37,20 @@
 }
 
 .link_home{
-    position: absolute;
     text-align: center;
     width: 100%;
 }
 
 .link_login{
-    position: absolute;
     text-align: center;
     width: 100%;
 }
 
 .link_register{
-    position: absolute;
     text-align: center;
     width: 100%;
 }
 .link_about{
-    position: absolute;
     text-align: center;
     width: 100%;
 }
