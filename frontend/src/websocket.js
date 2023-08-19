@@ -1,6 +1,6 @@
 // WEBSOCKET
-import { createUserList, displayMessages, displayIsWriting, newMessage } from "./views/messenger.js"
-import { createPostHtml } from "./views/postComment.js"
+// import { createUserList, displayMessages, displayIsWriting, newMessage } from "./views/messenger.js"
+// import { createPostHtml } from "./views/postComment.js"
 export class Event {
     constructor(type, payload) {
         this.type = type
@@ -9,57 +9,12 @@ export class Event {
 }
 
 export function wsAddConnection() {
-    if (window["WebSocket"]) {
-        let currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
-        const wsURL = `ws://localhost:8081/ws?UserID=${currentUser.UserID}`;
-
-        console.log("WSCONNECTION!")
-
-        if (!window.socket || window.socket.readyState === WebSocket.CLOSED) {
-            const ws = new WebSocket(wsURL);
-
-            ws.onopen = () => {
-                console.log("WebSocket Connection established!");
-            };
-
-            ws.onmessage = (e) => {
-                console.log("WebSocket Message attempt");
-                const eventData = JSON.parse(e.data);
-                const event = Object.assign(new Event(), eventData);
-                routeEvent(event);
-            };
-
-            ws.onclose = (e) => {
-                console.log("WebSocket connection Lost!", e);
-            };
-
-            window.socket = ws;
-
-            // Store the WebSocket URL in sessionStorage to re-establish the connection on refresh.
-            sessionStorage.setItem("WebSocketURL", wsURL);
-
-            window.addEventListener("beforeunload", function () {
-                ws.close();
-            });
-        } else if (window.socket.readyState === WebSocket.CONNECTING) {
-            // WebSocket is in the process of connecting, you can wait here until it's connected.
-            console.log("WebSocket is connecting...");
-        } else {
-            // WebSocket is already open and connected.
-            console.log("WebSocket is already connected!");
-        }
-    } else {
-        alert("This browser does not support websockets!");
-    }
-}
-
-export function wsAddConnection() {
     return new Promise((resolve, reject) => {
         if (window["WebSocket"]) {
             if (window.socket) window.socket.close();
 
-            let currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
-            const ws = new WebSocket(`ws://${document.location.host}/ws?UserID=${currentUser.UserID}`);
+            // let currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+            const ws = new WebSocket(`ws://localhost:8081/ws`)//?UserID=${currentUser.UserID}`);
 
             ws.onopen = () => {
                 console.log("WebSocket Connection established!");
@@ -131,15 +86,15 @@ const functionMap = {
     "update_users": updateUserList,
     "get_online_members": loadOnlineMembers,
     "is_typing": updateIsTyping,
-    "new_message": newMessage
+    // "new_message": newMessage
 };
 
 function updateIsTyping(data){
-    displayIsWriting(data.receivingUser, data.currentUser)
+    // displayIsWriting(data.receivingUser, data.currentUser)
 }
 
 export function loadPosts(data){
-   createPostHtml(data)
+//    createPostHtml(data)
 }
 
 export function sendEvent(type, payload) {
@@ -159,11 +114,11 @@ export function loadOnlineMembers(data) {
     document.getElementById("openButton").innerHTML = `Messenger ${data.length-1}🌐`
 }
 export function updateUserList(data) {
-    if (document.getElementById("messageBox").innerHTML != "") createUserList(data, document.getElementById("messageBox"))
+    // if (document.getElementById("messageBox").innerHTML != "") createUserList(data, document.getElementById("messageBox"))
 }
 
 export function loadChat(data) {
-    displayMessages(data.ReceiverName, data.userName, data.Messages)
+    // displayMessages(data.ReceiverName, data.userName, data.Messages)
 }
 
 
