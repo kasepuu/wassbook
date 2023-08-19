@@ -29,7 +29,7 @@ export function wsAddConnection() {
             };
 
             ws.onclose = (e) => {
-                console.log("WebSocket connection Lost!", e);
+                console.log("WebSocket connection Lost! Is the server running?", e);
             };
 
             window.socket = ws;
@@ -42,40 +42,6 @@ export function wsAddConnection() {
             reject(new Error("WebSocket not supported"));
         }
     });
-}
-
-export function wsAddConnection_existing() {
-    if (window["WebSocket"]) {
-
-        if (window.socket) window.socket.close()
-
-        let currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"))
-        const ws = new WebSocket(`ws://${document.location.host}/ws?UserID=${currentUser.UserID}`)
-        
-        ws.onopen = () => {
-            console.log("WebSocket Connection established!")
-        }
-
-        ws.onmessage = (e) => {
-            console.log("WebSocket Message attempt")
-            const eventData = JSON.parse(e.data)
-            const event = Object.assign(new Event, eventData)
-
-            routeEvent(event)
-        }
-
-        ws.onclose = (e) => {
-            console.log("WebSocket connection Lost!", e)
-        }
-
-        window.socket = ws
-
-        window.addEventListener('beforeunload', function() {
-            ws.close();
-        });
-    } else {
-        alert("This browser does not support websockets!")
-    }
 }
 
 const functionMap = { 

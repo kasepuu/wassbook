@@ -1,10 +1,6 @@
 //sfc
 const FriendsList = () => {
-    return ( 
-        <div className="friendslist">
+  return <div className="Friendslist"></div>;
+};
 
-        </div>
-    );
-}
- 
 export default FriendsList;

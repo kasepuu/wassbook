@@ -2,8 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './Application.js';
 import "./css/index.css"
-// import {wsAddConnection} from "./websocket.js"
-/*
+import {wsAddConnection} from "./websocket.js" // websocket
+import {BrowserRouter} from "react-router-dom" // router
+
 async function connectAndSendEvents() {
   try {
       const websocket = await wsAddConnection(); // Wait for the WebSocket connection to be established
@@ -18,14 +19,6 @@ async function connectAndSendEvents() {
 }
 
 connectAndSendEvents() // establishing a connection between frontend & backend
-*/
-
-
-
-// router
-import Home from "./components/pages/Home"
-import {BrowserRouter as Router, Route, Routes, BrowserRouter} from "react-router-dom"
-
 
 // rendering starts here
 const root = ReactDOM.createRoot(document.getElementById('app'));

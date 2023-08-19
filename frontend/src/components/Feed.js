@@ -1,9 +1,7 @@
-const Feed = () => {
-    return ( 
-        <div className="Feed">
-            <h1>Page content</h1>
-        </div>
-     );
-}
- 
+import "../css/Feed.css";
+
+const Feed = ({ children }) => {
+  return <div className="Feed">{children}</div>;
+};
+
 export default Feed;

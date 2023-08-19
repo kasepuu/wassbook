@@ -52,7 +52,9 @@ a modern browser with websocket support
 ###### Recommended videos:
 
 ```
-Routing > https://www.youtube.com/watch?v=6BozpmSjk-Y&ab_channel=dcode
+Routing > https://www.youtube.com/watch?v=Ul3y1LXxzdU&ab_channel=WebDevSimplified
+
+
 WebSocket > https://www.youtube.com/watch?v=pKpKv9MKN-E&ab_channel=ProgrammingPercy
 ```
 

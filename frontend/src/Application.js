@@ -1,20 +1,23 @@
-import logo from './logo.svg';
-import './css/Application.css';
-import Navbar from './components/Navbar';
+import logo from "./logo.svg";
+import "./css/Application.css";
+import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Feed from "./components/Feed";
-import FriendsList from './components/Friends';
+import FriendsList from "./components/Friends";
 
-import Routing from './router';
+import Routing from "./router";
 function App() {
- 
   return (
-  <>
-  <Navbar/>
-  <Routing/>
-  </>
+    <>
+      <Navbar />
+      <Sidebar />
+      <Feed>
+        <Routing />
+      </Feed>
+      <FriendsList />
+    </>
     // <div className="Application">
-      
+
     //   <Sidebar/>
     //   <Feed/>
     //   <FriendsList/>
@@ -25,4 +28,3 @@ function App() {
 }
 
 export default App;
- 
