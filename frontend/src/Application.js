@@ -5,26 +5,18 @@ import Feed from "./components/Feed";
 import FriendsList from "./components/FriendsList";
 
 import Routing from "./router";
+
+let isAuthorized = false;
 function App() {
   return (
     <>
-      <Navbar />
       <div className="MainContainer">
-        <Sidebar />
-        <Feed>
-          <Routing />
-        </Feed>
-        <FriendsList />
+        {isAuthorized && <Navbar />}
+        {isAuthorized && <Sidebar />}
+        <Routing />
+        {isAuthorized && <FriendsList />}
       </div>
     </>
-    // <div className="Application">
-
-    //   <Sidebar/>
-    //   <Feed/>
-    //   <FriendsList/>
-
-    //   <img src={logo} className="App-logo" alt="logo" />
-    // </div>
   );
 }
 

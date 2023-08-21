@@ -1,10 +1,6 @@
 .login-form {
-  position: absolute;
-  left: 0;
-  top: 60px;
+  position: inherit;
   background-color: black;
-  height: 100%;
-  width: 100%;
 }
 
 .login-box {

@@ -1,42 +1,30 @@
 import { Link } from "react-router-dom";
+import { Form, Button } from "semantic-ui-react";
 import "../../css/Login.css";
 
+// formid ümber teha!
+// https://scrimba.com/scrim/cobc44a7ba60db603359ae530
+
 const Login = () => {
+  const handleSubmit = () => {};
+
   return (
     <div className="login-form">
-      <form className="login-box">
-        <div className="login-credentials">
-          <br />
+      <Form onSubmit={handleSubmit}>
+        <Form.Field>
+          <label>First Name</label>
+          <input placeholder="First Name" type="text" name="firstName" />
+        </Form.Field>
 
-          <h2>Login Form</h2>
+        <Form.Field>
+          <label>Last Name</label>
+          <input placeholder="Last Name" type="text" name="lastName" />
+        </Form.Field>
 
-          <input
-            type="text"
-            placeholder="Username or Email"
-            name="username"
-            id="username"
-          />
-          <br />
+        <Button>Login!</Button>
+      </Form>
 
-          <br />
-          <input
-            type="password"
-            placeholder="Password"
-            name="password"
-            id="password"
-          />
-          <br />
-
-          <br />
-          <button type="submit" className="button">
-            Sign in!
-          </button>
-
-          <br />
-          <br />
-          <Link to="/register">Create an account!</Link>
-        </div>
-      </form>
+      <Link to="/register">Create a new Account</Link>
     </div>
   );
 };

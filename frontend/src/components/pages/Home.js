@@ -1,10 +1,13 @@
 import Feed from "../Feed";
-
+import Sidebar from "../Sidebar";
+import FriendsList from "../FriendsList";
 const Home = () => {
   return (
-    <div className="home">
-      <h1>See on kodu!</h1>
-    </div>
+    <>
+      <Sidebar />
+      <Feed />
+      <FriendsList />
+    </>
   );
 };
 
