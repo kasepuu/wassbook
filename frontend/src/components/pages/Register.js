@@ -46,7 +46,6 @@ const Register = () => {
         <h1>Register Form</h1>
 
         <Form.Field>
-          <label>First Name</label>
           <input
             placeholder="First Name"
             type="text"
@@ -64,7 +63,6 @@ const Register = () => {
         </Form.Field>
 
         <Form.Field>
-          <label>Last Name</label>
           <input
             placeholder="Last Name"
             type="text"
@@ -82,7 +80,6 @@ const Register = () => {
         </Form.Field>
 
         <Form.Field>
-          <label>E-mail</label>
           <input
             placeholder="E-mail"
             {...register("email", {
@@ -97,7 +94,6 @@ const Register = () => {
         </Form.Field>
 
         <Form.Field>
-          <label>Password</label>
           <input
             placeholder="Password"
             type="password"

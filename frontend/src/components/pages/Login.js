@@ -129,7 +129,7 @@ const Login = () => {
           </p>
         </Form.Field>
 
-        <div id="LoginMessage">ERRRR</div>
+        <div id="LoginMessage"></div>
 
         <Link to="/register" className="ReferLink">
           Create a new Account!
