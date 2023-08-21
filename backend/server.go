@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"strings"
 
+	handler "01.kood.tech/git/kasepuu/social-network/backend/handlers"
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
+	"github.com/rs/cors"
 )
 
 func StartServer(port string) {
@@ -14,6 +16,14 @@ func StartServer(port string) {
 	fsViews := noDirListing(http.FileServer(http.Dir("./views/")))   // nodirlisting to avoid guest seeing all files stored in /web/images/
 	fsPublic := noDirListing(http.FileServer(http.Dir("./public/"))) // nodirlisting to avoid guest seeing all files stored in /web/images/
 
+	// Create a CORS handler
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8080"},  // Allow requests from this origin
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"}, // Allow these HTTP methods
+		AllowedHeaders:   []string{"*"},                      // Allow these headers
+		AllowCredentials: true,                               // Allow sending cookies
+	})
+
 	log.Printf("Starting server at port " + port + "\n\n")
 	log.Printf("backend is running at: http://localhost:" + port + "/\n")
 
@@ -21,20 +31,17 @@ func StartServer(port string) {
 	http.Handle("/public/", http.StripPrefix("/public", fsPublic)) // handling public folder
 
 	http.HandleFunc("/ws", wsManager.serveWs)
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+	// Wrap your handlers with the corsHandler
+	http.Handle("/", corsHandler.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./views/index.html")
-	})
+	})))
 
-	// session related
-	// http.HandleFunc("/login-attempt", LoginHandler)
-	// http.HandleFunc("/logout-attempt", LogoutHandler)
-	// http.HandleFunc("/register-attempt", RegisterHandler)
-	// http.HandleFunc("/hasCookie", HasCookieHandler)
+	http.Handle("/login-attempt", corsHandler.Handler(http.HandlerFunc(handler.Login)))
+	http.Handle("/register-attempt", corsHandler.Handler(http.HandlerFunc(handler.Register)))
 
-	// miscellaneous
-	// http.HandleFunc("/get-comments", SendCommentList)
-	// http.HandleFunc("/new-post", AddPostHandler)
-	// http.HandleFunc("/new-comment", AddCommentHandler)
+	http.Handle("/jwt", corsHandler.Handler(http.HandlerFunc(handler.GetJwt)))      // for generating jwt token
+	http.Handle("/api", corsHandler.Handler(http.HandlerFunc(handler.ValidateJWT))) // for validating jwt token
 
 	errorHandler(http.ListenAndServe(":"+port, nil))
 }

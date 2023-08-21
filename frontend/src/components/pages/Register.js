@@ -1,54 +1,125 @@
 import { Link } from "react-router-dom";
-
+import { Form } from "semantic-ui-react";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { Navigate } from "react-router-dom";
+// forms -> https://scrimba.com/scrim/cobc44a7ba60db603359ae530
+import { backendHost } from "../../index.js";
 const Register = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const [loading, setLoading] = useState(false); // add loading state
+
+  async function onSubmit(data) {
+    console.log("Register attempt requested!");
+    console.log(data);
+    try {
+      setLoading(true);
+
+      const response = await fetch(`${backendHost}/register-attempt`, {
+        method: "POST", // Specify the HTTP method as POST
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        Navigate("/login");
+      } else {
+        console.log("Registration failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <div className="login-form">
-      <form className="login-box">
-        <div className="login-credentials">
-          <br />
+    <div className="register-form">
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <h1>Register Form</h1>
 
-          <h2>Register Form</h2>
-
+        <Form.Field>
+          <label>First Name</label>
           <input
+            placeholder="First Name"
             type="text"
-            placeholder="First name"
-            name="f-name"
-            id="username"
+            {...register("firstName", {
+              required: true,
+              maxLength: 20,
+              minLength: 3,
+            })}
           />
-          <br />
+          <p className="ErrorMessage">
+            {errors.firstName && (
+              <>First name must be longer than 3 characters!</>
+            )}
+          </p>
+        </Form.Field>
 
-          <br />
+        <Form.Field>
+          <label>Last Name</label>
           <input
+            placeholder="Last Name"
             type="text"
-            placeholder="Last name"
-            name="e-mail"
-            id="username"
+            {...register("lastName", {
+              required: true,
+              maxLength: 20,
+              minLength: 3,
+            })}
           />
-          <br />
+          <p className="ErrorMessage">
+            {errors.lastName && (
+              <>Last name must be longer than 3 characters!</>
+            )}
+          </p>
+        </Form.Field>
 
-          <br />
-          <input type="text" placeholder="E-mail" name="l-name" id="username" />
-          <br />
-
-          <br />
-
+        <Form.Field>
+          <label>E-mail</label>
           <input
-            type="password"
+            placeholder="E-mail"
+            {...register("email", {
+              required: true,
+              pattern:
+                /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            })}
+          />
+          <p className="ErrorMessage">
+            {errors.email && <>Bad Email format!</>}
+          </p>
+        </Form.Field>
+
+        <Form.Field>
+          <label>Password</label>
+          <input
             placeholder="Password"
-            name="r-password"
-            id="password"
+            type="password"
+            {...register("password", {
+              required: true,
+              minLength: 3,
+              // pattern: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,15}$/, //  <- liiga rets :')
+            })}
           />
-          <br />
+          <p className="ErrorMessage">
+            {errors.password && <>Password cannot be this short!</>}
+          </p>
+        </Form.Field>
 
-          <br />
-          <button type="submit" className="button">
-            Sign in!
-          </button>
-          <br />
-          <br />
-          <Link to="/login">Already have an account?</Link>
-        </div>
-      </form>
+        <button type="submit" className="submitButton">
+          {loading ? "Registering..." : "Register!"}
+        </button>
+
+        <Link to="/login" className="ReferLink">
+          Already have an Account?
+        </Link>
+      </Form>
     </div>
   );
 };

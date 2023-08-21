@@ -3,7 +3,13 @@ import logo from "../logo.svg";
 import { Link } from "react-router-dom";
 
 // react icons: https://react-icons.github.io/react-icons/icons?name=fa
-import { FaLock, FaMailBulk, FaHome } from "react-icons/fa";
+import {
+  FaHome,
+  FaDoorOpen,
+  FaUserFriends,
+  FaUsers,
+  FaBell,
+} from "react-icons/fa";
 import SearchContainer from "./SearchContainer";
 
 const Navbar = () => {
@@ -11,15 +17,23 @@ const Navbar = () => {
     <nav className="Navbar">
       <div className="links">
         <Link to="/">
-          Home <FaHome />
+          <FaHome /> Home
         </Link>
 
-        <Link to="/login">
-          <FaLock /> Login
+        <Link to="/">
+          <FaUserFriends /> Friends
         </Link>
 
-        <Link to="/register">
-          <FaMailBulk /> Register
+        <Link to="/">
+          <FaUsers /> Groups
+        </Link>
+
+        <Link to="/">
+          <FaBell /> Notifications
+        </Link>
+
+        <Link to="/logout">
+          <FaDoorOpen /> Logout
         </Link>
       </div>
 

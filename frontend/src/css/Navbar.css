@@ -45,12 +45,22 @@ a {
   align-items: center;
 }
 
-.links > a:first-child {
-  margin-right: auto; /* Push the first link to the center */
-  position: absolute;
-  left: 50%; /* Move to the horizontal center */
-  transform: translateX(-10%); /* Center horizontally */
-  white-space: nowrap;
+@media (min-width: 1280px) {
+  /* Adjust the positioning for smaller screens */
+  .links > a:nth-child(1) {
+    position: absolute;
+    left: 40%;
+  }
+
+  .links > a:nth-child(2) {
+    position: absolute;
+    left: 50%;
+  }
+
+  .links > a:nth-child(3) {
+    position: absolute;
+    left: 60%;
+  }
 }
 
 .links > a:not(:first-child) {
@@ -60,7 +70,6 @@ a {
 .links > a:last-child {
   margin-right: 0;
 }
-
 /* MainContainer.css */
 .MainContainer {
   display: flex;
