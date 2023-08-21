@@ -4,8 +4,7 @@ import Home from "./components/pages/Home";
 import Login from "./components/pages/Login";
 import Register from "./components/pages/Register";
 
-let isAuthorized = false;
-
+import { isAuthorized } from "./Application.js";
 const Routing = () => {
   return (
     <Routes>
@@ -13,8 +12,14 @@ const Routing = () => {
         path="/"
         element={isAuthorized ? <Home /> : <Navigate to="/login" />}
       />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/login"
+        element={isAuthorized ? <Navigate to="/" /> : <Login />}
+      />
+      <Route
+        path="/register"
+        element={isAuthorized ? <Navigate to="/" /> : <Register />}
+      />
 
       {/*   <Route path="*" element={<NotFound />} />    */}
     </Routes>

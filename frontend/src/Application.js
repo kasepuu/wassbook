@@ -6,7 +6,7 @@ import FriendsList from "./components/FriendsList";
 
 import Routing from "./router";
 
-let isAuthorized = false;
+export let isAuthorized = true;
 function App() {
   return (
     <>
