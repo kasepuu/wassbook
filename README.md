@@ -53,8 +53,7 @@
 ## USAGE
 
 ```
- prepare frontend > npm install --prefix frontend/
- start frontend > npm start --prefix frontend/
+ start frontend > sh start.sh
  start backend > go run . <port> // port is optional, this will be 8081 by default
 ```
 
