@@ -12,9 +12,7 @@ function App() {
     <>
       <div className="MainContainer">
         {isAuthorized && <Navbar />}
-        {isAuthorized && <Sidebar />}
         <Routing />
-        {isAuthorized && <FriendsList />}
       </div>
     </>
   );
