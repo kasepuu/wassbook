@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-function getUserInfoFromToken(tokenStr) {
+export default function getUserInfoFromToken(tokenStr) {
   try {
     const decodedToken = jwt.verify(tokenStr, "supermees");
     const userID = decodedToken.UID;
