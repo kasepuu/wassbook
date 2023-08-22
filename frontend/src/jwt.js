@@ -14,6 +14,7 @@ export function loadUser() {
     if (userInfo) {
       console.log("decoded data:", userInfo);
       console.log("UserInfo:", userInfo.UserInfo);
+      localStorage.setItem("CurrentUser", JSON.stringify(userInfo.UserInfo));
     } else {
       console.log("Token is not valid or is expired.");
     }
