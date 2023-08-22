@@ -1,7 +1,7 @@
 import "../css/SearchResult.css";
 const SearchResult = ({ result }, { id }) => {
   const clickEvent = (event) => {
-    console.log(event.name, event.id, "profile opened!");
+    console.log(event.UserID, event.UserName, "profile opened!");
   };
 
   return (
@@ -11,8 +11,7 @@ const SearchResult = ({ result }, { id }) => {
         clickEvent(result);
       }}
     >
-      {result.UserName},
-      {' ' + result.FirstName + ' ' + result.LastName}
+      {result.UserName},{" " + result.FirstName + " " + result.LastName}
     </div>
   );
 };
