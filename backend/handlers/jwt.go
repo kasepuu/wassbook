@@ -24,6 +24,7 @@ func CreateJWT() (string, error) {
 	// 	"username": username,
 	// 	// add more claims as needed
 	// })
+
 	claims["exp"] = time.Now().Add(time.Hour).Unix() // make the token expire after 1h
 
 	tokenStr, err := token.SignedString(SecretKEY)

@@ -15,7 +15,7 @@
   /* Add other styles as needed */
   background: linear-gradient(darkblue, aqua 70%, darkblue);
   text-align: center;
-  height: 500px;
+  height: 600px;
   /* Make sure to specify the unit, e.g., px */
   width: 500px;
   /* Make sure to specify the unit, e.g., px */
@@ -29,6 +29,24 @@
   width: 100%;
   max-height: 50px; /* Adjust the value to your desired fixed height */
   overflow: hidden;
+}
+
+.DateOfBirth {
+  display: flex;
+}
+
+.DateOfBirth select {
+  left: 0;
+  padding: 5px 5px;
+  border-radius: 10px;
+  background-color: #ddd;
+}
+.DateOfBirth select:hover {
+  background-color: #e7e7e7;
+}
+
+.DateOfBirth select:not(:last-child) {
+  margin-right: 25px;
 }
 
 .field:not(:last-child) {

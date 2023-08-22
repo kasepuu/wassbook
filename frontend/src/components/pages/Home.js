@@ -5,9 +5,7 @@ import Navbar from "../Navbar";
 import { useState, useEffect } from "react";
 //import { Navigate } from "react-router-dom";
 import { tokenValidation } from "../../index.js";
-import Login from "./Login";
 import { useNavigate } from "react-router-dom";
-
 
 const Home = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);

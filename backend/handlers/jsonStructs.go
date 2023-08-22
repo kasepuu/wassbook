@@ -2,10 +2,14 @@ package handler
 
 // register form
 type RegisterForm struct {
-	firstName string `json:"firstName"`
-	lastName  string `json:"lastName"`
-	email     string `json:"email"`
-	password  string `json:"password"`
+	UserName          string `json:"userName"`
+	FirstName         string `json:"firstName"`
+	LastName          string `json:"lastName"`
+	Email             string `json:"email"`
+	Password          string `json:"password"`
+	DateOfBirth_day   string `json:"dobDay"`
+	DateOfBirth_month string `json:"dobMonth"`
+	DateOfBirth_year  string `json:"dobYear"`
 }
 
 // login form

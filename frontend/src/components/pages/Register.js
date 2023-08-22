@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import { Form } from "semantic-ui-react";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // forms -> https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 import { backendHost } from "../../index.js";
 const Register = () => {
+  const navigate = useNavigate(); // Get the navigate function
+
   const {
     register,
     handleSubmit,
@@ -29,7 +31,7 @@ const Register = () => {
       });
 
       if (response.ok) {
-        Navigate("/login");
+        navigate("/login");
       } else {
         console.log("Registration failed. Please try again.");
       }
@@ -47,12 +49,30 @@ const Register = () => {
 
         <Form.Field>
           <input
+            placeholder="Username"
+            type="text"
+            {...register("userName", {
+              required: true,
+              maxLength: 20,
+              minLength: 3,
+            })}
+          />
+          <p className="ErrorMessage">
+            {errors.firstName && (
+              <>First name must be longer than 3 characters!</>
+            )}
+          </p>
+        </Form.Field>
+
+        <Form.Field>
+          <input
             placeholder="First Name"
             type="text"
             {...register("firstName", {
               required: true,
               maxLength: 20,
               minLength: 3,
+              // pattern: /^[A-Za-z]+$/i, // disallow number usage in first name
             })}
           />
           <p className="ErrorMessage">
@@ -106,6 +126,51 @@ const Register = () => {
           <p className="ErrorMessage">
             {errors.password && <>Password cannot be this short!</>}
           </p>
+        </Form.Field>
+
+        <Form.Field>
+          <div className="DateOfBirth">
+            <select {...register("dobDay", { required: true })}>
+              <option value="">DAY</option>
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                <option key={day} value={day}>
+                  {day}
+                </option>
+              ))}
+            </select>
+            <select {...register("dobMonth", { required: true })}>
+              <option value="">MONTH</option>
+              {[
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
+              ].map((month, index) => (
+                <option key={index} value={index + 1}>
+                  {month}
+                </option>
+              ))}
+            </select>
+            <select {...register("dobYear", { required: true })}>
+              <option value="">YEAR</option>
+              {Array.from(
+                { length: 100 },
+                (_, i) => new Date().getFullYear() - i
+              ).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
         </Form.Field>
 
         <button type="submit" className="submitButton">

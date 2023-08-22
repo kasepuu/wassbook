@@ -5,6 +5,7 @@ import "../../css/Login.css";
 import { useState } from "react";
 import { backendHost } from "../../index.js";
 import { useNavigate } from "react-router-dom";
+import logo from "../../logo.svg";
 // formid ümber teha!
 // https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 
@@ -89,56 +90,58 @@ const Login = () => {
   }
 
   return (
-    <div className="login-form">
-      <Form onSubmit={handleSubmit(onSubmit)}>
-        <h1>Login Form</h1>
+    <>
+      <div className="login-form">
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <h1>Login Form</h1>
 
-        <Form.Field>
-          <input
-            placeholder="Username or email"
-            type="text"
-            {...register("loginID", {
-              required: true,
-              maxLength: 20,
-              minLength: 3,
-            })}
-          />
-          {
+          <Form.Field>
+            <input
+              placeholder="Username or email"
+              type="text"
+              {...register("loginID", {
+                required: true,
+                maxLength: 20,
+                minLength: 3,
+              })}
+            />
+            {
+              <p className="ErrorMessage">
+                {errors.loginID && (
+                  <>First name must be longer than 3 characters!</>
+                )}
+              </p>
+            }
+          </Form.Field>
+
+          <Form.Field>
+            <input
+              placeholder="Password"
+              type="password"
+              {...register("password", {
+                required: true,
+                maxLength: 20,
+                minLength: 3,
+              })}
+            />
             <p className="ErrorMessage">
-              {errors.loginID && (
-                <>First name must be longer than 3 characters!</>
+              {errors.password && (
+                <>Password is required and must be longer than 3 characters!</>
               )}
             </p>
-          }
-        </Form.Field>
+          </Form.Field>
 
-        <Form.Field>
-          <input
-            placeholder="Password"
-            type="password"
-            {...register("password", {
-              required: true,
-              maxLength: 20,
-              minLength: 3,
-            })}
-          />
-          <p className="ErrorMessage">
-            {errors.password && (
-              <>Password is required and must be longer than 3 characters!</>
-            )}
-          </p>
-        </Form.Field>
+          <div id="LoginMessage"></div>
 
-        <div id="LoginMessage"></div>
-
-        <Link to="/register" className="ReferLink">
-          Create a new Account!
-        </Link>
-        <button type="submit" className="submitButton">
-          {loading ? "Logging in..." : "Login!"}
-        </button>
-      </Form>
-    </div>
+          <Link to="/register" className="ReferLink">
+            Create a new Account!
+          </Link>
+          <button type="submit" className="submitButton">
+            {loading ? "Logging in..." : "Login!"}
+          </button>
+        </Form>
+      </div>
+    </>
   );
 };
 
