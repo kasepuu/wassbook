@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 //import { Navigate } from "react-router-dom";
 import { tokenValidation } from "../../index.js";
 import { useNavigate } from "react-router-dom";
-
+import { loadUser } from "../../jwt";
 const Home = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ const Home = () => {
     checkAuthorization();
   }, [navigate]);
   if (isAuthorized) {
+    loadUser();
     return (
       <>
         <Navbar />

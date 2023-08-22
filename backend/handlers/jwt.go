@@ -20,8 +20,8 @@ func CreateJWT() (string, error) {
 
 	// fetchUserInformation()
 
-	claims["sub"] = "1"
-	claims["username"] = "sinunimi"
+	claims["UID"] = "1"
+	claims["UserName"] = "sinunimi"
 	claims["exp"] = time.Now().Add(time.Hour).Unix() // make the token expire after 1h
 
 	tokenStr, err := token.SignedString(SecretKEY)
