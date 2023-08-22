@@ -3,7 +3,7 @@
 # Check if frontend dependencies are installed
 if [ ! -d "frontend/node_modules" ]; then
     echo "Installing dependencies..."
-    npm ci --prefix frontend/
+    npm install --prefix frontend/
     echo "Dependencies installed."
 fi
 

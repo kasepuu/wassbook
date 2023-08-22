@@ -19,9 +19,10 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false); // add loading state
 
-  async function getTokenJWT() {
+  async function getTokenJWT(username) {
     try {
-      const response = await fetch(`${backendHost}/jwt`, {
+      console.log("username- ", username);
+      const response = await fetch(`${backendHost}/jwt?User=${username}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,10 +44,10 @@ const Login = () => {
     }
   }
 
-  async function loginResponse(response) {
+  async function loginResponse(response, username) {
     if (response.ok) {
       document.getElementById("LoginMessage").innerHTML = "";
-      const validation = await getTokenJWT();
+      const validation = await getTokenJWT(username);
       if (validation) {
         console.log("You are authorized, welcome!");
         return true;
@@ -76,7 +77,7 @@ const Login = () => {
         body: JSON.stringify(data),
       });
 
-      const loginResp = await loginResponse(response);
+      const loginResp = await loginResponse(response, data.loginID);
       if (loginResp) {
         navigate("/");
       } else {

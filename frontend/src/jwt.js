@@ -13,8 +13,7 @@ export function loadUser() {
     const userInfo = getUserInfoFromToken(jwtToken);
     if (userInfo) {
       console.log("decoded data:", userInfo);
-      console.log("UserID:", userInfo.UID);
-      console.log("Username:", userInfo.UserName);
+      console.log("UserInfo:", userInfo.UserInfo);
     } else {
       console.log("Token is not valid or is expired.");
     }

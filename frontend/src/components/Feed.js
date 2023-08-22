@@ -1,9 +1,9 @@
 import "../css/Feed.css";
-import React, { useState } from 'react';
-import profilePicture from "../blank.png";
+import React, { useState } from "react";
+import profilePicture from "../page-images/blank.png";
 
 const Feed = () => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [posts, setPosts] = useState([]);
 
   // siia vaja teha load feed databaasist
@@ -14,14 +14,14 @@ const Feed = () => {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    if (inputValue.trim() !== '') {
+    if (inputValue.trim() !== "") {
       const currentDate = new Date().toLocaleString();
       const newPost = {
         title: `${firstName} ${lastName} - ${currentDate}`,
         body: inputValue,
       };
       setPosts([...posts, newPost]);
-      setInputValue('');
+      setInputValue("");
     }
   };
 
@@ -47,7 +47,11 @@ const Feed = () => {
         {posts.map((post, index) => (
           <div key={index} className="feed-post">
             <div className="post-header">
-              <img src={profilePicture} alt="Profile" className="profile-picture" />
+              <img
+                src={profilePicture}
+                alt="Profile"
+                className="profile-picture"
+              />
               <div className="post-title">{post.title}</div>
             </div>
             <div className="post-body">{post.body}</div>

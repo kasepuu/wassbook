@@ -10,24 +10,14 @@ import (
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
-type User struct {
-	UserID      int
-	UserName    string
-	FirstName   string
-	LastName    string
-	DateOfBirth string
-	Password    string
-	Email       string
-	Avatar      string
-	Description string
-}
-
 func Login(w http.ResponseWriter, r *http.Request) {
 	var LoginDetails LoginForm
 	err := json.NewDecoder(r.Body).Decode(&LoginDetails)
 	if err != nil {
 		log.Println("Error while decoding loginInfo:", err)
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Internal issue, please try again later!"))
+		return
 	}
 
 	var password string
@@ -36,9 +26,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	rows, errS := sqlDB.DataBase.Query(query, strings.ToLower(LoginDetails.Login), strings.ToLower(LoginDetails.Login))
 	if errS != nil {
 		log.Println("SQL error:", errS)
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Internal issue, please try again later!"))
 		return
 	}
+	defer rows.Close()
 
 	if rows.Next() {
 		err := rows.Scan(&userId, &password)
@@ -54,11 +46,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	scanErr := rows.Scan(&userId, &password)
-
 	// on bad password or bad login
-	if LoginDetails.Password != password || scanErr != nil {
-		fmt.Println(userId, password)
+	if LoginDetails.Password != password {
+		fmt.Println("bad login:", userId, password)
 
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Please check your password and account name and try again."))
@@ -71,14 +61,4 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Login was a success!"))
-}
-
-// protected endpoint that requires JWT token
-func ProtectedJWT(w http.ResponseWriter, r *http.Request) {
-
-}
-
-// user ability refresh tokens
-func RefreshJWT(w http.ResponseWriter, r *http.Request) {
-
 }

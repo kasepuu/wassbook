@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
+	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -14,20 +14,31 @@ import (
 var SecretKEY = []byte("supermees") // key that protects the token, to avoid tampering with it
 var api_key = "MegaTurvaline123"    // key that is required to Create JWT key
 
-func CreateJWT() (string, error) {
+func CreateJWT(username string) (string, error) {
+
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	// fetchUserInformation()
-
-	claims["UID"] = "1"
-	claims["UserName"] = "sinunimi"
-	claims["exp"] = time.Now().Add(time.Hour).Unix() // make the token expire after 1h
+	userInfo := fetchUserInformation(getUserID(username))
+	fmt.Println(userInfo)
+	claims["UserInfo"] = userInfo
 
 	tokenStr, err := token.SignedString(SecretKEY)
 	if err != nil {
 		log.Println("Error signing token: ", err.Error())
 		return "", err
+	}
+
+	_, deleteErr := sqlDB.DataBase.Exec("DELETE FROM sessions WHERE userid = ?", getUserID(username))
+	if deleteErr != nil {
+		log.Printf("Error deleting session for user %s: %v", username, deleteErr)
+		return "", fmt.Errorf("failed to delete session: %w", deleteErr)
+	}
+
+	_, execError := sqlDB.DataBase.Exec("INSERT INTO sessions (token, userid) VALUES (?,?)", tokenStr, getUserID(username))
+	if execError != nil {
+		log.Println("There was an sql issue, when trying to insert a new token to the table:", execError.Error())
+		return "", execError
 	}
 
 	fmt.Println("token created: ", tokenStr)
@@ -36,6 +47,17 @@ func CreateJWT() (string, error) {
 
 func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 	if r.Header["Token"] != nil {
+		// check if the token is saved
+		var savedToken string
+		rows := sqlDB.DataBase.QueryRow("SELECT token FROM sessions WHERE token = ?", r.Header["Token"][0])
+		scanErr := rows.Scan(&savedToken)
+		if scanErr != nil {
+			fmt.Println("Expired token found!", scanErr)
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("not authorized"))
+			return
+		}
+
 		token, err := jwt.Parse(r.Header["Token"][0], func(t *jwt.Token) (interface{}, error) {
 			_, ok := t.Method.(*jwt.SigningMethodHMAC)
 			if !ok {
@@ -51,7 +73,7 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if token.Valid {
-			fmt.Println(token, "<= on valid token!")
+			// fmt.Println(token, "<= on valid token!")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("you are authorized!"))
 		}
@@ -62,9 +84,10 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetJwt(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("User")
 	if r.Header["Access"] != nil {
 		if r.Header["Access"][0] == api_key {
-			token, err := CreateJWT()
+			token, err := CreateJWT(username)
 			if err != nil {
 				fmt.Println(err)
 				return
