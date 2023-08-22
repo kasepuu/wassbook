@@ -26,10 +26,9 @@ const Feed = () => {
   };
 
   // lisada uus postitus databaasi
-  const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
-  let firstName = userInfo.FirstName;
-  let lastName = userInfo.LastName;
+  let firstName = "Eesnimi";
+  let lastName = "Perenimi";
   return (
     <div className="Feed">
       <div className="feed-container">

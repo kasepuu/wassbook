@@ -43,6 +43,8 @@ func StartServer(port string) {
 	http.Handle("/jwt", corsHandler.Handler(http.HandlerFunc(handler.GetJwt)))      // for generating jwt token
 	http.Handle("/api", corsHandler.Handler(http.HandlerFunc(handler.ValidateJWT))) // for validating jwt token
 
+	http.Handle("/getSearchedUsers", corsHandler.Handler(http.HandlerFunc(handler.GetSearchedUsers)))
+
 	errorHandler(http.ListenAndServe(":"+port, nil))
 }
 

@@ -11,7 +11,8 @@ const SearchResult = ({ result }, { id }) => {
         clickEvent(result);
       }}
     >
-      {result.name}
+      {result.UserName},
+      {' ' + result.FirstName + ' ' + result.LastName}
     </div>
   );
 };
