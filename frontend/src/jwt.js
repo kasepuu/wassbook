@@ -1,13 +1,24 @@
-const jwt = require("jsonwebtoken");
+import jwtDecode from "jwt-decode";
 
-export default function getUserInfoFromToken(tokenStr) {
-  try {
-    const decodedToken = jwt.verify(tokenStr, "supermees");
-    const userID = decodedToken.UID;
-    const userName = decodedToken.UserName;
-    console.log(userID, userName);
-  } catch (error) {
-    console.error("Error decoding token:", error);
-    return null;
+function getUserInfoFromToken(tokenStr) {
+  // const { decodedToken, isExpired } = useJwt(tokenStr);
+  var decoded = jwtDecode(tokenStr);
+  return decoded;
+}
+
+export function loadUser() {
+  const jwtToken = sessionStorage.getItem("Bearer");
+
+  if (jwtToken) {
+    const userInfo = getUserInfoFromToken(jwtToken);
+    if (userInfo) {
+      console.log("decoded data:", userInfo);
+      console.log("UserID:", userInfo.UID);
+      console.log("Username:", userInfo.UserName);
+    } else {
+      console.log("Token is not valid or is expired.");
+    }
+  } else {
+    console.log("Session token is missing!");
   }
 }
