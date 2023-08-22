@@ -18,13 +18,10 @@ func CreateJWT() (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	// userdata can be stored this way V
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-	// 	"sub":      userID,
-	// 	"username": username,
-	// 	// add more claims as needed
-	// })
+	// fetchUserInformation()
 
+	claims["sub"] = "1"
+	claims["username"] = "sinunimi"
 	claims["exp"] = time.Now().Add(time.Hour).Unix() // make the token expire after 1h
 
 	tokenStr, err := token.SignedString(SecretKEY)
