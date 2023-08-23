@@ -26,7 +26,7 @@ const Profile = ({ results }) => {
                     <img
                         src={profilePicture}
                         alt="Profile"
-                        className="profile-picture"
+                        className="profilepic"
                     />
                 </div>
                 <div className="profile-info">
