@@ -2,9 +2,7 @@ package app
 
 import (
 	"fmt"
-	"os"
 	"sort"
-	"time"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
@@ -110,7 +108,7 @@ func getOnlineUsers() (onlineUsers []int) {
 	return onlineUsers
 }
 
-func getAllPosts() (posts []PostResponse) {
+/* func getAllPosts() (posts []PostResponse) {
 	rows, err := sqlDB.DataBase.Query("SELECT id, userId, title, content, categoryId, date FROM posts ORDER BY id DESC")
 	if err != nil {
 		fmt.Println(err)
@@ -130,48 +128,49 @@ func getAllPosts() (posts []PostResponse) {
 		posts = append(posts, post)
 	}
 	return posts
-}
+} */
 
-func getAllComments(postId int) (postData PostResponse, comments []CommentResponse) {
-	rows, err := sqlDB.DataBase.Query("SELECT id, userId, content, datecommented FROM comments WHERE postId = ? ORDER BY id DESC", postId)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(0)
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var comment CommentResponse
-
-		rows.Scan(&comment.CommentID, &comment.OriginalPosterID, &comment.Content, &comment.Date)
-		messageDateTime, err := time.Parse(time.RFC3339Nano, comment.Date)
-		if err == nil {
-			comment.Date = messageDateTime.Format("02.01.2006 15:04")
+/*
+	 func getAllComments(postId int) (postData PostResponse, comments []CommentResponse) {
+		rows, err := sqlDB.DataBase.Query("SELECT id, userId, content, datecommented FROM comments WHERE postId = ? ORDER BY id DESC", postId)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(0)
 		}
-		comment.PostID = postId
-		comment.OriginalPoster = getUserName(comment.OriginalPosterID)
-		comments = append(comments, comment)
-	}
+		defer rows.Close()
 
-	row, erro := sqlDB.DataBase.Query("SELECT userId, title, content, categoryId, date FROM posts WHERE id = ?", postId)
-	if erro != nil {
-		fmt.Println(erro)
-		os.Exit(0)
-	}
+		for rows.Next() {
+			var comment CommentResponse
 
-	for row.Next() {
-		row.Scan(&postData.OriginalPosterID, &postData.Title, &postData.Content, &postData.Category, &postData.Date)
-
-		messageDateTime, err := time.Parse(time.RFC3339Nano, postData.Date)
-		if err == nil {
-			postData.Date = messageDateTime.Format("02.01.2006 15:04")
+			rows.Scan(&comment.CommentID, &comment.OriginalPosterID, &comment.Content, &comment.Date)
+			messageDateTime, err := time.Parse(time.RFC3339Nano, comment.Date)
+			if err == nil {
+				comment.Date = messageDateTime.Format("02.01.2006 15:04")
+			}
+			comment.PostID = postId
+			comment.OriginalPoster = getUserName(comment.OriginalPosterID)
+			comments = append(comments, comment)
 		}
-		postData.OriginalPoster = getUserName(postData.OriginalPosterID)
+
+		row, erro := sqlDB.DataBase.Query("SELECT userId, title, content, categoryId, date FROM posts WHERE id = ?", postId)
+		if erro != nil {
+			fmt.Println(erro)
+			os.Exit(0)
+		}
+
+		for row.Next() {
+			row.Scan(&postData.OriginalPosterID, &postData.Title, &postData.Content, &postData.Category, &postData.Date)
+
+			messageDateTime, err := time.Parse(time.RFC3339Nano, postData.Date)
+			if err == nil {
+				postData.Date = messageDateTime.Format("02.01.2006 15:04")
+			}
+			postData.OriginalPoster = getUserName(postData.OriginalPosterID)
+		}
+
+		return postData, comments
 	}
-
-	return postData, comments
-}
-
+*/
 func removeSessionById(id int) {
 	_, err := sqlDB.DataBase.Exec("DELETE FROM session WHERE userId = ?", id)
 	errorHandler(err)

@@ -17,3 +17,13 @@ type LoginForm struct {
 	Login    string `json:"loginID"`
 	Password string `json:"password"`
 }
+
+type PostForm struct {
+	PostID           int
+	OriginalPosterID int    `json:"UserID"`
+	FirstName        string `json:"FirstName"`
+	LastName         string `json:"LastName"`
+	Date             string `json:"Date"`
+	Content          string `json:"Content"`
+	GroupID          int    `json:"GroupID"`
+}

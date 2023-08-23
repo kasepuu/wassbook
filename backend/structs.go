@@ -58,11 +58,11 @@ type RegisterInfo struct {
 type PostResponse struct {
 	PostID           int
 	OriginalPosterID int
-	OriginalPoster   string
-	Title            string
-	Content          string
-	Category         string
+	FirstName        string
+	LastName         string
 	Date             string
+	Content          string
+	GroupId          int
 }
 
 type CommentResponse struct {

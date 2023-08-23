@@ -26,7 +26,7 @@ func (m *wsManager) setupEventHandlers() {
 	m.handlers[EventGetOnlineMembers] = GetOnlineMembersHandler
 	m.handlers[EventSendMessage] = SendMessageHandler
 	m.handlers[EventLoadMessages] = LoadMessagesHandler
-	m.handlers[EventLoadPosts] = GetAllPosts
+	//m.handlers[EventLoadPosts] = GetAllPosts
 	m.handlers[EventSortUsers] = SortUserList
 	m.handlers[EventIsTyping] = IsTypingHandler
 }
@@ -100,7 +100,7 @@ func GetOnlineMembersHandler(event Event, c *Client) error {
 
 const EventLoadPosts = "load_posts"
 
-func GetAllPosts(event Event, c *Client) error {
+/* func GetAllPosts(event Event, c *Client) error {
 	var userId int
 	if err := json.Unmarshal(event.Payload, &userId); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
@@ -110,7 +110,7 @@ func GetAllPosts(event Event, c *Client) error {
 		sendResponse(getAllPosts(), EventLoadPosts, client)
 	}
 	return nil
-}
+} */
 
 /*MESSAGE HANDLERS*/
 
