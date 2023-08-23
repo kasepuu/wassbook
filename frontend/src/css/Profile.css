@@ -1,0 +1,44 @@
+/* .profile {
+    background-color: #e7e7e7;
+    color: black;
+    white-space: pre-line;
+    display: flex;
+    flex: 3;
+    position: relative;
+}
+
+.profile-picture {
+    width: 400px;
+    height: 400px;
+}
+
+.username {
+    position: absolute;
+    right: 0;
+} */
+
+.profile {
+    display: flex;
+    align-items: flex-start;
+    background-color: #e7e7e7;
+    color: black;
+    flex: 3;
+}
+
+.profile-picture-container {
+    flex: 0 0 auto;
+    margin-right: 40px;
+}
+
+.profile-picture {
+    width: 300px;
+    height: 300px;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-right: 20px;
+    font-weight: bold;
+}

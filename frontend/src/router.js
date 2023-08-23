@@ -5,6 +5,8 @@ import Login from "./components/pages/Login";
 import Register from "./components/pages/Register";
 import Logout from "./components/pages/Logout";
 import Game1 from "./components/pages/Game1";
+import { Profiler } from "react";
+import Profile from "./components/pages/Profile";
 const Routing = () => {
   return (
     <Routes>
@@ -15,6 +17,7 @@ const Routing = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/logout" element={<Logout />} />
       <Route path="/game-1" element={<Game1 />} />
+      <Route path="/profile" element={<Profile />} />
       {/*   <Route path="*" element={<NotFound />} />    */}
     </Routes>
   );

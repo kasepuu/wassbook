@@ -9,6 +9,7 @@ import {
   FaUserFriends,
   FaUsers,
   FaBell,
+  FaUserCircle,
 } from "react-icons/fa";
 import SearchContainer from "./SearchContainer";
 
@@ -18,6 +19,10 @@ const Navbar = () => {
       <div className="links">
         <Link to="/">
           <FaHome /> Home
+        </Link>
+
+        <Link to="/profile">
+          <FaUserCircle /> Profile
         </Link>
 
         <Link to="/">
