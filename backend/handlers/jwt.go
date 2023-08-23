@@ -19,8 +19,11 @@ func CreateJWT(username string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	userInfo := fetchUserInformation(getUserID(username))
-	fmt.Println(userInfo)
+	userInfo, fetchErr := fetchUserInformation(getUserID(username))
+	if fetchErr != nil {
+		log.Println("[sql] Something went wrong while Creating JWT", fetchErr)
+		return "", fetchErr
+	}
 	claims["UserInfo"] = userInfo
 
 	tokenStr, err := token.SignedString(SecretKEY)
@@ -41,7 +44,6 @@ func CreateJWT(username string) (string, error) {
 		return "", execError
 	}
 
-	fmt.Println("token created: ", tokenStr)
 	return tokenStr, nil
 }
 
@@ -52,7 +54,7 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 		rows := sqlDB.DataBase.QueryRow("SELECT token FROM sessions WHERE token = ?", r.Header["Token"][0])
 		scanErr := rows.Scan(&savedToken)
 		if scanErr != nil {
-			fmt.Println("Expired token found!", scanErr)
+			log.Println("Expired token found!", scanErr)
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("not authorized"))
 			return
@@ -73,7 +75,6 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if token.Valid {
-			// fmt.Println(token, "<= on valid token!")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("you are authorized!"))
 		}
@@ -89,7 +90,7 @@ func GetJwt(w http.ResponseWriter, r *http.Request) {
 		if r.Header["Access"][0] == api_key {
 			token, err := CreateJWT(username)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 			fmt.Fprint(w, token)

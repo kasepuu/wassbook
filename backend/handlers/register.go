@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -13,7 +12,6 @@ import (
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Register request received!")
 	// register functionality here
 	var RegisterDetails RegisterForm
 	err := json.NewDecoder(r.Body).Decode(&RegisterDetails)
@@ -21,8 +19,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		log.Println("Something went wrong, while decoding register details")
 		return
 	}
-
-	fmt.Println(RegisterDetails)
 
 	validDetails := fieldVerification(RegisterDetails)
 

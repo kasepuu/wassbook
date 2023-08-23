@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -48,16 +47,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// on bad password or bad login
 	if LoginDetails.Password != password {
-		fmt.Println("bad login:", userId, password)
-
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Please check your password and account name and try again."))
 		return
 	}
-
-	fmt.Println(LoginDetails)
-
-	// token := jwt.New(jwt.SigningMethodHS256)
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Login was a success!"))

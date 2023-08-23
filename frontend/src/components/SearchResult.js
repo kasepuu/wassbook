@@ -1,14 +1,15 @@
 import "../css/SearchResult.css";
+import { useNavigate } from "react-router-dom";
 const SearchResult = ({ result }, { id }) => {
-  const clickEvent = (event) => {
-    console.log(event.UserID, event.UserName, "profile opened!");
-  };
+  const navigate = useNavigate(); // Get the navigate function
+
+  if (!result) return;
 
   return (
     <div
       className="search-result"
       onClick={() => {
-        clickEvent(result);
+        navigate(`/profile/${result.UserName}`);
       }}
     >
       {result.UserName},{" " + result.FirstName + " " + result.LastName}

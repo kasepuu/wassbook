@@ -17,6 +17,7 @@ const Routing = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/logout" element={<Logout />} />
       <Route path="/game-1" element={<Game1 />} />
+      <Route path="/profile/:id" element={<Profile />} />
       <Route path="/profile" element={<Profile />} />
       {/*   <Route path="*" element={<NotFound />} />    */}
     </Routes>

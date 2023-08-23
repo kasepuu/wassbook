@@ -43,7 +43,9 @@ func StartServer(port string) {
 	http.Handle("/jwt", corsHandler.Handler(http.HandlerFunc(handler.GetJwt)))      // for generating jwt token
 	http.Handle("/api", corsHandler.Handler(http.HandlerFunc(handler.ValidateJWT))) // for validating jwt token
 
-	http.Handle("/getSearchedUsers", corsHandler.Handler(http.HandlerFunc(handler.GetSearchedUsers)))
+	// other fetch requests
+	http.Handle("/fetch-searchbar-users", corsHandler.Handler(http.HandlerFunc(handler.FetchSearchBarUsers)))
+	http.Handle("/fetch-current-profile", corsHandler.Handler(http.HandlerFunc(handler.FetchCurrentProfile)))
 	http.Handle("/savepost", corsHandler.Handler(http.HandlerFunc(handler.Savepost)))
 	http.Handle("/getposts", corsHandler.Handler(http.HandlerFunc(handler.GetPosts)))
 

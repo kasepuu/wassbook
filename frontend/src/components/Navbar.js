@@ -21,7 +21,11 @@ const Navbar = () => {
           <FaHome /> Home
         </Link>
 
-        <Link to="/profile">
+        <Link
+          to={`/profile/${
+            JSON.parse(localStorage.getItem("CurrentUser")).UserName
+          }`}
+        >
           <FaUserCircle /> Profile
         </Link>
 

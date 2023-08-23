@@ -1,73 +1,56 @@
 import "../css/SearchBar.css";
 import { FaSearch } from "react-icons/fa";
-import { useState } from "react";
+import React, { useState } from "react";
 import { backendHost } from "../index.js";
+let fetchTimeout;
 
 const SearchBar = ({ setResults }) => {
   const [input, setInput] = useState("");
 
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
-  const [dropdownContent, setDropdownContent] = useState([]);
+  const delayedFetchData = (value, delay = 1000) => {
+    fetchTimeout = setTimeout(() => {
+      fetchData(value);
+    }, delay);
+  };
 
-
-  const fetchDropdownData = (value) => {
-    // Fetch dropdown data from API
-
-    fetch(`${backendHost}/getSearchedUsers`)
+  const fetchData = (value) => {
+    // Send the value to the backend for filtering
+    fetch(
+      `${backendHost}/fetch-searchbar-users?filter=${encodeURIComponent(value)}`
+    )
       .then((response) => response.json())
       .then((json) => {
-        // see filter tuleks ehk backendis hoopis teha :)
-        console.log(json);
-        const results = json.filter((user) => {
-          return (
-            value &&
-            user &&
-            (user.UserName.toLowerCase().includes(value) ||
-              user.FirstName.toLowerCase().includes(value) ||
-              user.LastName.toLowerCase().includes(value))
-          );
-        });
-        setResults(results); // setresults
+        console.log("fetched data:", json);
+        setResults(json); // Assuming the backend returns filtered results
       })
       .catch((error) => {
-        console.error("Error fetching dropdown data:", error);
+        console.error("Error:", error);
       });
   };
 
-  const handleChange = (value) => {
+  const handleChange = (value, delay = 1000) => {
     setInput(value);
-    fetchDropdownData(value); // Fetch dropdown suggestions
-
-    // Toggle dropdown visibility
-    setIsDropdownVisible(value.length > 0);
+    clearTimeout(fetchTimeout);
+    delayedFetchData(value, delay);
   };
 
   return (
     <div className="input-wrapper">
       <FaSearch id="search-icon" />
-
       <input
         type="text"
         placeholder="Search Wassbook"
         value={input}
         className="search-input"
+        id="search-bar"
+        onClick={(e) => {
+          handleChange(e.target.value, 100);
+        }}
         onChange={(e) => {
           handleChange(e.target.value);
         }}
       ></input>
-
-      {isDropdownVisible && (
-        <div className="dropdown-menu">
-          {dropdownContent.map((item) => (
-            <div key={item.id} className="dropdown-item">
-              {item.name}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
-
 };
-
 export default SearchBar;
