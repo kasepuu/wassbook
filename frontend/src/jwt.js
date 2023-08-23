@@ -12,6 +12,8 @@ export function loadUser() {
   if (jwtToken) {
     const userInfo = getUserInfoFromToken(jwtToken);
     if (userInfo) {
+      localStorage.setItem("CurrentUser", JSON.stringify(userInfo.UserInfo));
+
       console.log("decoded data:", userInfo);
       console.log("UserInfo:", userInfo.UserInfo);
     } else {

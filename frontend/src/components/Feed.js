@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import profilePicture from "../page-images/blank.png";
 import { backendHost } from "../index.js";
 
-const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
+
 const Feed = () => {
   const [inputValue, setInputValue] = useState("");
   const [posts, setPosts] = useState([]);
@@ -98,9 +98,11 @@ const Feed = () => {
       console.log("Post saved!");
     }
   }
+  const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
   let firstName = userInfo.FirstName;
   let lastName = userInfo.LastName;
+
   return (
     <div className="Feed">
       <div className="feed-container">
