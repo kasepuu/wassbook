@@ -1,8 +1,9 @@
-import "../css/SearchResult.css";
+import "../../css/SearchResult.css";
 import { useNavigate } from "react-router-dom";
+
+import blank from "../../page-images/blank.png";
 const SearchResult = ({ result }, { id }) => {
   const navigate = useNavigate(); // Get the navigate function
-
   if (!result) return;
 
   return (
@@ -12,7 +13,12 @@ const SearchResult = ({ result }, { id }) => {
         navigate(`/profile/${result.UserName}`);
       }}
     >
-      {result.UserName},{" " + result.FirstName + " " + result.LastName}
+      <img
+        className="search-result-image"
+        alt="avatar"
+        src={result.Avatar === "" ? blank : blank}
+      ></img>
+      {" " + result.FirstName + " " + result.LastName}
     </div>
   );
 };

@@ -1,7 +1,27 @@
 .search-result {
-    padding: 10px 20px;
+  display: flex; /* Use flexbox */
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+
+  padding: 10px 20px;
+}
+
+.search-result:not(:last-child) {
+  border-bottom: 1px solid #ddd;
 }
 
 .search-result:hover {
-    background-color: #efefef;
+  background-color: #efefef;
+}
+
+.search-result-image {
+  /* position: absolute; */
+  margin-right: 10px;
+  max-width: 20px;
+  max-height: 20px;
+  border-radius: 100%;
+
+  left: 20px;
+
+  border: 2px solid #ddd;
 }

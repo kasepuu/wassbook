@@ -58,7 +58,8 @@ func fetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 		filterValue := "%" + filter + "%"
 		rows, sqlErr = sqlDB.DataBase.Query(query, filterValue, filterValue)
 	} else {
-		rows, sqlErr = sqlDB.DataBase.Query(query)
+		return users, returnErr
+		// rows, sqlErr = sqlDB.DataBase.Query(query)
 	}
 	if sqlErr != nil {
 		log.Println("sql error at fetchAllUsers:", sqlErr)
