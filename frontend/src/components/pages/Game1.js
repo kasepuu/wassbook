@@ -24,7 +24,12 @@ const Game1 = () => {
     <>
       <Navbar />
       <Sidebar />
-      <iframe src="http://joelsoft.eu:1111" width="1300px" height="740px" />
+      <iframe
+        src="http://joelsoft.eu:1111"
+        width="1300px"
+        height="740px"
+        title="make-your-game"
+      />
       <FriendsList />
     </>
   );

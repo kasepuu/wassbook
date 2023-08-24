@@ -10,7 +10,7 @@ const Sidebar = () => {
         <h2>Ads</h2>
         <FaAd /> advertisement
         <Link to="/game-1">
-          <img src={Advertisement1} className="ad1" />
+          <img src={Advertisement1} className="ad1" alt="advertisement" />
         </Link>
       </div>
 

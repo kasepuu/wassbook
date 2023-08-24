@@ -1,11 +1,10 @@
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Form } from "semantic-ui-react";
 import { useForm } from "react-hook-form";
 import "../../css/Login.css";
 import { useState } from "react";
 import { backendHost } from "../../index.js";
 import { useNavigate } from "react-router-dom";
-import logo from "../../logo.svg";
 // formid ümber teha!
 // https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 
