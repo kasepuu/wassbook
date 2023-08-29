@@ -11,7 +11,6 @@ const Feed = () => {
   const fileInputRef = useRef(null);
   const [imageName, setImageName] = useState('');
   const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
-
   let firstName = userInfo.FirstName;
   let lastName = userInfo.LastName;
 
@@ -26,7 +25,6 @@ const Feed = () => {
     loadFeed();
   }, []);
 
-  // Function to load feed data from the backend
   async function loadFeed() {
     try {
       const response = await fetch(`${backendHost}/getposts`);
