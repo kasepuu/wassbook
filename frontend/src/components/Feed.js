@@ -34,10 +34,12 @@ const Feed = () => {
           setPosts([]);
           return;
         }
+        console.log(data)
         const postsArray = data.map(post => ({
           title: `${post.FirstName} ${post.LastName} - ${post.Date}`,
           body: post.Content,
-          file: post.Filename
+          file: post.Filename,
+          userID: post.UserID
         }));
         setPosts(postsArray.reverse());
       } else {
@@ -141,7 +143,7 @@ const Feed = () => {
             </div>
             <div className="post-body">{post.body}</div>
             {post.file !== "-" || post.file === undefined ? <img
-              src={`${backendHost}/users/${userInfo.UserID}/${post.file}`}
+              src={`${backendHost}/users/${post.userID}/${post.file}`}
               alt="Post"
               className="image-content"
             /> : null}
