@@ -26,9 +26,6 @@ type PublicUserInfo struct {
 	UserName   string `json:"UserName"`
 	Avatar     string `json:"Avatar"`
 	DateJoined string `json:"DateJoined"`
-	Followers  int    `json:"Followers"`
-	Following  int    `json:"Following"`
-	Friends    bool   `json:"isFriends"`
 }
 
 type PostForm struct {

@@ -9,18 +9,17 @@ import (
 )
 
 type UserInfo struct {
-	UserID      int
-	UserName    string
-	FirstName   string
-	LastName    string
-	DateOfBirth []string
-	DateJoined  string
-	Email       string
-	Avatar      string
-	Description string
-	Following   int
-	Followers   int
-	Friends     bool // vb ple vaja
+	UserID       int
+	UserName     string
+	FirstName    string
+	LastName     string
+	DateOfBirth  []string
+	DateJoined   string
+	Email        string
+	Avatar       string
+	Description  string
+	FriendStatus string // on vajalik!!!
+	//Praegu kustutasin followerid täiesti ära aga kui followerite arvu või kes followib tagasi saadaks oleks lahe küll. Vb saab kuskil mujal seda teha? 
 }
 
 func getUserID(UserName string) (UserID int) {
@@ -32,16 +31,42 @@ func getUserName(UserID int) (UserName string) {
 	return UserName
 }
 
-func fetchUserInformation(UserID int) (User UserInfo, fetchErr error) {
+func getFirstAndLastName(UserID int) (User UserInfo, err error) {
 	User.UserID = UserID
 	User.UserName = getUserName(UserID)
 
 	var DateOfBirthFormatted string
 
-	fetchErr = sqlDB.DataBase.QueryRow(`SELECT 
-	id, nickname, fname, lname, dateofbirth, datejoined, email, avatar, description, following, followers	
-	FROM users WHERE id = ?`, UserID).Scan(&User.UserID, &User.UserName, &User.FirstName, &User.LastName, &DateOfBirthFormatted, &User.DateJoined, &User.Email, &User.Avatar, &User.Description, &User.Following, &User.Followers)
+	err = sqlDB.DataBase.QueryRow("SELECT fname, lname FROM users WHERE id = ?", UserID).Scan(&User.FirstName, &User.LastName)
+	User.DateOfBirth = strings.Split(DateOfBirthFormatted, ".")
+	return User, err
+	
+}
 
+func friendStatus(UserID int, FriendID int) (status string) {
+	sqlDB.DataBase.QueryRow("SELECT status FROM followers WHERE userid = ? AND friendid = ? OR userid = ? AND friendid = ?",
+		UserID, FriendID, FriendID, UserID).Scan(&status)
+	return
+}
+
+func fetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr error) {
+	User.UserID = UserID
+	User.UserName = getUserName(UserID)
+
+	var DateOfBirthFormatted string
+
+	fetchErr = sqlDB.DataBase.QueryRow(`SELECT id, nickname, fname, lname, dateofbirth, datejoined, email, avatar, description FROM users WHERE id = ?`, UserID).Scan(
+		&User.UserID,
+		&User.UserName,
+		&User.FirstName,
+		&User.LastName,
+		&DateOfBirthFormatted,
+		&User.DateJoined,
+		&User.Email,
+		&User.Avatar,
+		&User.Description,
+	)
+	User.FriendStatus = friendStatus(User.UserID, RequesterID)
 	User.DateOfBirth = strings.Split(DateOfBirthFormatted, ".")
 
 	return User, fetchErr
@@ -74,7 +99,7 @@ func fetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 			continue
 		}
 
-		user, err := fetchUserInformation(id)
+		user, err := getFirstAndLastName(id)
 		if err != nil {
 			log.Println("error fetching user information:", err)
 			continue

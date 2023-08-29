@@ -38,7 +38,7 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("fetch request received!", openedProfile, "profile opened, requested by:", requestedBy)
 
-	UserInfo, fetchErr := fetchUserInformation(getUserID(openedProfile))
+	UserInfo, fetchErr := fetchUserInformation(getUserID(openedProfile), 0)
 	if fetchErr != nil {
 		log.Println("Error fetching user information at profile request! Error Message:", fetchErr)
 		w.WriteHeader(http.StatusAccepted)
@@ -66,9 +66,6 @@ func hidePrivateInformation(user UserInfo) (newInfo PublicUserInfo) {
 		UserName:   user.UserName,
 		Avatar:     user.Avatar,
 		DateJoined: user.DateJoined,
-		Followers:  user.Followers,
-		Following:  user.Following,
-		Friends:    false,
 	}
 
 	return newInfo

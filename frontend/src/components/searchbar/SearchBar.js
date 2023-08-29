@@ -28,7 +28,7 @@ const SearchBar = ({ setResults }) => {
       });
   };
 
-  const handleChange = (value, delay = 1000) => {
+  const handleChange = (value, delay = 500) => {
     setInput(value);
     clearTimeout(fetchTimeout);
     delayedFetchData(value, delay);

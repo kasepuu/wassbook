@@ -7,6 +7,16 @@ import { useParams } from "react-router-dom";
 import { backendHost } from "../..";
 import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
+import { ButtonOr } from "semantic-ui-react";
+
+function toTitleCase(str) {
+  if (str) {
+    return str.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    });
+  }
+}
+
 const Profile = () => {
   let { id } = useParams();
   let isLocalUser = false;
@@ -35,7 +45,6 @@ const Profile = () => {
     }
     fetchProfileData();
   }, [id, LoggedUser.UserName]);
-
   return (
     <>
       <Navbar />
@@ -47,8 +56,8 @@ const Profile = () => {
 
           <div className="profile-info">
             <p className="username">Username: {userInfo.UserName}</p>
-            <p className="firstname">Firstname: {userInfo.FirstName}</p>
-            <p className="lastname">Lastname: {userInfo.LastName}</p>
+            <p className="firstname">Firstname: {toTitleCase(userInfo.FirstName)}</p>
+            <p className="lastname">Lastname: {toTitleCase(userInfo.LastName)}</p>
             {userInfo.Friends || isLocalUser ? (
               <>
                 <p>You are friends with this user</p>
@@ -58,9 +67,10 @@ const Profile = () => {
                 <p className="email">Email: {userInfo.Email}</p>
               </>
             ) : (
-              <p className="not-friends-message">
-                You are not friends with this user.
-              </p>
+              <div className="not-friends-message">
+                You are not friends with this user. 
+                <button>Add Friend &gt;.&lt;</button> {/* TODO */}
+              </div>
             )}
           </div>
         </div>
