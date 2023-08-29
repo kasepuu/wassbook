@@ -1,11 +1,10 @@
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 //pages
 import Home from "./components/pages/Home";
 import Login from "./components/pages/Login";
 import Register from "./components/pages/Register";
 import Logout from "./components/pages/Logout";
 import Game1 from "./components/pages/Game1";
-import { Profiler } from "react";
 import Profile from "./components/pages/Profile";
 const Routing = () => {
   return (

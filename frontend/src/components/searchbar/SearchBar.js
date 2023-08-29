@@ -1,7 +1,7 @@
-import "../css/SearchBar.css";
+import "../../css/SearchBar.css";
 import { FaSearch } from "react-icons/fa";
 import React, { useState } from "react";
-import { backendHost } from "../index.js";
+import { backendHost } from "../../index.js";
 let fetchTimeout;
 
 const SearchBar = ({ setResults }) => {
@@ -20,7 +20,7 @@ const SearchBar = ({ setResults }) => {
     )
       .then((response) => response.json())
       .then((json) => {
-        console.log("fetched data:", json);
+        console.log("fetched using this value:", `"${value}"`, json);
         setResults(json); // Assuming the backend returns filtered results
       })
       .catch((error) => {
@@ -43,6 +43,7 @@ const SearchBar = ({ setResults }) => {
         value={input}
         className="search-input"
         id="search-bar"
+        autoComplete="off"
         onClick={(e) => {
           handleChange(e.target.value, 100);
         }}

@@ -72,6 +72,10 @@ a {
 }
 /* MainContainer.css */
 .MainContainer {
+  position: absolute;
+  left: 0;
+  top: calc(60px);
   display: flex;
-  margin-top: 60px;
+  height: calc(100% - 60px);
+  width: 100%;
 }

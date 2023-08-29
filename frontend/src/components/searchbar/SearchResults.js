@@ -1,6 +1,5 @@
-import "../css/SearchResults.css";
+import "../../css/SearchResults.css";
 import SearchResult from "./SearchResult";
-import { useEffect, useState, useRef } from "react";
 
 const SearchResults = ({ results }) => {
   if (!results) return;
