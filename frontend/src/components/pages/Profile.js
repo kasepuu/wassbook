@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 import { backendHost } from "../..";
 import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
-import { ButtonOr } from "semantic-ui-react";
+//import { ButtonOr } from "semantic-ui-react";
 
 function toTitleCase(str) {
   if (str) {
@@ -68,8 +68,10 @@ const Profile = () => {
               </>
             ) : (
               <div className="not-friends-message">
-                You are not friends with this user. 
-                <button>Add Friend &gt;.&lt;</button> {/* TODO */}
+                You are not friends with this user.
+                <button>Add Friend &gt;.&lt;</button>
+                {/* TODO: Sellega buttoniga läbi websocketi (kui selline meil üldse töökorras 💀) request saata ja lisada followeri databaasi staatus: pending.
+                    Võib notification asju ka vaikselt vaadata ;) */}
               </div>
             )}
           </div>
