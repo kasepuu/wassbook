@@ -48,6 +48,7 @@ func StartServer(port string) {
 	http.Handle("/fetch-current-profile", corsHandler.Handler(http.HandlerFunc(handler.FetchCurrentProfile)))
 	http.Handle("/savepost", corsHandler.Handler(http.HandlerFunc(handler.Savepost)))
 	http.Handle("/getposts", corsHandler.Handler(http.HandlerFunc(handler.GetPosts)))
+	http.Handle("/users/", corsHandler.Handler(http.HandlerFunc(handler.ImageHandler)))
 
 	errorHandler(http.ListenAndServe(":"+port, nil))
 }

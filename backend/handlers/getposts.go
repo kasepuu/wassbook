@@ -30,6 +30,7 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 			&post.Date,
 			&post.Content,
 			&post.GroupID,
+			&post.Filename,
 		)
 		if err != nil {
 			log.Println("Error scanning row:", err)

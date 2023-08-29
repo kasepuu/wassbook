@@ -33,13 +33,14 @@
   background-color: #ddd;
   padding: 10px; /* Add some padding for spacing */
   border-radius: 10px;
+  margin: 10px;
 }
 
 .feed-post {
   background-color: white;
   border-radius: 10px;
   padding: 10px;
-  margin: 10px 0; /* Adjusted margin for spacing */
+  margin: 10px 0;  /* Adjusted margin for spacing */
 }
 
 .post-title {
@@ -68,4 +69,8 @@
   display: flex;
   align-items: center;
   margin-bottom: 5px;
+}
+
+.image-content{
+  width: 100%;
 }

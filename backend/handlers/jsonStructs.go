@@ -36,7 +36,8 @@ type PostForm struct {
 	OriginalPosterID int    `json:"UserID"`
 	FirstName        string `json:"FirstName"`
 	LastName         string `json:"LastName"`
-	Date             string `json:"Date"`
+	Date             string
 	Content          string `json:"Content"`
 	GroupID          int    `json:"GroupID"`
+	Filename         string
 }

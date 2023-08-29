@@ -1,5 +1,5 @@
 import "../css/Feed.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import profilePicture from "../page-images/blank.png";
 import { backendHost } from "../index.js";
 
@@ -7,6 +7,19 @@ import { backendHost } from "../index.js";
 const Feed = () => {
   const [inputValue, setInputValue] = useState("");
   const [posts, setPosts] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
+  const [imageName, setImageName] = useState('');
+  const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
+
+  let firstName = userInfo.FirstName;
+  let lastName = userInfo.LastName;
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+    setImageName(file.name);
+  };
 
   useEffect(() => {
     // Load feed data from the backend on component mount
@@ -26,6 +39,7 @@ const Feed = () => {
         const postsArray = data.map(post => ({
           title: `${post.FirstName} ${post.LastName} - ${post.Date}`,
           body: post.Content,
+          file: post.Filename
         }));
         setPosts(postsArray.reverse());
       } else {
@@ -40,68 +54,45 @@ const Feed = () => {
     setInputValue(event.target.value);
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
-    const options = {
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    };
 
     if (inputValue.trim() !== "") {
-      const currentDate = new Date().toLocaleString(undefined, options);
-      const newPost = {
-        title: `${firstName} ${lastName} - ${currentDate}`,
-        body: inputValue,
+      const postBody = {
+        userID: userInfo.UserID,
+        firstName,
+        lastName,
+        content: inputValue,
+        GroupID: -1
       };
-      postToDatabase({ userID: userInfo.UserID, firstName, lastName, currentDate, content: inputValue })
-      setPosts([newPost, ...posts]);
-      setInputValue("");
-    }
-  };
 
-  async function postToDatabase(PostData) {
-    console.log(PostData)
-    try {
-      const response = await fetch(`${backendHost}/savepost`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          UserID: PostData.userID,
-          FirstName: PostData.firstName,
-          LastName: PostData.lastName,
-          Date: PostData.currentDate,
-          Content: PostData.content,
-          GroupID: -1
-        })
+      const postBodyString = JSON.stringify(postBody);
+      const blob = new Blob([postBodyString], {
+        type: 'application/json'
       });
 
-      if (response.ok) {
-        const message = await response.text();
-        console.log("Everything is finee", `"${message}"`);
-        return true;
-      } else {
-        console.log(
-          "Something went wrong!"
-        );
-        return false;
-      }
-    } catch (e) {
-      console.error("Something went wrong while sabing post:", e);
-      return false;
-    } finally {
-      console.log("Post saved!");
-    }
-  }
-  const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
+      const formData = new FormData();
+      formData.append('file', selectedFile); // Append the image file to the form data
+      formData.append('content', blob); // Append the text content to the form data
+      try {
+        const response = await fetch(`${backendHost}/savepost`, {
+          method: 'POST',
+          body: formData,
+        });
 
-  let firstName = userInfo.FirstName;
-  let lastName = userInfo.LastName;
+        if (response.ok) {
+          console.log("Post saved successfully!");
+          loadFeed();
+          setInputValue("");
+          setImageName(undefined);
+        } else {
+          console.error("Error saving post");
+        }
+      } catch (error) {
+        console.error("Error saving post:", error);
+      }
+    }
+  };
 
   return (
     <div className="Feed">
@@ -114,6 +105,28 @@ const Feed = () => {
             value={inputValue}
             onChange={handleInputChange}
           ></input>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ display: 'none' }}
+            ref={fileInputRef} // Use the useRef hook to get a reference to the input element
+          />
+          <div
+            className="DragDropArea"
+            onDragOver={(e) => {
+              e.preventDefault();
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              const file = e.dataTransfer.files[0];
+              setSelectedFile(file);
+              setImageName(file.name);
+            }}
+            onClick={() => fileInputRef.current.click()} // Use the ref to trigger input click
+          >
+            {imageName ? `Selected image: ${imageName}` : 'Drag and drop an image or click here to select one.'}
+          </div>
         </form>
       </div>
 
@@ -129,6 +142,11 @@ const Feed = () => {
               <div className="post-title">{post.title}</div>
             </div>
             <div className="post-body">{post.body}</div>
+            {post.file !== "-" || post.file === undefined ? <img
+              src={`${backendHost}/users/${userInfo.UserID}/${post.file}`}
+              alt="Post"
+              className="image-content"
+            /> : null}
           </div>
         ))}
       </div>
