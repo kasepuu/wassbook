@@ -12,7 +12,7 @@ import PostsByProfile from "../PostsByProfile";
 function toTitleCase(str) {
   if (str) {
     return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
 }
@@ -26,23 +26,28 @@ const Profile = () => {
   const [userInfo, setUserInfo] = useState({});
 
   useEffect(() => {
-    async function fetchProfileData() {
-      try {
-        const response = await fetch(
-          `${backendHost}/fetch-current-profile?ProfileName=${id}&RequestedBy=${LoggedUser.UserName}`
-        );
-
-        if (response.status === 200) {
-          const data = await response.json();
-          setUserInfo(data);
-        } else if (response.status === 202) {
-          console.log("user does not exist! :'(");
-          // handle "does not exist" äkki näidata logged useri infot?
-        }
-      } catch (error) {
-        console.error(error);
-      }
+    function fetchProfileData() {
+      fetch(
+        `${backendHost}/fetch-current-profile?ProfileName=${id}&RequestedBy=${LoggedUser.UserName}`
+      )
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else if (response.status === 202) {
+            console.log("user does not exist! :'(");
+            return null;
+          }
+        })
+        .then((data) => {
+          if (data != null) {
+            setUserInfo(data);
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     }
+
     fetchProfileData();
   }, [id, LoggedUser.UserName]);
   return (
@@ -56,8 +61,12 @@ const Profile = () => {
 
           <div className="profile-info">
             <p className="username">Username: {userInfo.UserName}</p>
-            <p className="firstname">Firstname: {toTitleCase(userInfo.FirstName)}</p>
-            <p className="lastname">Lastname: {toTitleCase(userInfo.LastName)}</p>
+            <p className="firstname">
+              Firstname: {toTitleCase(userInfo.FirstName)}
+            </p>
+            <p className="lastname">
+              Lastname: {toTitleCase(userInfo.LastName)}
+            </p>
             {userInfo.Friends || isLocalUser ? (
               <>
                 <p>You are friends with this user</p>

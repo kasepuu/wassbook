@@ -8,9 +8,14 @@ const Game1 = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    async function checkAuthorization() {
-      const authorized = await tokenValidation();
-      setIsAuthorized(authorized);
+    function checkAuthorization() {
+      tokenValidation()
+        .then((authorized) => {
+          setIsAuthorized(authorized);
+        })
+        .catch((error) => {
+          console.error("Authorization error:", error);
+        });
     }
 
     checkAuthorization();

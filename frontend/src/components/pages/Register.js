@@ -16,30 +16,32 @@ const Register = () => {
 
   const [loading, setLoading] = useState(false); // add loading state
 
-  async function onSubmit(data) {
+  function onSubmit(data) {
     console.log("Register attempt requested!");
     console.log(data);
-    try {
-      setLoading(true);
 
-      const response = await fetch(`${backendHost}/register-attempt`, {
-        method: "POST", // Specify the HTTP method as POST
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+    setLoading(true);
+
+    fetch(`${backendHost}/register-attempt`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        if (response.ok) {
+          navigate("/login");
+        } else {
+          console.log("Registration failed. Please try again.");
+        }
+      })
+      .catch((error) => {
+        console.error("Registration error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      if (response.ok) {
-        navigate("/login");
-      } else {
-        console.log("Registration failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Registration error:", error);
-    } finally {
-      setLoading(false);
-    }
   }
 
   return (

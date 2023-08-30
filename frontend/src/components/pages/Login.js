@@ -18,75 +18,100 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false); // add loading state
 
-  async function getTokenJWT(username) {
-    try {
-      console.log("username- ", username);
-      const response = await fetch(`${backendHost}/jwt?User=${username}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Access: "MegaTurvaline123",
-        },
-      });
+  function getTokenJWT(username) {
+    console.log("username- ", username);
 
-      if (response.ok) {
-        let token = await response.text();
+    return fetch(`${backendHost}/jwt?User=${username}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Access: "MegaTurvaline123",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error("Network response was not ok.");
+        }
+      })
+      .then((token) => {
         sessionStorage.setItem("Bearer", token);
+        console.log("Token fetched!");
         return true;
-      } else {
+      })
+      .catch((error) => {
+        console.error(error);
         return false;
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      console.log("Token fetched!");
-    }
+      });
   }
 
-  async function loginResponse(response, username) {
+  function loginResponse(response, username) {
     if (response.ok) {
       document.getElementById("LoginMessage").innerHTML = "";
-      const validation = await getTokenJWT(username);
-      if (validation) {
-        console.log("You are authorized, welcome!");
-        return true;
-      } else {
-        console.log("You are not authorized!");
-        return false;
-      }
+
+      return getTokenJWT(username)
+        .then((validation) => {
+          if (validation) {
+            console.log("You are authorized, welcome!");
+            return true;
+          } else {
+            console.log("You are not authorized!");
+            return false;
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          return false;
+        });
     } else {
       console.log(response);
-      let message = await response.text();
-      document.getElementById("LoginMessage").innerHTML = message;
-      return false;
+
+      return response
+        .text()
+        .then((message) => {
+          document.getElementById("LoginMessage").innerHTML = message;
+          return false;
+        })
+        .catch((error) => {
+          console.error(error);
+          return false;
+        });
     }
   }
 
-  async function onSubmit(data) {
+  function onSubmit(data) {
     console.log("Login attempt requested!");
     console.log(data);
-    try {
-      setLoading(true);
 
-      const response = await fetch(`${backendHost}/login-attempt`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+    setLoading(true);
+
+    fetch(`${backendHost}/login-attempt`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => {
+        console.log("on login submit:");
+        return loginResponse(response, data.loginID);
+      })
+      .then((loginResp) => {
+        if (loginResp) {
+          console.log("navigating to: /");
+
+          navigate("/");
+        } else {
+          console.log("something went wrong at loginResponse!");
+        }
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      const loginResp = await loginResponse(response, data.loginID);
-      if (loginResp) {
-        navigate("/");
-      } else {
-        console.log("something went wrong at loginResponse!");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-    } finally {
-      setLoading(false);
-    }
   }
 
   return (

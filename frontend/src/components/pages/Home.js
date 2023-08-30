@@ -12,15 +12,22 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function checkAuthorization() {
-      const authorized = await tokenValidation();
-      setIsAuthorized(authorized);
-      if (!authorized) {
-        navigate("/login");
-      }
+    function checkAuthorization() {
+      tokenValidation()
+        .then((authorized) => {
+          setIsAuthorized(authorized);
+          if (!authorized) {
+            navigate("/login");
+          }
+          console.log("current user is:", authorized);
+        })
+        .catch((error) => {
+          console.error("Authorization error:", error);
+        });
     }
     checkAuthorization();
   }, [navigate]);
+
   if (isAuthorized) {
     loadUser();
     return (
