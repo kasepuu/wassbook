@@ -48,7 +48,7 @@ const Feed = () => {
           userID: post.UserID,
         }));
 
-        setPosts(postsArray);
+        setPosts(postsArray.reverse());
       })
       .catch((error) => {
         console.error("Error loading feed:", error);
