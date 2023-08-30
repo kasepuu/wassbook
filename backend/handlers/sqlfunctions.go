@@ -18,8 +18,7 @@ type UserInfo struct {
 	Email        string
 	Avatar       string
 	Description  string
-	FriendStatus string // on vajalik!!!
-	//Praegu kustutasin followerid täiesti ära aga kui followerite arvu või kes followib tagasi saadaks oleks lahe küll. Vb saab kuskil mujal seda teha? 
+	FollowStatus string //Praegu kustutasin followerid täiesti ära aga kui followerite arvu või kes followib tagasi saadaks oleks lahe küll. Vb saab kuskil mujal seda teha?
 }
 
 func getUserID(UserName string) (UserID int) {
@@ -31,6 +30,21 @@ func getUserName(UserID int) (UserName string) {
 	return UserName
 }
 
+func SaveFollow(UserID int, RecieverID int) {
+	if followStatus(UserID, RecieverID) != "following" {
+		row, err := sqlDB.DataBase.Prepare(`INSERT INTO followers (userid, targetid, status) 
+	VALUES (?, ?, ?)`)
+		if err != nil {
+			log.Println("register sql query error:", err)
+			return
+		}
+		_, execError := row.Exec(UserID, RecieverID, "following")
+		if execError != nil {
+			log.Println("register sql exec error:", execError)
+		}
+	}
+}
+
 func getFirstAndLastName(UserID int) (User UserInfo, err error) {
 	User.UserID = UserID
 	User.UserName = getUserName(UserID)
@@ -40,12 +54,12 @@ func getFirstAndLastName(UserID int) (User UserInfo, err error) {
 	err = sqlDB.DataBase.QueryRow("SELECT fname, lname FROM users WHERE id = ?", UserID).Scan(&User.FirstName, &User.LastName)
 	User.DateOfBirth = strings.Split(DateOfBirthFormatted, ".")
 	return User, err
-	
+
 }
 
-func friendStatus(UserID int, FriendID int) (status string) {
-	sqlDB.DataBase.QueryRow("SELECT status FROM followers WHERE userid = ? AND friendid = ? OR userid = ? AND friendid = ?",
-		UserID, FriendID, FriendID, UserID).Scan(&status)
+func followStatus(UserID int, TargetID int) (status string) {
+	sqlDB.DataBase.QueryRow("SELECT status FROM followers WHERE userid = ? AND targetid = ?",
+		UserID, TargetID).Scan(&status)
 	return
 }
 
@@ -66,7 +80,7 @@ func fetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 		&User.Avatar,
 		&User.Description,
 	)
-	User.FriendStatus = friendStatus(User.UserID, RequesterID)
+	User.FollowStatus = followStatus(RequesterID, User.UserID)
 	User.DateOfBirth = strings.Split(DateOfBirthFormatted, ".")
 
 	return User, fetchErr

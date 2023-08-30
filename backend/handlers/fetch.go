@@ -38,7 +38,7 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("fetch request received!", openedProfile, "profile opened, requested by:", requestedBy)
 
-	UserInfo, fetchErr := fetchUserInformation(getUserID(openedProfile), 0)
+	UserInfo, fetchErr := fetchUserInformation(getUserID(openedProfile), getUserID(requestedBy))
 	if fetchErr != nil {
 		log.Println("Error fetching user information at profile request! Error Message:", fetchErr)
 		w.WriteHeader(http.StatusAccepted)

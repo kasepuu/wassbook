@@ -7,6 +7,8 @@ import { useParams } from "react-router-dom";
 import { backendHost } from "../..";
 import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
+import { sendEvent } from "../../websocket.js";
+
 //import { ButtonOr } from "semantic-ui-react";
 
 function toTitleCase(str) {
@@ -15,6 +17,14 @@ function toTitleCase(str) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
     });
   }
+}
+
+function handleFollowClick(recieverId, currentUserId) {
+  const followResponse = {
+    UserID: currentUserId.toString(),
+    ReceivingUserID: recieverId.toString()
+  };
+  sendEvent("follow_user", followResponse)
 }
 
 const Profile = () => {
@@ -50,12 +60,12 @@ const Profile = () => {
 
     fetchProfileData();
   }, [id, LoggedUser.UserName]);
+
   return (
     <>
       <Navbar />
       <Sidebar />
       <div className="profile-container">
-        {console.log(userInfo)}
         <div className="profile-info-container">
           <img src={profilePicture} alt="Profile" className="profilepic" />
 
@@ -67,20 +77,34 @@ const Profile = () => {
             <p className="lastname">
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
-            {userInfo.Friends || isLocalUser ? (
+            {userInfo.FollowStatus === "following" || isLocalUser ? (
               <>
-                <p>You are friends with this user</p>
+                <p>You are following this user</p>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth}
                 </p>
                 <p className="email">Email: {userInfo.Email}</p>
               </>
             ) : (
-              <div className="not-friends-message">
-                You are not friends with this user.
-                <button>Add Friend &gt;.&lt;</button>
-                {/* TODO: Sellega buttoniga läbi websocketi (kui selline meil üldse töökorras 💀) request saata ja lisada followeri databaasi staatus: pending.
-                    Võib notification asju ka vaikselt vaadata ;) */}
+              <div>
+                {userInfo.FollowStatus === "pending" ? (
+
+                  <div className="not-friends-message">
+                    You are not following this user yet.
+                    <button disabled>Request pending ⏳</button>
+                  </div>
+                ) : (
+                  <p>You are not following this user.
+                    <button onClick={() => {
+                      handleFollowClick(userInfo.UserID, LoggedUser.UserID)
+                      setUserInfo(prevUserInfo => ({
+                        ...prevUserInfo,
+                        FollowStatus: "following"
+                      }));
+                      }
+                    } value={userInfo.UserID}>Follow &gt;.&lt;</button>
+                  </p>
+                )}
               </div>
             )}
           </div>
@@ -88,7 +112,7 @@ const Profile = () => {
 
         <div className="profile-posts">
           <p>Posts by {userInfo.UserName}:</p>
-          {userInfo.Friends || isLocalUser ? (
+          {userInfo.FollowStatus === "following" || isLocalUser ? (
             <>
               <PostsByProfile />
             </>

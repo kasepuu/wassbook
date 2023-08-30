@@ -19,7 +19,7 @@ func CreateJWT(username string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	userInfo, fetchErr := fetchUserInformation(getUserID(username), getUserID(username))
+	userInfo, fetchErr := fetchUserInformation(getUserID(username), 0)
 	if fetchErr != nil {
 		log.Println("[sql] Something went wrong while Creating JWT", fetchErr)
 		return "", fetchErr

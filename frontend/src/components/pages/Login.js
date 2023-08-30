@@ -5,6 +5,7 @@ import "../../css/Login.css";
 import { useState } from "react";
 import { backendHost } from "../../index.js";
 import { useNavigate } from "react-router-dom";
+import { connectAndSendEvents } from "../../index.js"
 // formid ümber teha!
 // https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 
@@ -100,7 +101,7 @@ const Login = () => {
       .then((loginResp) => {
         if (loginResp) {
           console.log("navigating to: /");
-
+          connectAndSendEvents()
           navigate("/");
         } else {
           console.log("something went wrong at loginResponse!");

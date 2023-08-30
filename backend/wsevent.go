@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	handler "01.kood.tech/git/kasepuu/social-network/backend/handlers"
 )
 
 type Event struct {
@@ -29,6 +31,27 @@ func (m *wsManager) setupEventHandlers() {
 	//m.handlers[EventLoadPosts] = GetAllPosts
 	m.handlers[EventSortUsers] = SortUserList
 	m.handlers[EventIsTyping] = IsTypingHandler
+	m.handlers[followEvent] = FollowHandler
+}
+
+const followEvent = "follow_user"
+
+type followFormat struct {
+	UserID          string `json:"UserID"`
+	ReceivingUserID string `json:"ReceivingUserID"`
+}
+
+func FollowHandler(event Event, c *Client) error {
+	var payload followFormat
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("bad payload in request: %v", err)
+	}
+	UserID, _ := strconv.Atoi(payload.UserID)
+	ReceivingUserID, _ := strconv.Atoi(payload.ReceivingUserID)
+
+	handler.SaveFollow(UserID, ReceivingUserID)
+	
+	return nil
 }
 
 func sendResponse(responseData any, event string, c *Client) {
