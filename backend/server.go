@@ -49,6 +49,7 @@ func StartServer(port string) {
 	http.Handle("/savepost", corsHandler.Handler(http.HandlerFunc(handler.Savepost)))
 	http.Handle("/getposts", corsHandler.Handler(http.HandlerFunc(handler.GetPosts)))
 	http.Handle("/users/", corsHandler.Handler(http.HandlerFunc(handler.ImageHandler)))
+	http.Handle("/update-private-status", corsHandler.Handler(http.HandlerFunc(handler.UpdatePrivateStatusHandler)))
 
 	errorHandler(http.ListenAndServe(":"+port, nil))
 }

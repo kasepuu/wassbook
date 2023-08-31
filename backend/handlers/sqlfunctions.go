@@ -2,23 +2,28 @@ package handler
 
 import (
 	"database/sql"
+	"encoding/json"
+	"fmt"
 	"log"
+	"net/http"
 	"strings"
+	"time"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
 type UserInfo struct {
-	UserID       int
-	UserName     string
-	FirstName    string
-	LastName     string
-	DateOfBirth  []string
-	DateJoined   string
-	Email        string
-	Avatar       string
-	Description  string
-	FollowStatus string //Praegu kustutasin followerid täiesti ära aga kui followerite arvu või kes followib tagasi saadaks oleks lahe küll. Vb saab kuskil mujal seda teha?
+	UserID        int
+	UserName      string
+	FirstName     string
+	LastName      string
+	DateOfBirth   []string
+	DateJoined    string
+	Email         string
+	Avatar        string
+	Description   string
+	FollowStatus  string //Praegu kustutasin followerid täiesti ära aga kui followerite arvu või kes followib tagasi saadaks oleks lahe küll. Vb saab kuskil mujal seda teha?
+	PrivateStatus int
 }
 
 func getUserID(UserName string) (UserID int) {
@@ -63,13 +68,44 @@ func followStatus(UserID int, TargetID int) (status string) {
 	return
 }
 
+func updatePrivateStatus(userID int, newPrivateValue int) error {
+	_, err := sqlDB.DataBase.Exec("UPDATE users SET private = ? WHERE id = ?", newPrivateValue, userID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdatePrivateStatusHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		UserID          int `json:"userID"`
+		NewPrivateValue int `json:"newPrivateValue"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	// Assuming you have a function to update the private status in your database
+	err = updatePrivateStatus(request.UserID, request.NewPrivateValue)
+	if err != nil {
+		http.Error(w, "Failed to update private status", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]string{"message": "Private status updated successfully"}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func fetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr error) {
 	User.UserID = UserID
 	User.UserName = getUserName(UserID)
 
 	var DateOfBirthFormatted string
 
-	fetchErr = sqlDB.DataBase.QueryRow(`SELECT id, nickname, fname, lname, dateofbirth, datejoined, email, avatar, description FROM users WHERE id = ?`, UserID).Scan(
+	fetchErr = sqlDB.DataBase.QueryRow(`SELECT id, nickname, fname, lname, dateofbirth, datejoined, email, avatar, description, private FROM users WHERE id = ?`, UserID).Scan(
 		&User.UserID,
 		&User.UserName,
 		&User.FirstName,
@@ -79,9 +115,22 @@ func fetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 		&User.Email,
 		&User.Avatar,
 		&User.Description,
+		&User.PrivateStatus,
 	)
 	User.FollowStatus = followStatus(RequesterID, User.UserID)
-	User.DateOfBirth = strings.Split(DateOfBirthFormatted, ".")
+	User.DateOfBirth = strings.Split(DateOfBirthFormatted, " ")
+
+	inputDate := User.DateJoined
+
+	parsedTime, err := time.Parse(time.RFC3339Nano, inputDate)
+	if err != nil {
+		fmt.Println("Error parsing date:", err)
+		return
+	}
+
+	estonianLocation, _ := time.LoadLocation("Europe/Tallinn")
+	formattedDate := parsedTime.In(estonianLocation).Format("02.01.2006 15:04:05")
+	User.DateJoined = formattedDate
 
 	return User, fetchErr
 }

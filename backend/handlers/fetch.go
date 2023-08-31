@@ -35,10 +35,11 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 	// fetch-current-profile/?ProfileName=${id}&RequestedBy
 	openedProfile := r.URL.Query().Get("ProfileName")
 	requestedBy := r.URL.Query().Get("RequestedBy")
+	loggedUserId := getUserID(requestedBy)
 
 	fmt.Println("fetch request received!", openedProfile, "profile opened, requested by:", requestedBy)
 
-	UserInfo, fetchErr := fetchUserInformation(getUserID(openedProfile), getUserID(requestedBy))
+	UserInfo, fetchErr := fetchUserInformation(getUserID(openedProfile), loggedUserId)
 	if fetchErr != nil {
 		log.Println("Error fetching user information at profile request! Error Message:", fetchErr)
 		w.WriteHeader(http.StatusAccepted)
@@ -46,8 +47,14 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
 	//if requestedBy is not friends with openedprofile then -> hidePrivateInformation(UserInfo)
+	// AND FOLLOW STATUS !!!!! TODO!
+	if UserInfo.PrivateStatus == 1 && UserInfo.UserID != loggedUserId {
+		UserInfo.Email = "Private"
+		UserInfo.DateOfBirth = nil
+		UserInfo.Description = "Private"
+		UserInfo.DateJoined = "Private"
+	}
 
 	w.WriteHeader(http.StatusOK)
 	err := json.NewEncoder(w).Encode(UserInfo)
