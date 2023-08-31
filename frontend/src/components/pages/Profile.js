@@ -8,6 +8,7 @@ import { backendHost } from "../..";
 import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
 import { sendEvent } from "../../websocket.js";
+import { useAuthorization } from "../Authorization";
 //import { ButtonOr } from "semantic-ui-react";
 function toTitleCase(str) {
   if (str) {
@@ -40,7 +41,11 @@ const handleToggleClick = (userID, PrivateStatus) => {
       console.error("Error updating private status:", error);
     });
 };
+
 const Profile = () => {
+  const isAuthorized = useAuthorization();
+  console.log("isAuthorized:", isAuthorized);
+
   let { id } = useParams();
   let isLocalUser = false;
   const LoggedUser = JSON.parse(localStorage.getItem("CurrentUser"));
