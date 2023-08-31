@@ -1,11 +1,90 @@
+import "../css/Feed.css";
+import React, { useState, useEffect } from "react";
+import profilePicture from "../page-images/blank.png";
+import { backendHost } from "../index.js";
+import { useAuthorization } from "./Authorization";
+
 const PostsByProfile = ({ post }) => {
+  useAuthorization();
+  const [posts, setPosts] = useState([]);
+  const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
+
+  const search = window.location.pathname;
+  const parts = search.split("/");
+  const lastPart = parts.pop();
+  {console.log(lastPart)};
+
+  function loadFeed() {
+    fetch(`${backendHost}/getPostByUserId`, {
+      method: "POST",
+      body: JSON.stringify({
+        userName: lastPart,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .catch((error) => {
+        console.error("Error updating private status:", error);
+      })
+      .then((data) => {
+        if (data === null) {
+          setPosts([]);
+          return;
+        }
+
+        console.log(data);
+
+        const postsArray = data.map((post) => ({
+          title: `${post.FirstName} ${post.LastName} - ${post.Date}`,
+          body: post.Content,
+          id: post.PostID,
+          file: post.Filename,
+          userID: post.UserID,
+        }));
+
+        setPosts(postsArray.reverse());
+      })
+      .catch((error) => {
+        console.error("Error loading feed:", error);
+      });
+  }
+
+  useEffect(() => {
+    // Load feed data from the backend on component mount
+    loadFeed();
+  }, []);
+
   return (
     <>
       <div className="profile-post">
-        <p>Postituse formaat siia!</p>
-        <p>post.Creator </p>
-        <p>post.Contents </p>
-        <p>jms</p>
+        <div className="feed-posts" id="feed-posts">
+          {posts.map((post, index) => (
+            <div
+              key={index}
+              id={`post-${post.id}`}
+              className="feed-post"
+            >
+              <div className="post-header">
+                <img
+                  src={profilePicture}
+                  alt="Profile"
+                  className="profile-picture"
+                />
+                <div className="post-title">{post.title}</div>
+              </div>
+              <div className="post-body">{post.body}</div>
+              {post.file !== "-" || post.file === undefined ? (
+                <img
+                  src={`${backendHost}/users/${post.userID}/${post.file}`}
+                  alt="Post"
+                  className="image-content"
+                />
+              ) : null}
+            </div>
+          ))}
+        </div>
       </div>
     </>
   );

@@ -92,7 +92,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-            userInfo.UserID === LoggedUser.UserID ? (
+              userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -161,7 +161,7 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-        userInfo.UserID === LoggedUser.UserID ? (
+          userInfo.UserID === LoggedUser.UserID ? (
           <>
             {" "}
             <div className="profile-posts">
