@@ -5,12 +5,17 @@ import "../../css/Login.css";
 import { useState } from "react";
 import { backendHost } from "../../index.js";
 import { useNavigate } from "react-router-dom";
-import { connectAndSendEvents } from "../../index.js"
+import { connectAndSendEvents } from "../../index.js";
+import { useAuthorization } from "../Authorization";
 // formid ümber teha!
 // https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 
 const Login = () => {
   const navigate = useNavigate(); // Get the navigate function
+  const isAuthorized = useAuthorization();
+
+  if (isAuthorized) navigate("/");
+
   const {
     register,
     handleSubmit,
@@ -18,68 +23,6 @@ const Login = () => {
   } = useForm();
 
   const [loading, setLoading] = useState(false); // add loading state
-
-  function getTokenJWT(username) {
-    console.log("username- ", username);
-
-    return fetch(`${backendHost}/jwt?User=${username}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Access: "MegaTurvaline123",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          return response.text();
-        } else {
-          throw new Error("Network response was not ok.");
-        }
-      })
-      .then((token) => {
-        sessionStorage.setItem("Bearer", token);
-        console.log("Token fetched!");
-        return true;
-      })
-      .catch((error) => {
-        console.error(error);
-        return false;
-      });
-  }
-
-  function loginResponse(response, username) {
-    if (response.ok) {
-      document.getElementById("LoginMessage").innerHTML = "";
-
-      return getTokenJWT(username)
-        .then((validation) => {
-          if (validation) {
-            console.log("You are authorized, welcome!");
-            return true;
-          } else {
-            console.log("You are not authorized!");
-            return false;
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          return false;
-        });
-    } else {
-      console.log(response);
-
-      return response
-        .text()
-        .then((message) => {
-          document.getElementById("LoginMessage").innerHTML = message;
-          return false;
-        })
-        .catch((error) => {
-          console.error(error);
-          return false;
-        });
-    }
-  }
 
   function onSubmit(data) {
     console.log("Login attempt requested!");
@@ -101,7 +44,7 @@ const Login = () => {
       .then((loginResp) => {
         if (loginResp) {
           console.log("navigating to: /");
-          connectAndSendEvents()
+          connectAndSendEvents();
           navigate("/");
         } else {
           console.log("something went wrong at loginResponse!");
@@ -172,3 +115,64 @@ const Login = () => {
 };
 
 export default Login;
+
+function loginResponse(response, username) {
+  if (response.ok) {
+    document.getElementById("LoginMessage").innerHTML = "";
+
+    return getTokenJWT(username)
+      .then((validation) => {
+        if (validation) {
+          console.log("You are authorized, welcome!");
+          return true;
+        } else {
+          console.log("You are not authorized!");
+          return false;
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        return false;
+      });
+  } else {
+    console.log(response);
+
+    return response
+      .text()
+      .then((message) => {
+        document.getElementById("LoginMessage").innerHTML = message;
+        return false;
+      })
+      .catch((error) => {
+        console.error(error);
+        return false;
+      });
+  }
+}
+
+function getTokenJWT(username) {
+  console.log("username- ", username);
+
+  return fetch(`${backendHost}/jwt?User=${username}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Access: "MegaTurvaline123",
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw new Error("Network response was not ok.");
+      }
+    })
+    .then((token) => {
+      document.cookie = `Bearer=${token}; Path=/`;
+      return true;
+    })
+    .catch((error) => {
+      console.error(error);
+      return false;
+    });
+}

@@ -1,6 +1,7 @@
 import "../css/Navbar.css";
 import logo from "../logo.svg";
 import { Link } from "react-router-dom";
+import SearchContainer from "./SearchContainer";
 
 // react icons: https://react-icons.github.io/react-icons/icons?name=fa
 import {
@@ -11,7 +12,6 @@ import {
   FaBell,
   FaUserCircle,
 } from "react-icons/fa";
-import SearchContainer from "./SearchContainer";
 
 const Navbar = () => {
   return (

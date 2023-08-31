@@ -52,12 +52,12 @@ const functionMap = {
   update_users: updateUserList,
   get_online_members: loadOnlineMembers,
   is_typing: updateIsTyping,
-  follow_user: followNotify
+  follow_user: followNotify,
   // "new_message": newMessage
 };
 
-function followNotify(){
-  console.log("follow sent!!!!")
+function followNotify() {
+  console.log("follow sent!!!!");
 }
 
 function updateIsTyping(data) {

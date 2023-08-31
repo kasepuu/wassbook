@@ -17,4 +17,20 @@ code {
 
 iframe {
   scale: 1;
+  width: 1300px;
+  height: 740px;
+  border-width: 5px;
+  border-style: solid;
+  border-image: linear-gradient(to top, rgb(69, 255, 255), rgb(0, 0, 131)) 1;
+}
+.center-vertically {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.game {
+  width: 1310px;
+  height: 100%;
+  background-color: #ddd;
 }

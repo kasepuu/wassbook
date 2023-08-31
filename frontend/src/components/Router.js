@@ -1,11 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 //pages
-import Home from "./components/pages/Home";
-import Login from "./components/pages/Login";
-import Register from "./components/pages/Register";
-import Logout from "./components/pages/Logout";
-import Game1 from "./components/pages/Game1";
-import Profile from "./components/pages/Profile";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Logout from "./pages/Logout";
+import Game1 from "./pages/Game1";
+import Profile from "./pages/Profile";
 const Routing = () => {
   return (
     <Routes>

@@ -40,7 +40,7 @@
   background-color: white;
   border-radius: 10px;
   padding: 10px;
-  margin: 10px 0;  /* Adjusted margin for spacing */
+  margin: 10px 0; /* Adjusted margin for spacing */
 }
 
 .post-title {
@@ -70,7 +70,69 @@
   align-items: center;
   margin-bottom: 5px;
 }
+.image-content {
+  max-width: 800px;
+}
 
-.image-content{
-  width: 100%;
+.post-overlay {
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  background-color: #ddd;
+}
+
+.post-commentbox {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.comment-input-wrapper {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.comment-input-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 5px;
+}
+
+.comment-input-container input {
+  flex: 1;
+  border: none;
+  padding: 5px;
+}
+
+.file-upload-button {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.comment-input-button {
+  background-color: #007bff;
+  color: white;
+  padding: 5px 15px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.comment-input-button:hover {
+  background-color: #0056b3;
 }
