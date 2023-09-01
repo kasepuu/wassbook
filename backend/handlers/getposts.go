@@ -54,7 +54,7 @@ func GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := sqlDB.DataBase.Query("SELECT * FROM posts WHERE userId = (SELECT id FROM users WHERE nickname = ?)", request.UserName) // Adjust the query according to your table structure
+	rows, err := sqlDB.DataBase.Query("SELECT * FROM posts WHERE userId = (SELECT id FROM users WHERE nickname = ?)", request.UserName)
 	if err != nil {
 		log.Println("Error querying posts:", err)
 		w.WriteHeader(http.StatusInternalServerError)

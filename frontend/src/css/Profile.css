@@ -1,13 +1,17 @@
 .profile-container {
   width: 100%;
   flex: 3;
-  background-color: #ddd;
+  background-color: #e7e7e7;
+}
+.profile-container p {
+color: black;
+font-weight: bold;
 }
 
 .profile-info-container {
   flex: 0 0 auto;
   margin-top: 1px;
-  border: 1px solid yellow;
+  border: 1px solid rgb(0, 0, 0);
   background-color: #e7e7e7;
   display: flex;
 }
@@ -30,6 +34,7 @@
 }
 
 .profile-posts {
+  background-color: #e7e7e7;
   position: relative;
 }
 

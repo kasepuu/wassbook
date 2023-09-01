@@ -7,12 +7,11 @@ import { useAuthorization } from "./Authorization";
 const PostsByProfile = ({ post }) => {
   useAuthorization();
   const [posts, setPosts] = useState([]);
-  const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
+  //const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
   const search = window.location.pathname;
   const parts = search.split("/");
   const lastPart = parts.pop();
-  {console.log(lastPart)};
 
   function loadFeed() {
     fetch(`${backendHost}/getPostByUserId`, {
@@ -52,9 +51,8 @@ const PostsByProfile = ({ post }) => {
   }
 
   useEffect(() => {
-    // Load feed data from the backend on component mount
-    loadFeed();
-  }, []);
+    loadFeed(lastPart);
+  }, [lastPart]);
 
   return (
     <>
