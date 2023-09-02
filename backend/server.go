@@ -51,6 +51,7 @@ func StartServer(port string) {
 	http.Handle("/users/", corsHandler.Handler(http.HandlerFunc(handler.ImageHandler)))
 	http.Handle("/update-private-status", corsHandler.Handler(http.HandlerFunc(handler.UpdatePrivateStatusHandler)))
 	http.Handle("/getPostByUserId", corsHandler.Handler(http.HandlerFunc(handler.GetPostsByUserId)))
+	http.Handle("/update-user-description", corsHandler.Handler(http.HandlerFunc(handler.UpdateUserDescriptionHandler)))
 
 	errorHandler(http.ListenAndServe(":"+port, nil))
 }

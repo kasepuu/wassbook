@@ -42,6 +42,33 @@ const handleToggleClick = (userID, PrivateStatus) => {
     });
 };
 
+const handleDescriptionUpdate = (userID, newDescription) => {
+  return fetch(`${backendHost}/update-user-description`, {
+    method: "POST",
+    body: JSON.stringify({
+      userID: userID,
+      newDescription: newDescription,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      console.log("User description updated successfully:", data.message);
+    })
+    .catch((error) => {
+      console.error("Error updating user description:", error);
+      throw error;
+    });
+};
+
+
 const Profile = () => {
   const isAuthorized = useAuthorization();
   console.log("isAuthorized:", isAuthorized);
@@ -52,6 +79,36 @@ const Profile = () => {
   if (id === undefined || !id) id = LoggedUser.UserName;
   if (id === LoggedUser.UserName) isLocalUser = true;
   const [userInfo, setUserInfo] = useState({});
+
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [newDescription, setNewDescription] = useState(userInfo.Description);
+  const [originalDescription] = useState(userInfo.Description);
+
+  const handleEditClick = () => {
+    setIsEditingDescription(true);
+  };
+
+  const handleSaveClick = () => {
+    handleDescriptionUpdate(userInfo.UserID, newDescription)
+      .then(() => {
+        console.log("User description updated successfully");
+        setUserInfo((prevUserInfo) => ({
+          ...prevUserInfo,
+          Description: newDescription,
+        }));
+        setIsEditingDescription(false);
+      })
+      .catch((error) => {
+        console.error("Error updating user description:", error);
+      });
+    setIsEditingDescription(false);
+  };
+
+  const handleCancelClick = () => {
+    setNewDescription(originalDescription);
+    setIsEditingDescription(false);
+  };
+
   useEffect(() => {
     function fetchProfileData() {
       fetch(
@@ -76,6 +133,7 @@ const Profile = () => {
     }
     fetchProfileData();
   }, [id, LoggedUser.UserName]);
+
   return (
     <>
       <Navbar />
@@ -100,13 +158,43 @@ const Profile = () => {
                 </p>
                 <p className="email">Email: {userInfo.Email}</p>
                 <p className="dateJoined">Date joined: {userInfo.DateJoined}</p>
-                <p className="description">
-                  Description: {userInfo.Description}
-                </p>
               </>
             ) : (
               <>This profile is private!</>
             )}
+
+            {userInfo.UserID === LoggedUser.UserID ? (
+              <>
+                <div>
+                  Description:
+                  {isEditingDescription ? (
+                    <div>
+                      <textarea
+                        value={newDescription}
+                        onChange={(e) => setNewDescription(e.target.value)}
+                      />
+                      <div>
+                        <button onClick={handleSaveClick}>Save</button>
+                        <button onClick={handleCancelClick}>Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <p>{userInfo.Description}</p>
+                      <button onClick={handleEditClick}>Edit</button>
+                    </div>
+                  )}
+                </div>
+              </>
+
+            ) : (
+              <>
+                <p className="description">
+                  Description: {userInfo.Description}
+                </p>
+              </>
+            )}
+
             {userInfo.FollowStatus === "following" || isLocalUser ? (
               <p>You are following this user</p>
             ) : (

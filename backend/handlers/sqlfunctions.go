@@ -173,3 +173,39 @@ func fetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 
 	return users, nil
 }
+
+// func getUserDescription(UserID int) (description string, err error) {
+// 	err = sqlDB.DataBase.QueryRow("SELECT description FROM users WHERE id = ?", UserID).Scan(&description)
+// 	return description, err
+// }
+
+func updateUserDescription(UserID int, newDescription string) error {
+	_, err := sqlDB.DataBase.Exec("UPDATE users SET description = ? WHERE id = ?", newDescription, UserID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateUserDescriptionHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		UserID         int    `json:"userID"`
+		NewDescription string `json:"newDescription"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	// Assuming you have a function to update the user's description in your database
+	err = updateUserDescription(request.UserID, request.NewDescription)
+	if err != nil {
+		http.Error(w, "Failed to update user description", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]string{"message": "User description updated successfully"}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
