@@ -35,18 +35,31 @@ func getUserName(UserID int) (UserName string) {
 	return UserName
 }
 
-func SaveFollow(UserID int, RecieverID int) {
-	if followStatus(UserID, RecieverID) != "following" {
+func SaveFollow(UserID int, ReceiverID int, Status string) {
+	if followStatus(UserID, ReceiverID) != "following" || followStatus(UserID, ReceiverID) != "pending" {
 		row, err := sqlDB.DataBase.Prepare(`INSERT INTO followers (userid, targetid, status) 
 	VALUES (?, ?, ?)`)
 		if err != nil {
-			log.Println("register sql query error:", err)
+			log.Println("followstatus sql query error:", err)
 			return
 		}
-		_, execError := row.Exec(UserID, RecieverID, "following")
+		_, execError := row.Exec(UserID, ReceiverID, Status)
 		if execError != nil {
-			log.Println("register sql exec error:", execError)
+			log.Println("followstatus sql exec error:", execError)
 		}
+	}
+}
+
+func SaveNotification(UserID int, ReceiverID int, Type string) {
+	row, err := sqlDB.DataBase.Prepare(`INSERT INTO notifications (userid, receiverid, type) 
+	VALUES (?, ?, ?)`)
+	if err != nil {
+		log.Println("notification sql query error:", err)
+		return
+	}
+	_, execError := row.Exec(UserID, ReceiverID, Type)
+	if execError != nil {
+		log.Println("notification sql exec error:", execError)
 	}
 }
 

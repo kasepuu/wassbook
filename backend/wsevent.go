@@ -39,6 +39,7 @@ const followEvent = "follow_user"
 type followFormat struct {
 	UserID          string `json:"UserID"`
 	ReceivingUserID string `json:"ReceivingUserID"`
+	Status          string `json:"Status"`
 }
 
 func FollowHandler(event Event, c *Client) error {
@@ -49,8 +50,16 @@ func FollowHandler(event Event, c *Client) error {
 	UserID, _ := strconv.Atoi(payload.UserID)
 	ReceivingUserID, _ := strconv.Atoi(payload.ReceivingUserID)
 
-	handler.SaveFollow(UserID, ReceivingUserID)
-	
+	handler.SaveFollow(UserID, ReceivingUserID, payload.Status)
+
+	payload.Status = "follow_"+payload.Status
+	handler.SaveNotification(UserID, ReceivingUserID, payload.Status)
+
+	for client := range c.client.clients {
+		if client.userId == ReceivingUserID {
+			sendResponse(payload, "notification", client)
+		}
+	}
 	return nil
 }
 

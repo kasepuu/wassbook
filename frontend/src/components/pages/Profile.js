@@ -17,13 +17,17 @@ function toTitleCase(str) {
     });
   }
 }
-function handleFollowClick(recieverId, currentUserId) {
+
+function handleFollowClick(receiverId, currentUserId, status) {
   const followResponse = {
     UserID: currentUserId.toString(),
-    ReceivingUserID: recieverId.toString(),
+    ReceivingUserID: receiverId.toString(),
+    Status: status
   };
   sendEvent("follow_user", followResponse);
 }
+
+
 const handleToggleClick = (userID, PrivateStatus) => {
   const newPrivateValue = PrivateStatus === 1 ? 0 : 1;
   fetch(`${backendHost}/update-private-status`, {
@@ -209,10 +213,12 @@ const Profile = () => {
                     You are not following this user.
                     <button
                       onClick={() => {
-                        handleFollowClick(userInfo.UserID, LoggedUser.UserID);
+                        let status = "following"
+                        if (userInfo.PrivateStatus === 1) status = "pending"
+                        handleFollowClick(userInfo.UserID, LoggedUser.UserID, status);
                         setUserInfo((prevUserInfo) => ({
                           ...prevUserInfo,
-                          FollowStatus: "following",
+                          FollowStatus: "pending",
                         }));
                       }}
                       value={userInfo.UserID}
