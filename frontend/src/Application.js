@@ -1,5 +1,3 @@
-import "./css/Application.css";
-
 import Routing from "./components/Router";
 
 function App() {

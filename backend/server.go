@@ -7,53 +7,73 @@ import (
 
 	handler "01.kood.tech/git/kasepuu/social-network/backend/handlers"
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
-	"github.com/rs/cors"
 )
+
+type CorsHandler struct {
+	*http.ServeMux
+}
+
+func (c CorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// The CORS headers
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080") // origin
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")   // methods
+	w.Header().Set("Access-Control-Allow-Headers", "*")                    // headers
+	w.Header().Set("Access-Control-Allow-Credentials", "true")             // cookies
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	c.ServeMux.ServeHTTP(w, r)
+}
 
 func StartServer(port string) {
 	sqlDB.SessionCleanup()                                           // sessions table cleanup
 	wsManager := NewManager()                                        // websocket manager
-	fsViews := noDirListing(http.FileServer(http.Dir("./views/")))   // nodirlisting to avoid guest seeing all files stored in /web/images/
-	fsPublic := noDirListing(http.FileServer(http.Dir("./public/"))) // nodirlisting to avoid guest seeing all files stored in /web/images/
-
-	// Create a CORS handler
-	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080"},  // Allow requests from this origin
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"}, // Allow these HTTP methods
-		AllowedHeaders:   []string{"*"},                      // Allow these headers
-		AllowCredentials: true,                               // Allow sending cookies
-	})
+	fsViews := noDirListing(http.FileServer(http.Dir("./views/")))   // nodirlisting to avoid guest seeing all files stored in /views/
+	fsPublic := noDirListing(http.FileServer(http.Dir("./public/"))) // nodirlisting to avoid guest seeing all files stored in /public/
 
 	log.Printf("Starting server at port " + port + "\n\n")
 	log.Printf("backend is running at: http://localhost:" + port + "/\n")
 
-	http.Handle("/views/", http.StripPrefix("/views", fsViews))    // handling views folder
-	http.Handle("/public/", http.StripPrefix("/public", fsPublic)) // handling public folder
+	// mux
+	mux := http.NewServeMux()
+	corsMux := &CorsHandler{ServeMux: mux}
 
-	http.HandleFunc("/ws", wsManager.serveWs)
+	// Apply CORS middleware to all handler
+	corsMux.Handle("/views/", http.StripPrefix("/views", fsViews))
+	corsMux.Handle("/public/", http.StripPrefix("/public", fsPublic))
 
-	// Wrap your handlers with the corsHandler
-	http.Handle("/", corsHandler.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./views/index.html")
-	})))
+	// essential stuff
+	corsMux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("mux mux mux"))
+	})
 
-	http.Handle("/login-attempt", corsHandler.Handler(http.HandlerFunc(handler.Login)))
-	http.Handle("/register-attempt", corsHandler.Handler(http.HandlerFunc(handler.Register)))
+	// Wrap wsManager.serveWs with corsMiddleware
+	corsMux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		http.HandlerFunc(wsManager.serveWs).ServeHTTP(w, r)
+	})
 
-	http.Handle("/jwt", corsHandler.Handler(http.HandlerFunc(handler.GetJwt)))      // for generating jwt token
-	http.Handle("/api", corsHandler.Handler(http.HandlerFunc(handler.ValidateJWT))) // for validating jwt token
+	// api stuff
+	corsMux.HandleFunc("/login-attempt", handler.Login)
+	corsMux.HandleFunc("/register-attempt", handler.Register)
+	corsMux.HandleFunc("/jwt", handler.GetJwt)      // for generating jwt token
+	corsMux.HandleFunc("/api", handler.ValidateJWT) // for validating jwt token
 
-	// other fetch requests
-	http.Handle("/fetch-searchbar-users", corsHandler.Handler(http.HandlerFunc(handler.FetchSearchBarUsers)))
-	http.Handle("/fetch-current-profile", corsHandler.Handler(http.HandlerFunc(handler.FetchCurrentProfile)))
-	http.Handle("/savepost", corsHandler.Handler(http.HandlerFunc(handler.Savepost)))
-	http.Handle("/getposts", corsHandler.Handler(http.HandlerFunc(handler.GetPosts)))
-	http.Handle("/users/", corsHandler.Handler(http.HandlerFunc(handler.ImageHandler)))
-	http.Handle("/update-private-status", corsHandler.Handler(http.HandlerFunc(handler.UpdatePrivateStatusHandler)))
-	http.Handle("/getPostByUserId", corsHandler.Handler(http.HandlerFunc(handler.GetPostsByUserId)))
-	http.Handle("/update-user-description", corsHandler.Handler(http.HandlerFunc(handler.UpdateUserDescriptionHandler)))
+	// get requests
+	corsMux.HandleFunc("/fetch-searchbar-users", handler.FetchSearchBarUsers)
+	corsMux.HandleFunc("/fetch-current-profile", handler.FetchCurrentProfile)
+	corsMux.HandleFunc("/getPostByUserId", handler.FetchPostsCreatedBy)
+	corsMux.HandleFunc("/update-private-status", handler.UpdatePrivateStatusHandler)
+	corsMux.HandleFunc("/update-user-description", handler.UpdateUserDescriptionHandler)
 
-	errorHandler(http.ListenAndServe(":"+port, nil))
+	// post requests
+	corsMux.Handle("/savepost", http.HandlerFunc(handler.Savepost))
+	corsMux.Handle("/getposts", http.HandlerFunc(handler.FetchPosts))
+	corsMux.Handle("/users/", http.HandlerFunc(handler.ImageHandler))
+
+	errorHandler(http.ListenAndServe(":"+port, corsMux))
 }
 
 func errorHandler(err error) {

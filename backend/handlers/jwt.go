@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 	"github.com/dgrijalva/jwt-go"
 )
@@ -19,7 +20,7 @@ func CreateJWT(username string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	userInfo, fetchErr := fetchUserInformation(getUserID(username), 0)
+	userInfo, fetchErr := function.FetchUserInformation(function.GetUserID(username), 0)
 	if fetchErr != nil {
 		log.Println("[sql] Something went wrong while Creating JWT", fetchErr)
 		return "", fetchErr
@@ -32,13 +33,13 @@ func CreateJWT(username string) (string, error) {
 		return "", err
 	}
 
-	_, deleteErr := sqlDB.DataBase.Exec("DELETE FROM sessions WHERE userid = ?", getUserID(username))
+	_, deleteErr := sqlDB.DataBase.Exec("DELETE FROM sessions WHERE userid = ?", function.GetUserID(username))
 	if deleteErr != nil {
 		log.Printf("Error deleting session for user %s: %v", username, deleteErr)
 		return "", fmt.Errorf("failed to delete session: %w", deleteErr)
 	}
 
-	_, execError := sqlDB.DataBase.Exec("INSERT INTO sessions (token, userid) VALUES (?,?)", tokenStr, getUserID(username))
+	_, execError := sqlDB.DataBase.Exec("INSERT INTO sessions (token, userid) VALUES (?,?)", tokenStr, function.GetUserID(username))
 	if execError != nil {
 		log.Println("There was an sql issue, when trying to insert a new token to the table:", execError.Error())
 		return "", execError

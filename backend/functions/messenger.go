@@ -1,12 +1,10 @@
-package app
+package function
 
 import (
 	"log"
 	"time"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
-	// "encoding/json"
-	// "log"
 )
 
 type ReceivedMessageType struct {
@@ -44,8 +42,8 @@ func LoadMessages(sqlSentence string, userName string, receiverName string, limi
 	chat.UserName = userName
 	chat.ReceiverName = receiverName
 
-	userID := getUserIdFomMessage(userName)
-	receiverID := getUserIdFomMessage(receiverName)
+	userID := GetUserIdFomMessage(userName)
+	receiverID := GetUserIdFomMessage(receiverName)
 
 	rows, err := sqlDB.DataBase.Query(sqlSentence, userID, receiverID, userID, receiverID, limit)
 	if err != nil {
@@ -62,8 +60,8 @@ func LoadMessages(sqlSentence string, userName string, receiverName string, limi
 			messageData.MessageDate = messageDateTime.Format("15:04")
 		}
 
-		messageData.UserName = getUserNameByID(sender)
-		messageData.ReceivingUser = getUserNameByID(receiver)
+		messageData.UserName = GetUserName(sender)
+		messageData.ReceivingUser = GetUserName(receiver)
 		chat.Messages = append(chat.Messages, messageData)
 	}
 	chat.Messages = reverse(chat.Messages)

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	handler "01.kood.tech/git/kasepuu/social-network/backend/handlers"
+	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
 
 type Event struct {
@@ -50,10 +50,10 @@ func FollowHandler(event Event, c *Client) error {
 	UserID, _ := strconv.Atoi(payload.UserID)
 	ReceivingUserID, _ := strconv.Atoi(payload.ReceivingUserID)
 
-	handler.SaveFollow(UserID, ReceivingUserID, payload.Status)
+	function.SaveFollow(UserID, ReceivingUserID, payload.Status)
 
-	payload.Status = "follow_"+payload.Status
-	handler.SaveNotification(UserID, ReceivingUserID, payload.Status)
+	payload.Status = "follow_" + payload.Status
+	function.SaveNotification(UserID, ReceivingUserID, payload.Status)
 
 	for client := range c.client.clients {
 		if client.userId == ReceivingUserID {
@@ -89,7 +89,7 @@ func IsTypingHandler(event Event, c *Client) error {
 	}
 
 	for client := range c.client.clients {
-		if client.userId == getUserId(payload.ReceivingUser) {
+		if client.userId == function.GetUserID(payload.ReceivingUser) {
 			sendResponse(payload, EventIsTyping, client)
 		}
 	}
@@ -117,9 +117,9 @@ func GetOnlineMembersHandler(event Event, c *Client) error {
 		log.Println("[FATAL] @GetOnlineMemebersHandler STRCONVERSION USERID>:", err, login)
 	}
 
-	onlineUserList := getOnlineUsers()
+	onlineUserList := function.GetOnlineUsers()
 	if !login {
-		onlineUserList = removeFromSlice(onlineUserList, userId)
+		onlineUserList = function.RemoveFromSlice(onlineUserList, userId)
 	}
 	onlineUsersArray = onlineUserList
 
@@ -174,7 +174,7 @@ func SortUserList(event Event, c *Client) error {
 		if forOthers && client.userId == c.userId {
 			continue
 		}
-		responseData := getAllUsers(client.userId)
+		responseData := function.GetAllUsers(client.userId)
 		sendResponse(responseData, EventSortUsers, client)
 	}
 	return nil
@@ -189,19 +189,19 @@ func SendMessageHandler(event Event, c *Client) error {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
 
-	receivingUserID := getUserId(sendMessage.ReceiverName)
-	senderUserID := getUserId(sendMessage.SenderName)
+	receivingUserID := function.GetUserID(sendMessage.ReceiverName)
+	senderUserID := function.GetUserID(sendMessage.SenderName)
 
-	SaveChat(senderUserID, receivingUserID, sendMessage.Message)
+	function.SaveChat(senderUserID, receivingUserID, sendMessage.Message)
 
-	var outgoing ReturnMessage
+	var outgoing function.ReturnMessage
 	outgoing.MessageDate = time.Now().Format(time.RFC3339Nano)
 	outgoing.Message = sendMessage.Message
 	outgoing.ReceivingUser = sendMessage.ReceiverName
 	outgoing.UserName = sendMessage.SenderName
 
 	for client := range c.client.clients {
-		if client.userId == getUserId(sendMessage.ReceiverName) {
+		if client.userId == function.GetUserID(sendMessage.ReceiverName) {
 			sendResponse(outgoing, "new_message", client)
 		}
 	}
@@ -220,8 +220,8 @@ func LoadMessagesHandler(event Event, c *Client) error {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
 	for client := range c.client.clients {
-		if client.userId == getUserId(loadMessage.Sender) {
-			responseData := LoadMessages(sql, getUserName(client.userId), loadMessage.Receiver, loadMessage.Limit)
+		if client.userId == function.GetUserID(loadMessage.Sender) {
+			responseData := function.LoadMessages(sql, function.GetUserName(client.userId), loadMessage.Receiver, loadMessage.Limit)
 			sendResponse(responseData, EventLoadMessages, client)
 		}
 	}

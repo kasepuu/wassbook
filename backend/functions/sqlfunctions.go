@@ -1,11 +1,10 @@
-package handler
+package function
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -26,17 +25,22 @@ type UserInfo struct {
 	PrivateStatus int
 }
 
-func getUserID(UserName string) (UserID int) {
+func GetUserID(UserName string) (UserID int) {
 	sqlDB.DataBase.QueryRow("SELECT id FROM users WHERE LOWER(nickname) = LOWER(?) OR LOWER(email) = LOWER(?)", UserName, UserName).Scan(&UserID)
 	return UserID
 }
-func getUserName(UserID int) (UserName string) {
+func GetUserName(UserID int) (UserName string) {
 	sqlDB.DataBase.QueryRow("SELECT nickname FROM users WHERE id = ?", UserID).Scan(&UserName)
 	return UserName
 }
 
+func GetUserIdFomMessage(User string) (userID int) {
+	sqlDB.DataBase.QueryRow("SELECT id FROM users WHERE username = ?", User).Scan(&userID)
+	return
+}
+
 func SaveFollow(UserID int, ReceiverID int, Status string) {
-	if followStatus(UserID, ReceiverID) != "following" || followStatus(UserID, ReceiverID) != "pending" {
+	if FollowStatus(UserID, ReceiverID) != "following" || FollowStatus(UserID, ReceiverID) != "pending" {
 		row, err := sqlDB.DataBase.Prepare(`INSERT INTO followers (userid, targetid, status) 
 	VALUES (?, ?, ?)`)
 		if err != nil {
@@ -63,9 +67,9 @@ func SaveNotification(UserID int, ReceiverID int, Type string) {
 	}
 }
 
-func getFirstAndLastName(UserID int) (User UserInfo, err error) {
+func GetFirstAndLastName(UserID int) (User UserInfo, err error) {
 	User.UserID = UserID
-	User.UserName = getUserName(UserID)
+	User.UserName = GetUserName(UserID)
 
 	var DateOfBirthFormatted string
 
@@ -75,13 +79,13 @@ func getFirstAndLastName(UserID int) (User UserInfo, err error) {
 
 }
 
-func followStatus(UserID int, TargetID int) (status string) {
+func FollowStatus(UserID int, TargetID int) (status string) {
 	sqlDB.DataBase.QueryRow("SELECT status FROM followers WHERE userid = ? AND targetid = ?",
 		UserID, TargetID).Scan(&status)
 	return
 }
 
-func updatePrivateStatus(userID int, newPrivateValue int) error {
+func UpdatePrivateStatus(userID int, newPrivateValue int) error {
 	_, err := sqlDB.DataBase.Exec("UPDATE users SET private = ? WHERE id = ?", newPrivateValue, userID)
 	if err != nil {
 		return err
@@ -89,32 +93,17 @@ func updatePrivateStatus(userID int, newPrivateValue int) error {
 	return nil
 }
 
-func UpdatePrivateStatusHandler(w http.ResponseWriter, r *http.Request) {
-	var request struct {
-		UserID          int `json:"userID"`
-		NewPrivateValue int `json:"newPrivateValue"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&request)
+func UpdateUserDescription(UserID int, newDescription string) error {
+	_, err := sqlDB.DataBase.Exec("UPDATE users SET description = ? WHERE id = ?", newDescription, UserID)
 	if err != nil {
-		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
-		return
+		return err
 	}
-
-	// Assuming you have a function to update the private status in your database
-	err = updatePrivateStatus(request.UserID, request.NewPrivateValue)
-	if err != nil {
-		http.Error(w, "Failed to update private status", http.StatusInternalServerError)
-		return
-	}
-
-	response := map[string]string{"message": "Private status updated successfully"}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	return nil
 }
 
-func fetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr error) {
+func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr error) {
 	User.UserID = UserID
-	User.UserName = getUserName(UserID)
+	User.UserName = GetUserName(UserID)
 
 	var DateOfBirthFormatted string
 
@@ -130,7 +119,7 @@ func fetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 		&User.Description,
 		&User.PrivateStatus,
 	)
-	User.FollowStatus = followStatus(RequesterID, User.UserID)
+	User.FollowStatus = FollowStatus(RequesterID, User.UserID)
 	User.DateOfBirth = strings.Split(DateOfBirthFormatted, " ")
 
 	inputDate := User.DateJoined
@@ -148,7 +137,7 @@ func fetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 	return User, fetchErr
 }
 
-func fetchAllUsers(filter string) (users []UserInfo, returnErr error) {
+func FetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 	query := "SELECT id FROM users"
 
 	var rows *sql.Rows
@@ -175,7 +164,7 @@ func fetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 			continue
 		}
 
-		user, err := getFirstAndLastName(id)
+		user, err := GetFirstAndLastName(id)
 		if err != nil {
 			log.Println("error fetching user information:", err)
 			continue
@@ -187,38 +176,85 @@ func fetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 	return users, nil
 }
 
-// func getUserDescription(UserID int) (description string, err error) {
-// 	err = sqlDB.DataBase.QueryRow("SELECT description FROM users WHERE id = ?", UserID).Scan(&description)
-// 	return description, err
-// }
+func GetOnlineUsers() (onlineUsers []int) {
+	rows, _ := sqlDB.DataBase.Query("SELECT userId FROM session")
 
-func updateUserDescription(UserID int, newDescription string) error {
-	_, err := sqlDB.DataBase.Exec("UPDATE users SET description = ? WHERE id = ?", newDescription, UserID)
-	if err != nil {
-		return err
+	defer rows.Close()
+
+	for rows.Next() {
+
+		var id int
+		rows.Scan(&id)
+		onlineUsers = append(onlineUsers, id)
 	}
-	return nil
+
+	return onlineUsers
 }
 
-func UpdateUserDescriptionHandler(w http.ResponseWriter, r *http.Request) {
-	var request struct {
-		UserID         int    `json:"userID"`
-		NewDescription string `json:"newDescription"`
+/*non-sql (o.o)*/
+func RemoveFromSlice(slice []int, element int) []int {
+	var result []int
+	for _, item := range slice {
+		if item != element {
+			result = append(result, item)
+		}
 	}
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
-		return
-	}
+	return result
+}
 
-	// Assuming you have a function to update the user's description in your database
-	err = updateUserDescription(request.UserID, request.NewDescription)
-	if err != nil {
-		http.Error(w, "Failed to update user description", http.StatusInternalServerError)
-		return
+func GetAllUsers(uid int) (users []UserResponse) {
+	rows, _ := sqlDB.DataBase.Query("SELECT id, username FROM users WHERE id != ? ORDER BY username", uid)
+	defer rows.Close()
+	for rows.Next() {
+		var user UserResponse
+		rows.Scan(&user.UserID, &user.UserName)
+		user.Status = GetOnlineStatus(user.UserID)
+		users = append(users, user)
 	}
+	users = SortByLastMessage(users, uid)
+	return
+}
 
-	response := map[string]string{"message": "User description updated successfully"}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+func SortByLastMessage(users []UserResponse, uid int) (sortedUsers []UserResponse) {
+	sql := `SELECT messageid FROM chat WHERE (userid = ? AND receiverid = ?) OR
+	(receiverid = ? AND userid = ?) ORDER BY messageid DESC LIMIT 1`
+
+	for i := 0; i < len(users); i++ {
+		rows, err := sqlDB.DataBase.Query(sql, uid, users[i].UserID, uid, users[i].UserID)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer rows.Close()
+
+		if rows.Next() {
+			var user UserResponse
+
+			user.UserID = users[i].UserID
+			user.UserName = users[i].UserName
+			user.Status = users[i].Status
+
+			rows.Scan(&user.LastMessageID)
+
+			sortedUsers = append(sortedUsers, user)
+		} else {
+			sortedUsers = append(sortedUsers, users[i])
+		}
+	}
+	sort.Slice(sortedUsers, func(i, j int) bool {
+		return sortedUsers[i].LastMessageID > sortedUsers[j].LastMessageID
+	})
+
+	return
+}
+
+func GetOnlineStatus(userId int) (isOnline bool) {
+	isOnline = false
+	var onlineUsersArray []int // sisaldab userid'sid
+	for o := 0; o < len(onlineUsersArray); o++ {
+		if onlineUsersArray[o] == userId {
+			isOnline = true
+			return isOnline
+		}
+	}
+	return isOnline
 }

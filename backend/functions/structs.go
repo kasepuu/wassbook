@@ -1,4 +1,4 @@
-package app
+package function
 
 type UserResponse struct {
 	UserID        int

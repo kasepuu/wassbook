@@ -2,51 +2,16 @@ package handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	// Import the necessary database driver package
-	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
+	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
 
-func GetPosts(w http.ResponseWriter, r *http.Request) {
-	rows, err := sqlDB.DataBase.Query("SELECT * FROM posts") // Adjust the query according to your table structure
-	if err != nil {
-		log.Println("Error querying posts:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal issue, please try again later!"))
-		return
-	}
-	defer rows.Close()
-
-	var posts []PostForm
-	for rows.Next() {
-		var post PostForm
-		err := rows.Scan(
-			&post.PostID,
-			&post.OriginalPosterID,
-			&post.FirstName,
-			&post.LastName,
-			&post.Date,
-			&post.Content,
-			&post.GroupID,
-			&post.Filename,
-		)
-		if err != nil {
-			log.Println("Error scanning row:", err)
-			continue
-		}
-		posts = append(posts, post)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(posts)
-}
-
-func GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
-
+func UpdatePrivateStatusHandler(w http.ResponseWriter, r *http.Request) {
 	var request struct {
-		UserName string `json:"userName"`
+		UserID          int `json:"userID"`
+		NewPrivateValue int `json:"newPrivateValue"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
@@ -54,35 +19,14 @@ func GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rows, err := sqlDB.DataBase.Query("SELECT * FROM posts WHERE userId = (SELECT id FROM users WHERE nickname = ?)", request.UserName)
+	// Assuming you have a function to update the private status in your database
+	err = function.UpdatePrivateStatus(request.UserID, request.NewPrivateValue)
 	if err != nil {
-		log.Println("Error querying posts:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal issue, please try again later!"))
+		http.Error(w, "Failed to update private status", http.StatusInternalServerError)
 		return
 	}
-	defer rows.Close()
 
-	var posts []PostForm
-	for rows.Next() {
-		var post PostForm
-		err := rows.Scan(
-			&post.PostID,
-			&post.OriginalPosterID,
-			&post.FirstName,
-			&post.LastName,
-			&post.Date,
-			&post.Content,
-			&post.GroupID,
-			&post.Filename,
-		)
-		if err != nil {
-			log.Println("Error scanning row:", err)
-			continue
-		}
-		posts = append(posts, post)
-	}
-
+	response := map[string]string{"message": "Private status updated successfully"}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(posts)
+	json.NewEncoder(w).Encode(response)
 }
