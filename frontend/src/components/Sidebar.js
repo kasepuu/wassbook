@@ -1,4 +1,4 @@
-import "../css/Sidebar.css";
+import "../css/Sidepanels.css";
 import { FaAd } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaAngry } from "react-icons/fa";

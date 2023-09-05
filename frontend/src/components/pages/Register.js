@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Form } from "semantic-ui-react";
+import { Form, FormField } from "semantic-ui-react";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,9 +7,10 @@ import { useNavigate } from "react-router-dom";
 import { backendHost } from "../../index.js";
 import { useAuthorization } from "../Authorization.js";
 const Register = () => {
+  console.log("REGISTER PAGEEEE");
   const navigate = useNavigate(); // Get the navigate function
 
-  const isAuthorized = useAuthorization();
+  const isAuthorized = useAuthorization(true);
 
   if (isAuthorized) navigate("/");
 
@@ -177,6 +178,19 @@ const Register = () => {
                 </option>
               ))}
             </select>
+          </div>
+        </Form.Field>
+
+        <Form.Field>
+          <p>Date of birth</p>
+          <div className="DateOfBirth">
+            <input
+              type="date"
+              className={`form-control`}
+              id="dateOfBirth"
+              name="dateOfBirth"
+              required
+            />
           </div>
         </Form.Field>
 

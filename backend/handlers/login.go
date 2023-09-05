@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -11,9 +10,7 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("login")
 	var LoginDetails LoginForm
-	fmt.Println("body info:", r.Body)
 	err := json.NewDecoder(r.Body).Decode(&LoginDetails)
 	if err != nil {
 		log.Println("Error while decoding loginInfo:", err)

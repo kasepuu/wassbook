@@ -1,4 +1,3 @@
-import "../../css/SearchResult.css";
 import { useNavigate } from "react-router-dom";
 
 import blank from "../../page-images/blank.png";

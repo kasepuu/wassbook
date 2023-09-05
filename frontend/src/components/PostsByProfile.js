@@ -56,33 +56,27 @@ const PostsByProfile = ({ post }) => {
 
   return (
     <>
-      <div className="profile-post">
-        <div className="feed-posts" id="feed-posts">
-          {posts.map((post, index) => (
-            <div
-              key={index}
-              id={`post-${post.id}`}
-              className="feed-post"
-            >
-              <div className="post-header">
-                <img
-                  src={profilePicture}
-                  alt="Profile"
-                  className="profile-picture"
-                />
-                <div className="post-title">{post.title}</div>
-              </div>
-              <div className="post-body">{post.body}</div>
-              {post.file !== "-" || post.file === undefined ? (
-                <img
-                  src={`${backendHost}/users/${post.userID}/${post.file}`}
-                  alt="Post"
-                  className="image-content"
-                />
-              ) : null}
+      <div className="feed-posts" id="feed-posts">
+        {posts.map((post, index) => (
+          <div key={index} id={`post-${post.id}`} className="feed-post">
+            <div className="post-header">
+              <img
+                src={profilePicture}
+                alt="Profile"
+                className="profile-picture"
+              />
+              <div className="post-title">{post.title}</div>
             </div>
-          ))}
-        </div>
+            <div className="post-body">{post.body}</div>
+            {post.file !== "-" || post.file === undefined ? (
+              <img
+                src={`${backendHost}/users/${post.userID}/${post.file}`}
+                alt="Post"
+                className="image-content"
+              />
+            ) : null}
+          </div>
+        ))}
       </div>
     </>
   );

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { connectAndSendEvents } from "..";
 import { loadUser, tokenValidation } from "../jwt"; // Import your authentication function
 
-export const useAuthorization = () => {
+export const useAuthorization = (atRegister = false) => {
+  console.log("authorization attempt at:", document.location.href);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const navigate = useNavigate();
 
@@ -13,7 +14,7 @@ export const useAuthorization = () => {
         .then((authorized) => {
           setIsAuthorized(authorized);
           if (!authorized) {
-            navigate("/login");
+            atRegister ? navigate("/register") : navigate("/login");
           }
 
           // setting up current user & ws connection
@@ -26,7 +27,7 @@ export const useAuthorization = () => {
         });
     }
     checkAuthorization();
-  }, [navigate]);
+  }, [navigate, atRegister]);
 
   return isAuthorized;
 };

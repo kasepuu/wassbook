@@ -1,4 +1,3 @@
-import "../../css/SearchResults.css";
 import SearchResult from "./SearchResult";
 
 const SearchResults = ({ results }) => {

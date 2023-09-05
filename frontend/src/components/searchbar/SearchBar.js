@@ -1,4 +1,3 @@
-import "../../css/SearchBar.css";
 import { FaSearch } from "react-icons/fa";
 import React, { useState } from "react";
 import { backendHost } from "../../index.js";

@@ -1,6 +1,6 @@
 import Feed from "../Feed";
 import Sidebar from "../Sidebar";
-import FriendsList from "../FriendsList";
+import FollowersList from "../FollowersList";
 import Navbar from "../Navbar";
 import { useAuthorization } from "../Authorization";
 
@@ -12,7 +12,7 @@ const Home = () => {
         <Navbar />
         <Sidebar />
         <Feed />
-        <FriendsList />
+        <FollowersList />
       </>
     );
   }

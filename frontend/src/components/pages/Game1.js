@@ -1,5 +1,5 @@
 import Sidebar from "../Sidebar";
-import FriendsList from "../FriendsList";
+import FriendsList from "../FollowersList";
 import Navbar from "../Navbar";
 import { useAuthorization } from "../Authorization";
 const Game1 = () => {

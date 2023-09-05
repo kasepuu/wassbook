@@ -17,3 +17,10 @@
 .sidebar-content {
   margin-left: 20px;
 }
+
+/*followers*/
+.FollowersList {
+  background-color: #ddd;
+  flex: 1;
+  color: black;
+}

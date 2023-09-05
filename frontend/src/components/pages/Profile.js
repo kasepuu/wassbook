@@ -1,5 +1,5 @@
 import Sidebar from "../Sidebar";
-import FriendsList from "../FriendsList";
+import FriendsList from "../FollowersList";
 import Navbar from "../Navbar";
 import "../../css/Profile.css";
 import profilePicture from "../../page-images/blank.png";
@@ -22,11 +22,10 @@ function handleFollowClick(receiverId, currentUserId, status) {
   const followResponse = {
     UserID: currentUserId.toString(),
     ReceivingUserID: receiverId.toString(),
-    Status: status
+    Status: status,
   };
   sendEvent("follow_user", followResponse);
 }
-
 
 const handleToggleClick = (userID, PrivateStatus) => {
   const newPrivateValue = PrivateStatus === 1 ? 0 : 1;
@@ -71,7 +70,6 @@ const handleDescriptionUpdate = (userID, newDescription) => {
       throw error;
     });
 };
-
 
 const Profile = () => {
   const isAuthorized = useAuthorization();
@@ -154,7 +152,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-              userInfo.UserID === LoggedUser.UserID ? (
+            userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -190,7 +188,6 @@ const Profile = () => {
                   )}
                 </div>
               </>
-
             ) : (
               <>
                 <p className="description">
@@ -213,9 +210,13 @@ const Profile = () => {
                     You are not following this user.
                     <button
                       onClick={() => {
-                        let status = "following"
-                        if (userInfo.PrivateStatus === 1) status = "pending"
-                        handleFollowClick(userInfo.UserID, LoggedUser.UserID, status);
+                        let status = "following";
+                        if (userInfo.PrivateStatus === 1) status = "pending";
+                        handleFollowClick(
+                          userInfo.UserID,
+                          LoggedUser.UserID,
+                          status
+                        );
                         setUserInfo((prevUserInfo) => ({
                           ...prevUserInfo,
                           FollowStatus: "pending",
@@ -255,11 +256,11 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-          userInfo.UserID === LoggedUser.UserID ? (
+        userInfo.UserID === LoggedUser.UserID ? (
           <>
-            {" "}
+            <p>Posts by {userInfo.FirstName}:</p>
+
             <div className="profile-posts">
-              <p>Posts by {userInfo.UserName}:</p>
               {userInfo.FollowStatus === "following" || isLocalUser ? (
                 <>
                   <PostsByProfile />

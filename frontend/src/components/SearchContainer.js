@@ -1,7 +1,7 @@
 import SearchBar from "./searchbar/SearchBar";
 import SearchResults from "./searchbar/SearchResults";
-import "../css/SearchContainer.css";
 import React, { useState, useEffect } from "react";
+import "../css/SearchBar.css";
 
 const SearchContainer = () => {
   const [results, setResults] = useState([]);
