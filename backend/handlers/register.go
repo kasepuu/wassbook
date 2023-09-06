@@ -2,11 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
+	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 	// sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
@@ -20,6 +23,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println("register dob:", RegisterDetails.DateOfBirth)
+
 	validDetails := fieldVerification(RegisterDetails)
 
 	if !validDetails {
@@ -30,16 +35,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// creating a new account
 	uname := RegisterDetails.UserName
-	fname := RegisterDetails.FirstName
-	lname := RegisterDetails.LastName
-	email := RegisterDetails.Email
+	fname := function.Title(RegisterDetails.FirstName)
+	lname := function.Title(RegisterDetails.LastName)
+	email := strings.ToLower(RegisterDetails.Email)
 	password := RegisterDetails.Password
-	dateofbirth := RegisterDetails.DateOfBirth_day + " " + RegisterDetails.DateOfBirth_month + " " + RegisterDetails.DateOfBirth_year
+	dateofbirth := RegisterDetails.DateOfBirth
 	datejoined := time.Now().Format(time.RFC3339Nano)
 	avatar := ""
 	description := ""
-	following := 0
-	followers := 0
+	privateStatus := 1 // 0 -> public, 1 -> private
 
 	var nameExists, emailExists bool
 	err1 := sqlDB.DataBase.QueryRow("SELECT EXISTS (SELECT 1 FROM users WHERE lower(nickname) = lower(?))", uname).Scan(&nameExists)
@@ -64,14 +68,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	row, err := sqlDB.DataBase.Prepare(`INSERT INTO users (nickname, fname, lname, dateofbirth, datejoined, password, email, avatar, description, following, followers) 
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+	row, err := sqlDB.DataBase.Prepare(`INSERT INTO users (nickname, fname, lname, dateofbirth, datejoined, password, email, avatar, description, private) 
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
 	if err != nil {
 		log.Println("register sql query error:", err)
 		return
 	}
 
-	_, execError := row.Exec(uname, fname, lname, dateofbirth, datejoined, password, email, avatar, description, following, followers)
+	_, execError := row.Exec(uname, fname, lname, dateofbirth, datejoined, password, email, avatar, description, privateStatus)
 	if execError != nil {
 		log.Println("register sql exec error:", execError)
 	}
@@ -82,11 +86,17 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func fieldVerification(details RegisterForm) bool {
+	regex := regexp.MustCompile("[0-9]")
+	containsNumbersInFirstName := regex.MatchString(details.FirstName)
+	containsNumbersInLastName := regex.MatchString(details.LastName)
+
 	if strings.TrimSpace(details.FirstName) != "" &&
 		strings.TrimSpace(details.LastName) != "" &&
 		strings.TrimSpace(details.Email) != "" &&
-		strings.TrimSpace(details.Password) != "" {
-		return true // return true, since the fields are not empty
+		strings.TrimSpace(details.Password) != "" &&
+		!containsNumbersInFirstName && !containsNumbersInLastName {
+		return true // return true, since the fields are not empty & FirstName/LastName do not contain any numbers
 	}
-	return false // empty fields found
+
+	return false // empty fields found or FirstName/LastName contain numbers
 }

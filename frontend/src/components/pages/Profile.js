@@ -77,7 +77,7 @@ const Profile = () => {
 
   let { id } = useParams();
   let isLocalUser = false;
-  const LoggedUser = JSON.parse(localStorage.getItem("CurrentUser"));
+  const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
   if (id === undefined || !id) id = LoggedUser.UserName;
   if (id === LoggedUser.UserName) isLocalUser = true;
   const [userInfo, setUserInfo] = useState({});

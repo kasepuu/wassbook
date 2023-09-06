@@ -50,6 +50,14 @@ const Register = () => {
       });
   }
 
+  const minAllowedDate = "1900-01-01";
+  const maxAllowedDate = new Date().toISOString().split("T")[0];
+  console.log(
+    "register limitations:",
+    `(${minAllowedDate})`,
+    "&",
+    `(${maxAllowedDate})`
+  );
   return (
     <div className="register-form">
       <Form onSubmit={handleSubmit(onSubmit)}>
@@ -113,7 +121,7 @@ const Register = () => {
             {...register("email", {
               required: true,
               pattern:
-                /^(([^<>()\\[\\].,;:\s@"]+(\.[^<>()\\[\\].,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+.)+[a-zA-Z]{2,}))$/,
+                /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             })}
           />
           <p className="ErrorMessage">
@@ -137,61 +145,17 @@ const Register = () => {
         </Form.Field>
 
         <Form.Field>
-          <div className="DateOfBirth">
-            <select {...register("dobDay", { required: true })}>
-              <option value="">DAY</option>
-              {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              ))}
-            </select>
-            <select {...register("dobMonth", { required: true })}>
-              <option value="">MONTH</option>
-              {[
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December",
-              ].map((month, index) => (
-                <option key={index} value={index + 1}>
-                  {month}
-                </option>
-              ))}
-            </select>
-            <select {...register("dobYear", { required: true })}>
-              <option value="">YEAR</option>
-              {Array.from(
-                { length: 100 },
-                (_, i) => new Date().getFullYear() - i
-              ).map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
-            </select>
-          </div>
-        </Form.Field>
+          <label>Date of Birth</label>
 
-        <Form.Field>
-          <p>Date of birth</p>
-          <div className="DateOfBirth">
-            <input
-              type="date"
-              className={`form-control`}
-              id="dateOfBirth"
-              name="dateOfBirth"
-              required
-            />
-          </div>
+          <input
+            type="date"
+            {...register("dateofbirth", {
+              required: true,
+            })}
+            min={minAllowedDate}
+            max={maxAllowedDate}
+          />
+          <p className="ErrorMessage">{errors.dateofbirth && <>Bad Date!</>}</p>
         </Form.Field>
 
         <button type="submit" className="submitButton">

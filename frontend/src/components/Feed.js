@@ -13,7 +13,7 @@ const Feed = () => {
   const fileInputRef = useRef(null);
   const [imageName, setImageName] = useState("");
   const [openedPostId, setOpenedPostId] = useState(null);
-  const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
+  const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
   let firstName = userInfo.FirstName;
   let lastName = userInfo.LastName;
 

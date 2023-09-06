@@ -10,6 +10,7 @@ type RegisterForm struct {
 	DateOfBirth_day   string `json:"dobDay"`
 	DateOfBirth_month string `json:"dobMonth"`
 	DateOfBirth_year  string `json:"dobYear"`
+	DateOfBirth       string `json:dateofbirth`
 }
 
 // login form

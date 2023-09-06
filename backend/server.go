@@ -35,13 +35,11 @@ func StartServer(port string) {
 	fsPublic := noDirListing(http.FileServer(http.Dir("./public/"))) // nodirlisting to avoid guest seeing all files stored in /public/
 
 	log.Printf("Starting server at port " + port + "\n\n")
-	log.Printf("backend is running at: http://localhost:" + port + "/\n")
 
 	// mux
 	mux := http.NewServeMux()
 	corsMux := &CorsHandler{ServeMux: mux}
 
-	// Apply CORS middleware to all handler
 	corsMux.Handle("/views/", http.StripPrefix("/views", fsViews))
 	corsMux.Handle("/public/", http.StripPrefix("/public", fsPublic))
 
@@ -50,7 +48,6 @@ func StartServer(port string) {
 		w.Write([]byte("mux mux mux"))
 	})
 
-	// Wrap wsManager.serveWs with corsMiddleware
 	corsMux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		http.HandlerFunc(wsManager.serveWs).ServeHTTP(w, r)
 	})
@@ -69,9 +66,12 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/update-user-description", handler.UpdateUserDescriptionHandler)
 
 	// post requests
-	corsMux.Handle("/savepost", http.HandlerFunc(handler.Savepost))
-	corsMux.Handle("/getposts", http.HandlerFunc(handler.FetchPosts))
-	corsMux.Handle("/users/", http.HandlerFunc(handler.ImageHandler))
+	corsMux.HandleFunc("/savepost", handler.Savepost)
+	corsMux.HandleFunc("/getposts", handler.FetchPosts)
+	corsMux.HandleFunc("/users/", handler.ImageHandler)
+
+	log.Printf("backend is running at: http://localhost:" + port + "/\n")
+	log.Printf("frontend should be running at: http://localhost:" + "8080" + "/\n")
 
 	errorHandler(http.ListenAndServe(":"+port, corsMux))
 }

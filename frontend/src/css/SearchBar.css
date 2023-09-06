@@ -38,6 +38,11 @@
 }
 
 /*search result*/
+.isYou {
+  color: gray;
+  white-space: pre;
+}
+
 .search-result {
   display: flex; /* Use flexbox */
   align-items: center; /* Center vertically */
@@ -52,6 +57,7 @@
 
 .search-result:hover {
   background-color: #efefef;
+  word-wrap: normal;
 }
 
 .search-result-image {

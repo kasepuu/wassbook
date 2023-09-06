@@ -23,7 +23,7 @@ const Navbar = () => {
 
         <Link
           to={`/profile/${
-            JSON.parse(localStorage.getItem("CurrentUser")).UserName
+            JSON.parse(sessionStorage.getItem("CurrentUser")).UserName
           }`}
         >
           <FaUserCircle /> Profile

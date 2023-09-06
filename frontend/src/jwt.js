@@ -12,7 +12,7 @@ export function loadUser() {
   if (jwtToken) {
     const userInfo = getUserInfoFromToken(jwtToken);
     if (userInfo) {
-      localStorage.setItem("CurrentUser", JSON.stringify(userInfo.UserInfo));
+      sessionStorage.setItem("CurrentUser", JSON.stringify(userInfo.UserInfo));
     } else {
       console.log("Token is not valid or is expired.");
     }

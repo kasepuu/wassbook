@@ -144,9 +144,9 @@ func FetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 	var sqlErr error
 
 	if filter != "" {
-		query += " WHERE fname LIKE ? OR lname LIKE ?"
+		query += " WHERE fname LIKE ? OR lname LIKE ? OR nickname LIKE ?"
 		filterValue := "%" + filter + "%"
-		rows, sqlErr = sqlDB.DataBase.Query(query, filterValue, filterValue)
+		rows, sqlErr = sqlDB.DataBase.Query(query, filterValue, filterValue, filterValue)
 	} else {
 		return users, returnErr
 		// rows, sqlErr = sqlDB.DataBase.Query(query)

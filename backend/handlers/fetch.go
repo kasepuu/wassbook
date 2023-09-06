@@ -19,6 +19,7 @@ func FetchSearchBarUsers(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Internal server issues!"))
 		return
 	}
+	Users = function.SortUsers(Users)
 
 	// return only public information
 	sensitiveInfo := make([]PublicUserInfo, len(Users))
