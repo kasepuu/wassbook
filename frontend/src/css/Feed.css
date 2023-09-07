@@ -1,37 +1,46 @@
 .Feed {
   flex: 3;
-  height: calc(100vh - 60px); /* Subtract the height of the navbar */
+  height: calc(100vh - 60px);
+  /* Subtract the height of the navbar */
   background-color: #e7e7e7;
-  overflow-y: auto; /* Add a scrollbar when content overflows */
+  overflow-y: auto;
+  /* Add a scrollbar when content overflows */
 }
 
 .feed-container {
   color: black;
   background-color: #ddd;
   margin-left: 10px;
-  margin-right: 10px; /* Adjusted margin to match the Feed width */
-  padding: 20px; /* Add some padding for spacing */
+  margin-right: 10px;
+  /* Adjusted margin to match the Feed width */
+  padding: 20px;
+  /* Add some padding for spacing */
   border-radius: 10px;
 }
 
 .NewPost {
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  justify-content: center;
+  /* Center horizontally */
+  align-items: center;
+  /* Center vertically */
 
   background-color: white;
   height: 50px;
-  width: 100%; /* Adjusted width to fill the container */
+  width: 100%;
+  /* Adjusted width to fill the container */
 
   text-align: center;
 
   border-radius: 10px;
-  margin: 10px 0; /* Adjusted margin for spacing */
+  margin: 10px 0;
+  /* Adjusted margin for spacing */
 }
 
 .feed-posts {
   background-color: #ddd;
-  padding: 10px; /* Add some padding for spacing */
+  padding: 10px;
+  /* Add some padding for spacing */
   border-radius: 10px;
   margin: 10px;
 }
@@ -40,7 +49,8 @@
   background-color: white;
   border-radius: 10px;
   padding: 10px;
-  margin: 10px 0; /* Adjusted margin for spacing */
+  margin: 10px 0;
+  /* Adjusted margin for spacing */
 }
 
 .post-title {
@@ -70,16 +80,22 @@
   align-items: center;
   margin-bottom: 5px;
 }
+
 .image-content {
   max-width: 800px;
 }
 
 .post-overlay {
-  padding-left: 10px;
-  padding-right: 10px;
+  /* padding-left: 10px;
+  padding-right: 10px; */
   margin-bottom: 5px;
   margin-top: 5px;
   background-color: #ddd;
+  border-radius: 20px;
+}
+
+.NewComment {
+  margin: 5px;
 }
 
 .post-commentbox {
@@ -87,6 +103,7 @@
   flex-direction: column;
   border: 1px solid #ccc;
   padding: 10px;
+  border-radius: 20px;
 }
 
 .comment-input-wrapper {
