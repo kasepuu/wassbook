@@ -4,7 +4,7 @@ import { connectAndSendEvents } from "..";
 import { loadUser, tokenValidation } from "../jwt"; // Import your authentication function
 
 export const useAuthorization = (atRegister = false) => {
-  console.log("authorization attempt at:", document.location.href);
+  // console.log("authorization attempt at:", document.location.href);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const navigate = useNavigate();
 
@@ -20,7 +20,6 @@ export const useAuthorization = (atRegister = false) => {
           // setting up current user & ws connection
           if (!window.socket) connectAndSendEvents();
           loadUser();
-          console.log("current user is:", authorized);
         })
         .catch((error) => {
           console.error("Authorization error:", error);

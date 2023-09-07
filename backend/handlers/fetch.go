@@ -143,6 +143,7 @@ func UpdateUserNameHandler(w http.ResponseWriter, r *http.Request) {
 		UserID      int    `json:"userID"`
 		NewUsername string `json:"newUsername"`
 	}
+
 	err := json.NewDecoder(r.Body).Decode(&request)
 	if err != nil {
 		http.Error(w, "Failed to decode request body", http.StatusBadRequest)

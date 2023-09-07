@@ -3,13 +3,14 @@ import FriendsList from "../FollowersList";
 import Navbar from "../Navbar";
 import "../../css/Profile.css";
 import profilePicture from "../../page-images/blank.png";
-import { useParams } from "react-router-dom";
+import { json, useParams } from "react-router-dom";
 import { backendHost } from "../..";
 import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
 import { sendEvent } from "../../websocket.js";
 import { useAuthorization } from "../Authorization";
 import { useNavigate } from "react-router-dom";
+import { updateToken } from "../../jwt";
 
 // const refreshToken = async () => {
 //   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
@@ -68,7 +69,10 @@ const handleToggleClick = (userID, PrivateStatus) => {
       "Content-Type": "application/json",
     },
   })
-    .then((response) => response.json())
+    .then((response) => {
+      response.json();
+      updateToken();
+    })
     .catch((error) => {
       console.error("Error updating private status:", error);
     });
@@ -89,6 +93,7 @@ const handleDescriptionUpdate = (userID, newDescription) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      updateToken();
       return response.json();
     })
     .then((data) => {
@@ -115,6 +120,7 @@ const handleUsernameUpdate = (userID, newUsername) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      updateToken();
       return response.json();
     })
     .then((data) => {
@@ -197,7 +203,6 @@ const Profile = () => {
     setIsEditingUsername(false);
   };
 
-
   useEffect(() => {
     function fetchProfileData() {
       fetch(
@@ -231,8 +236,6 @@ const Profile = () => {
         <div className="profile-info-container">
           <img src={profilePicture} alt="Profile" className="profilepic" />
           <div className="profile-info">
-
-
             {userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <div>
@@ -245,7 +248,9 @@ const Profile = () => {
                       />
                       <div>
                         <button onClick={handleUsernameSaveClick}>Save</button>
-                        <button onClick={handleUsernameCancelClick}>Cancel</button>
+                        <button onClick={handleUsernameCancelClick}>
+                          Cancel
+                        </button>
                       </div>
                     </div>
                   ) : (
@@ -258,11 +263,8 @@ const Profile = () => {
               </>
             ) : (
               // Display username for other users
-              <div>
-                Username: {userInfo.UserName}
-              </div>
+              <div>Username: {userInfo.UserName}</div>
             )}
-
 
             <p className="username">Username: {userInfo.UserName}</p>
             <p className="firstname">
@@ -272,7 +274,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-              userInfo.UserID === LoggedUser.UserID ? (
+            userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -376,7 +378,7 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-          userInfo.UserID === LoggedUser.UserID ? (
+        userInfo.UserID === LoggedUser.UserID ? (
           <>
             <p>Posts by {userInfo.FirstName}:</p>
 

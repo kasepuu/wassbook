@@ -6,6 +6,27 @@ function getUserInfoFromToken(tokenStr) {
   return decoded;
 }
 
+export function updateToken() {
+  const userid = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
+  console.log("UPDATING JWT FOR USER:", userid);
+  fetch(`${backendHost}/update-jwt-token?UserID=${userid}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to update token");
+      }
+      return response.text();
+    })
+    .then((updatedToken) => {
+      console.log("new token:", updatedToken);
+      // Update the "Bearer" cookie with the updated token
+      document.cookie = `Bearer=${updatedToken}; Path=/`;
+      loadUser(); // reloading the current user
+    })
+    .catch((error) => {
+      console.error("Error updating token:", error);
+    });
+}
+
 export function loadUser() {
   console.log("loading user");
   const jwtToken = getCookieValue("Bearer");
