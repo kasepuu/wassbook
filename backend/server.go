@@ -69,9 +69,9 @@ func StartServer(port string) {
 
 	// post requests
 	corsMux.HandleFunc("/savepost", handler.Savepost)
-	corsMux.Handle("/savecomment", http.HandlerFunc(handler.SaveComment))
+	corsMux.HandleFunc("/savecomment", handler.SaveComment)
 	corsMux.HandleFunc("/getposts", handler.FetchPosts)
-	corsMux.Handle("/getcomments", http.HandlerFunc(handler.FetchComments))
+	corsMux.HandleFunc("/getcomments", handler.FetchComments)
 	corsMux.HandleFunc("/users/", handler.ImageHandler)
 
 	log.Printf("backend is running at: http://localhost:" + port + "/\n")

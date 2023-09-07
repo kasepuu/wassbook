@@ -106,6 +106,7 @@ const handleDescriptionUpdate = (userID, newDescription) => {
 };
 
 const handleUsernameUpdate = (userID, newUsername) => {
+  const navigate = useNavigate;
   return fetch(`${backendHost}/update-user-name`, {
     method: "POST",
     body: JSON.stringify({
@@ -189,7 +190,6 @@ const Profile = () => {
           UserName: newUsername,
         }));
         setIsEditingUsername(false);
-        navigate(`/profile/${newUsername}`);
       })
       .catch((error) => {
         console.error("Error updating username:", error);
@@ -274,7 +274,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-              userInfo.UserID === LoggedUser.UserID ? (
+            userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -378,7 +378,7 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-          userInfo.UserID === LoggedUser.UserID ? (
+        userInfo.UserID === LoggedUser.UserID ? (
           <>
             <p>Posts by {userInfo.FirstName}:</p>
 
