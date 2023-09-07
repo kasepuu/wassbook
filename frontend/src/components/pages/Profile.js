@@ -3,13 +3,12 @@ import FriendsList from "../FollowersList";
 import Navbar from "../Navbar";
 import "../../css/Profile.css";
 import profilePicture from "../../page-images/blank.png";
-import { json, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { backendHost } from "../..";
 import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
 import { sendEvent } from "../../websocket.js";
 import { useAuthorization } from "../Authorization";
-import { useNavigate } from "react-router-dom";
 import { updateToken } from "../../jwt";
 
 function toTitleCase(str) {
@@ -78,7 +77,6 @@ const handleDescriptionUpdate = (userID, newDescription) => {
 };
 
 const handleUsernameUpdate = (userID, newUsername) => {
-  const navigate = useNavigate;
   return fetch(`${backendHost}/update-user-name`, {
     method: "POST",
     body: JSON.stringify({
@@ -122,7 +120,6 @@ const Profile = () => {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState(userInfo.UserName);
   const [originalUsername] = useState(userInfo.UserName);
-  const navigate = useNavigate();
 
   const handleEditClick = () => {
     setIsEditingDescription(true);

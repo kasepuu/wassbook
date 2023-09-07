@@ -2,6 +2,7 @@ package function
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"sort"
@@ -107,6 +108,30 @@ func UpdateUsername(UserID int, newUsername string) error {
 		return err
 	}
 	return nil
+}
+
+func FetchUsersWithFollowStatus(targetID int, status string) (Users []int, err error) {
+	// two types of status: following, pending
+	if status != "following" && status != "pending" {
+		return nil, errors.New("invalid status")
+	}
+
+	rows, queryErr := sqlDB.DataBase.Query("SELECT userid FROM followers WHERE status = ? AND targetid = ?", status, targetID)
+	if queryErr != nil {
+		log.Println("[Followers] - something went wrong while trying to QUERY:", queryErr)
+		return nil, queryErr
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var userid int
+		if scanErr := rows.Scan(&userid); scanErr != nil {
+			return nil, scanErr
+		}
+		Users = append(Users, userid)
+	}
+
+	return Users, nil
 }
 
 func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr error) {

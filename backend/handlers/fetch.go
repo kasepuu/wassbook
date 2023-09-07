@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
@@ -31,6 +32,51 @@ func FetchSearchBarUsers(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(sensitiveInfo)
 	if err != nil {
 		log.Println(err)
+		return
+	}
+}
+
+func FetchUsersTryingToFollow(w http.ResponseWriter, r *http.Request) {
+	userid := r.URL.Query().Get("UserID")
+	uid, err := strconv.Atoi(userid)
+	if err != nil {
+		log.Println("Invalid userid in FetchUsersTryingToFollow():", err)
+
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Bad request, please try again!"))
+		return
+	}
+
+	Users, fetchErr := function.FetchUsersWithFollowStatus(uid, "pending")
+	if fetchErr != nil {
+		log.Println("Errors encountered when trying to fetch:", fetchErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal issue, please try again later!"))
+		return
+	}
+
+	fmt.Println("FOLLOWERS > Fetched users:", Users)
+
+	if len(Users) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	var UsersInfo []function.UserInfo
+	for u := 0; u < len(Users); u++ {
+		userinfo, err := function.FetchUserInformation(Users[u], 0)
+		if err != nil {
+			log.Println("Error at UserID:", Users[u], "- error message:", err)
+			continue
+		}
+
+		UsersInfo = append(UsersInfo, userinfo)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	encodeErr := json.NewEncoder(w).Encode(UsersInfo)
+	if encodeErr != nil {
+		log.Println(encodeErr)
 		return
 	}
 }

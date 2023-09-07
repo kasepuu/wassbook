@@ -5,7 +5,32 @@ function getUserInfoFromToken(tokenStr) {
   var decoded = jwtDecode(tokenStr);
   return decoded;
 }
+// const refreshToken = async () => {
+//   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+//   const currentAccessToken = userInfo.accessToken;
 
+//   try {
+//     const response = await fetch(`${backendHost}/refresh-token`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${currentAccessToken}`, // Include the refresh token
+//       },
+//     });
+
+//     if (response.ok) {
+//       const newAccessToken = await response.json();
+//       // Update the old access token with the new one
+//       const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+//       userInfo.accessToken = newAccessToken.accessToken;
+//       sessionStorage.setItem("CurrentUser", JSON.stringify(userInfo));
+//     } else {
+//       console.log("Token refresh failed.");
+//     }
+//   } catch (error) {
+//     console.error("Error refreshing token:", error);
+//   }
+// };
 export function updateToken(usernameChange = false) {
   const userid = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
   console.log("UPDATING JWT FOR USER:", userid);

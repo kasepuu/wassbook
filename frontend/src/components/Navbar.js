@@ -13,19 +13,23 @@ import {
   FaUserFriends,
 } from "react-icons/fa";
 import { useState } from "react";
+import FollowersDropDown from "./dropdown/followers";
+import NotificationsDropdown from "./dropdown/notifications";
 
 const Navbar = () => {
   const [isNotificationsOpen, setNotificationsOpened] = useState(false);
   const [isFollowersOpen, setFollowersOpened] = useState(false);
 
-  function onNotifactionsClick() {
+  function onNotifactionsClick(event) {
+    event.stopPropagation();
     setNotificationsOpened(!isNotificationsOpen);
-    if (isFollowersOpen) setFollowersOpened(!isFollowersOpen);
+    if (isFollowersOpen) setFollowersOpened(false);
   }
 
-  function onFollowersClick() {
+  function onFollowersClick(event) {
+    event.stopPropagation();
     setFollowersOpened(!isFollowersOpen);
-    if (isNotificationsOpen) setNotificationsOpened(!isNotificationsOpen);
+    if (isNotificationsOpen) setNotificationsOpened(false);
   }
 
   return (
@@ -45,13 +49,25 @@ const Navbar = () => {
           <FaUsers /> Groups
         </Link>
 
-        <Link onClick={onNotifactionsClick} className="notificationsBTN">
+        <Link
+          onClick={(e) => {
+            onNotifactionsClick(e);
+          }}
+          className="notificationsBTN"
+        >
           <FaBell /> Notifications
-          <NotificationsDropdown isOpen={isNotificationsOpen} />
+          {isNotificationsOpen && (
+            <NotificationsDropdown isOpen={isNotificationsOpen} />
+          )}
         </Link>
-        <Link onClick={onFollowersClick} className="followersBTN">
+        <Link
+          onClick={(e) => {
+            onFollowersClick(e);
+          }}
+          className="followersBTN"
+        >
           <FaUserFriends /> Followers
-          <FollowersDropdown isOpen={isFollowersOpen} />
+          {isFollowersOpen && <FollowersDropDown isOpen={isFollowersOpen} />}
         </Link>
 
         <Link to="/logout">
@@ -65,30 +81,6 @@ const Navbar = () => {
 
       <SearchContainer />
     </nav>
-  );
-};
-
-const NotificationsDropdown = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="dropdown">
-      <div className="dropdown-contents">
-        <p>No one is missing you!</p>
-      </div>
-    </div>
-  );
-};
-
-const FollowersDropdown = ({ isOpen, onClose }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="dropdown">
-      <div className="dropdown-contents">
-        <p>No one is trying to contact with you!</p>
-      </div>
-    </div>
   );
 };
 

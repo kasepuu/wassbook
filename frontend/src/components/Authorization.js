@@ -18,7 +18,10 @@ export const useAuthorization = (atRegister = false) => {
           }
 
           // setting up current user & ws connection
-          if (!window.socket) connectAndSendEvents();
+          if (!window.socket) {
+            console.log("WS CONNECTION PUUDUB!");
+            connectAndSendEvents();
+          }
           loadUser();
         })
         .catch((error) => {

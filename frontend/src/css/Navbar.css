@@ -112,3 +112,28 @@ a {
 .dropdown-contents {
   color: black;
 }
+
+.dropdown-result {
+  padding-top: 10px;
+  text-align: center;
+}
+
+.follower-requests-image {
+  /* ei ole kasutusel praegu */
+  width: 15px;
+  height: 15px;
+  border-radius: 100%;
+  border: 1px solid black;
+}
+
+.btn-accept {
+  position: absolute;
+  left: 0;
+  color: green;
+}
+
+.btn-decline {
+  position: absolute;
+  right: 0;
+  color: red;
+}

@@ -8,7 +8,6 @@ import { BrowserRouter } from "react-router-dom"; // router
 export const backendHost = "http://localhost:8081";
 
 export function connectAndSendEvents() {
-  if (!window.socket) return;
   console.log("connectAndSendEvents()");
   wsAddConnection()
     .then((websocket) => {
