@@ -121,7 +121,7 @@ const handleUsernameUpdate = (userID, newUsername) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      updateToken();
+      updateToken(true);
       return response.json();
     })
     .then((data) => {
