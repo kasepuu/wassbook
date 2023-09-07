@@ -101,6 +101,14 @@ func UpdateUserDescription(UserID int, newDescription string) error {
 	return nil
 }
 
+func UpdateUsername(UserID int, newUsername string) error {
+	_, err := sqlDB.DataBase.Exec("UPDATE users SET nickname = ? WHERE id = ?", newUsername, UserID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr error) {
 	User.UserID = UserID
 	User.UserName = GetUserName(UserID)

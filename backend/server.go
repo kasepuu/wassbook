@@ -64,6 +64,7 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/getPostByUserId", handler.FetchPostsCreatedBy)
 	corsMux.HandleFunc("/update-private-status", handler.UpdatePrivateStatusHandler)
 	corsMux.HandleFunc("/update-user-description", handler.UpdateUserDescriptionHandler)
+	corsMux.HandleFunc("/update-user-name", handler.UpdateUserNameHandler)
 
 	// post requests
 	corsMux.HandleFunc("/savepost", handler.Savepost)

@@ -138,6 +138,28 @@ func UpdateUserDescriptionHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func UpdateUserNameHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		UserID      int    `json:"userID"`
+		NewUsername string `json:"newUsername"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	err = function.UpdateUsername(request.UserID, request.NewUsername)
+	if err != nil {
+		http.Error(w, "Failed to update user description", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]string{"message": "User description updated successfully"}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func FetchPostsCreatedBy(w http.ResponseWriter, r *http.Request) {
 
 	var request struct {
