@@ -12,35 +12,7 @@ import { useAuthorization } from "../Authorization";
 import { useNavigate } from "react-router-dom";
 import { updateToken } from "../../jwt";
 
-// const refreshToken = async () => {
-//   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
-//   const currentAccessToken = userInfo.accessToken;
-
-//   try {
-//     const response = await fetch(`${backendHost}/refresh-token`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${currentAccessToken}`, // Include the refresh token
-//       },
-//     });
-
-//     if (response.ok) {
-//       const newAccessToken = await response.json();
-//       // Update the old access token with the new one
-//       const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
-//       userInfo.accessToken = newAccessToken.accessToken;
-//       sessionStorage.setItem("CurrentUser", JSON.stringify(userInfo));
-//     } else {
-//       console.log("Token refresh failed.");
-//     }
-//   } catch (error) {
-//     console.error("Error refreshing token:", error);
-//   }
-// };
-
-//import { ButtonOr } from "semantic-ui-react";
-function toTitleCase(str) {
+>function toTitleCase(str) {
   if (str) {
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();

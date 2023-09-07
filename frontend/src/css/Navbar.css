@@ -79,3 +79,36 @@ a {
   height: calc(100% - 60px);
   width: 100%;
 }
+
+.notificationsBTN {
+  position: relative;
+}
+
+.followersBTN {
+  position: relative;
+}
+
+.dropdown {
+  background-color: #ddd;
+
+  position: absolute; /* Make it an absolute positioned element */
+  top: 100%; /* Position it below the parent container */
+  left: 50%; /* Align it with the left edge of the parent container */
+
+  transform: translateX(-50%); /* Center horizontally */
+
+  margin-top: 10px;
+
+  width: 200px;
+  height: 250px;
+  border: 2px solid #b6b6b6;
+
+  /* Center vertically */
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.dropdown-contents {
+  color: black;
+}

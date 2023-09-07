@@ -7,20 +7,33 @@ import SearchContainer from "./SearchContainer";
 import {
   FaHome,
   FaDoorOpen,
-  FaUserFriends,
   FaUsers,
   FaBell,
   FaUserCircle,
+  FaUserFriends,
 } from "react-icons/fa";
+import { useState } from "react";
 
 const Navbar = () => {
+  const [isNotificationsOpen, setNotificationsOpened] = useState(false);
+  const [isFollowersOpen, setFollowersOpened] = useState(false);
+
+  function onNotifactionsClick() {
+    setNotificationsOpened(!isNotificationsOpen);
+    if (isFollowersOpen) setFollowersOpened(!isFollowersOpen);
+  }
+
+  function onFollowersClick() {
+    setFollowersOpened(!isFollowersOpen);
+    if (isNotificationsOpen) setNotificationsOpened(!isNotificationsOpen);
+  }
+
   return (
     <nav className="Navbar">
       <div className="links">
         <Link to="/">
           <FaHome /> Home
         </Link>
-
         <Link
           to={`/profile/${
             JSON.parse(sessionStorage.getItem("CurrentUser")).UserName
@@ -28,17 +41,17 @@ const Navbar = () => {
         >
           <FaUserCircle /> Profile
         </Link>
-
-        <Link to="/">
-          <FaUserFriends /> Friends
-        </Link>
-
         <Link to="/">
           <FaUsers /> Groups
         </Link>
 
-        <Link to="/">
+        <Link onClick={onNotifactionsClick} className="notificationsBTN">
           <FaBell /> Notifications
+          <NotificationsDropdown isOpen={isNotificationsOpen} />
+        </Link>
+        <Link onClick={onFollowersClick} className="followersBTN">
+          <FaUserFriends /> Followers
+          <FollowersDropdown isOpen={isFollowersOpen} />
         </Link>
 
         <Link to="/logout">
@@ -52,6 +65,30 @@ const Navbar = () => {
 
       <SearchContainer />
     </nav>
+  );
+};
+
+const NotificationsDropdown = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="dropdown">
+      <div className="dropdown-contents">
+        <p>No one is missing you!</p>
+      </div>
+    </div>
+  );
+};
+
+const FollowersDropdown = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="dropdown">
+      <div className="dropdown-contents">
+        <p>No one is trying to contact with you!</p>
+      </div>
+    </div>
   );
 };
 
