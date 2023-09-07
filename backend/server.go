@@ -70,7 +70,9 @@ func StartServer(port string) {
 
 	// post requests
 	corsMux.Handle("/savepost", http.HandlerFunc(handler.Savepost))
+	corsMux.Handle("/savecomment", http.HandlerFunc(handler.SaveComment))
 	corsMux.Handle("/getposts", http.HandlerFunc(handler.FetchPosts))
+	corsMux.Handle("/getcomments", http.HandlerFunc(handler.FetchComments))
 	corsMux.Handle("/users/", http.HandlerFunc(handler.ImageHandler))
 
 	errorHandler(http.ListenAndServe(":"+port, corsMux))

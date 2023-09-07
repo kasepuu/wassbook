@@ -7,20 +7,36 @@ import { useAuthorization } from "./Authorization";
 
 const Feed = () => {
   useAuthorization();
-  const [inputValue, setInputValue] = useState("");
+  const [postInputValue, setPostInputValue] = useState("");
+  const [commentInputValue, setCommentInputValue] = useState("");
   const [posts, setPosts] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const fileInputRef = useRef(null);
-  const [imageName, setImageName] = useState("");
+  const [comments, setComments] = useState([]);
+  const [selectedPostFile, setSelectedPostFile] = useState(null);
+  const [selectedCommentFile, setSelectedCommentFile] = useState(null);
+  const postFileInputRef = useRef(null);
+  const commentFileInputRef = useRef(null);
+  const [postImageName, setPostImageName] = useState("");
+  const [commentImageName, setCommentImageName] = useState("");
   const [openedPostId, setOpenedPostId] = useState(null);
   const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
   let firstName = userInfo.FirstName;
   let lastName = userInfo.LastName;
 
-  const handleFileChange = (event) => {
+  const handleFileChange = (event, inputType) => {
     const file = event.target.files[0];
-    setSelectedFile(file);
-    setImageName(file.name);
+    if (file === undefined) {
+      setPostImageName(undefined);
+      return;
+    }
+    if (inputType === 'post') {
+      setSelectedPostFile(file);
+      setPostImageName(file.name);
+      setCommentImageName(undefined)
+    } else if (inputType === 'comment') {
+      setSelectedCommentFile(file);
+      setCommentImageName(file.name);
+      setPostImageName(undefined)
+    }
   };
 
   useEffect(() => {
@@ -57,8 +73,6 @@ const Feed = () => {
           return;
         }
 
-        console.log(data);
-
         const postsArray = data.map((post) => ({
           title: `${post.FirstName} ${post.LastName} - ${post.Date}`,
           body: post.Content,
@@ -74,19 +88,59 @@ const Feed = () => {
       });
   }
 
-  const handleInputChange = (event) => {
-    setInputValue(event.target.value);
+
+  function loadComments(postID) {
+    // Construct the URL with the postID as a query parameter
+    const url = `${backendHost}/getcomments?postID=${postID}`;
+
+    fetch(url)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Error fetching comment data!");
+        }
+      })
+      .then((data) => {
+        if (data === null) {
+          setComments([]);
+          return;
+        }
+
+        const commentsArray = data.map((comment) => ({
+          title: `${comment.FirstName} ${comment.LastName} - ${comment.Date}`,
+          body: comment.Content,
+          id: comment.CommentID,
+          postID: comment.PostID,
+          file: comment.Filename,
+          userID: comment.UserID,
+        }));
+
+        setComments(commentsArray.reverse());
+      })
+      .catch((error) => {
+        console.error("Error loading feed:", error);
+      });
+  }
+
+
+  const handleInputChange = (event, inputType) => {
+    if (inputType === 'post') {
+      setPostInputValue(event.target.value);
+    } else if (inputType === 'comment') {
+      setCommentInputValue(event.target.value);
+    }
   };
 
-  const handleFormSubmit = (event) => {
+  const handlePostFormSubmit = (event) => {
     event.preventDefault();
 
-    if (inputValue.trim() !== "") {
+    if (postInputValue.trim() !== "") {
       const postBody = {
         userID: userInfo.UserID,
         firstName,
         lastName,
-        content: inputValue,
+        content: postInputValue,
         GroupID: -1,
       };
 
@@ -96,7 +150,9 @@ const Feed = () => {
       });
 
       const formData = new FormData();
-      formData.append("file", selectedFile); // Append the image file to the form data
+      if (postImageName !== undefined) {
+        formData.append("file", selectedPostFile); // Append the image file to the form data
+      }
       formData.append("content", blob); // Append the text content to the form data
 
       fetch(`${backendHost}/savepost`, {
@@ -107,8 +163,8 @@ const Feed = () => {
           if (response.ok) {
             console.log("Post saved successfully!");
             loadFeed();
-            setInputValue("");
-            setImageName(undefined);
+            setPostInputValue("");
+            setPostImageName(undefined);
           } else {
             console.error("Error saving post!");
           }
@@ -119,10 +175,59 @@ const Feed = () => {
     }
   };
 
+  const handleCommentFormSubmit = (event) => {
+    event.preventDefault();
+
+    if (commentInputValue.trim() !== "") {
+
+      const commentBody = {
+        userID: userInfo.UserID,
+        firstName,
+        lastName,
+        content: commentInputValue,
+        PostID: openedPostId,
+      };
+
+      const commentBodyString = JSON.stringify(commentBody);
+      const blob = new Blob([commentBodyString], {
+        type: "application/json",
+      });
+
+      const formData = new FormData();
+      if (commentImageName !== undefined) {
+        formData.append("file", selectedCommentFile); // Append the image file to the form data
+      }
+      formData.append("content", blob); // Append the text content to the form data
+
+      fetch(`${backendHost}/savecomment`, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Comment saved successfully!");
+            loadComments(openedPostId);
+            setCommentInputValue("");
+            setCommentImageName(undefined);
+          } else {
+            console.error("Error saving comment!");
+          }
+        })
+        .catch((error) => {
+          console.error("Error saving post:", error);
+        });
+    }
+  };
+
   const handlePostClick = (post) => {
-    localStorage.setItem("OpenedPost", post.id);
-    setOpenedPostId(post.id);
-    console.log("clicked post:", post);
+    if (openedPostId !== post.id) {
+      setOpenedPostId(post.id);
+      localStorage.setItem("OpenedPost", post.id);
+      console.log("clicked post:", post);
+      setCommentInputValue("")
+      setCommentImageName(undefined);
+    }
+    loadComments(post.id)
   };
 
   const isAuthorized = useAuthorization();
@@ -130,38 +235,49 @@ const Feed = () => {
     return (
       <div className="Feed">
         <div className="feed-container">
-          <form onSubmit={handleFormSubmit}>
+          <form onSubmit={handlePostFormSubmit}>
             <input
               type="text"
               placeholder={`What's on your mind, ${firstName}?`}
               className="NewPost"
-              value={inputValue}
-              onChange={handleInputChange}
+              value={postInputValue}
+              onChange={(e) => handleInputChange(e, 'post')}
             ></input>
             <input
               type="file"
               accept="image/*"
-              onChange={handleFileChange}
+              onChange={(e) => handleFileChange(e, 'post')}
               style={{ display: "none" }}
-              ref={fileInputRef} // Use the useRef hook to get a reference to the input element
+              ref={postFileInputRef} // Use the useRef hook to get a reference to the input element
             />
-            <div
-              className="DragDropArea"
-              onDragOver={(e) => {
-                e.preventDefault();
+            <button
+              type="button"
+              className="file-upload-button"
+
+              onClick={() => {
+                console.log("Button clicked"); // Add this line for debugging
+                postFileInputRef.current && postFileInputRef.current.click();
               }}
-              onDrop={(e) => {
-                e.preventDefault();
-                const file = e.dataTransfer.files[0];
-                setSelectedFile(file);
-                setImageName(file.name);
-              }}
-              onClick={() => fileInputRef.current.click()} // Use the ref to trigger input click
             >
-              {imageName
-                ? `Selected image: ${imageName}`
-                : "Drag and drop an image or click here to select one."}
-            </div>
+              <div
+                className="DragDropArea"
+                onDragOver={(e) => {
+                  e.preventDefault();
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const file = e.dataTransfer.files[0];
+                  setSelectedPostFile(file);
+                  setPostImageName(file.name);
+                  setCommentImageName(undefined)
+                }}
+              >
+                {postImageName
+                  ? `Selected image: ${postImageName}`
+                  : "Drag and drop an image or click here to select one."}
+              </div>
+            </button>
+
           </form>
         </div>
 
@@ -193,36 +309,64 @@ const Feed = () => {
               {openedPostId === post.id && (
                 <div className="post-overlay">
                   <div className="post-commentbox">
-                    <form onSubmit={handleFormSubmit}>
+                    <form onSubmit={handleCommentFormSubmit}>
                       <div className="comment-input-wrapper">
                         <div className="comment-input-container">
                           <input
                             type="text"
                             placeholder={`Write a comment...`}
                             className="NewComment"
-                            value={inputValue}
-                            onChange={handleInputChange}
+                            value={commentInputValue}
+                            onChange={(e) => handleInputChange(e, 'comment')}
                           />
                           <button
                             type="button"
                             className="file-upload-button"
-                            onClick={() => fileInputRef.current.click()}
+                            onClick={() => commentFileInputRef.current.click()}
                           >
                             <FaImage />
                           </button>
                           <input
                             type="file"
                             accept="image/*"
-                            onChange={handleFileChange}
-                            ref={fileInputRef}
+                            onChange={(e) => handleFileChange(e, 'comment')}
+                            ref={commentFileInputRef}
                             className="hidden-file-input"
                           />
+                          {commentImageName
+                            ? `Selected image: ${commentImageName}`
+                            : "Click here to select image."}
                         </div>
                         <button type="submit" className="comment-input-button">
                           Post comment
                         </button>
                       </div>
                     </form>
+                    {comments.map((comment, index) => (
+                      <div
+                        key={index}
+                        id={`comment-${comment.id}`}
+                        className="feed-post"
+                      >
+                        <div className="post-header">
+                          <img
+                            src={profilePicture}
+                            alt="Profile"
+                            className="profile-picture"
+                          />
+                          <div className="post-title">{comment.title}</div>
+                        </div>
+                        <div className="post-body">{comment.body}</div>
+                        {comment.file !== "-" || comment.file === undefined ? (
+                          <img
+                            src={`${backendHost}/users/${comment.userID}/${comment.file}`}
+                            {...console.log(comment)}
+                            alt="Post"
+                            className="image-content"
+                          />
+                        ) : null}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}

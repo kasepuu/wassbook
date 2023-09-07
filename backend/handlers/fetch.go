@@ -101,6 +101,52 @@ func FetchPosts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(posts)
 }
 
+func FetchComments(w http.ResponseWriter, r *http.Request) {
+	postID := r.URL.Query().Get("postID")
+
+	// Check if the "postID" parameter is empty or not provided
+	if postID == "" {
+		http.Error(w, "Missing 'postID' query parameter", http.StatusBadRequest)
+		return
+	}
+	rows, err := sqlDB.DataBase.Query(`SELECT id, postId, userId,
+	(SELECT fname FROM users WHERE id = userid) AS fname,
+	(SELECT lname FROM users WHERE id = userid) AS lname,
+	content, date, filename
+FROM comments
+WHERE postId = ?`, postID) // Adjust the query according to your table structure
+	if err != nil {
+		log.Println("Error querying posts:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal issue, please try again later!"))
+		return
+	}
+	defer rows.Close()
+
+	var comments []CommentForm
+	for rows.Next() {
+		var comment CommentForm
+		err := rows.Scan(
+			&comment.CommentID,
+			&comment.PostID,
+			&comment.UserID,
+			&comment.FirstName,
+			&comment.LastName,
+			&comment.Content,
+			&comment.Date,
+			&comment.Filename,
+		)
+		if err != nil {
+			log.Println("Error scanning row:", err)
+			continue
+		}
+		comments = append(comments, comment)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(comments)
+}
+
 func hidePrivateInformation(user function.UserInfo) (newInfo PublicUserInfo) {
 	// return only public information
 	newInfo = PublicUserInfo{

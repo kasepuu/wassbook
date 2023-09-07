@@ -42,7 +42,7 @@ func (m *wsManager) routeEvent(event Event, c *Client) error {
 		}
 		return nil
 	} else {
-		return errors.New("[FATAL] There is no such event type!")
+		return errors.New("[FATAL] There is no such event type")
 	}
 }
 

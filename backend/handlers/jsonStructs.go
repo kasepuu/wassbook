@@ -29,7 +29,7 @@ type PublicUserInfo struct {
 }
 
 type PostForm struct {
-	PostID           int
+	PostID           int    `json:"PostID"`
 	OriginalPosterID int    `json:"UserID"`
 	FirstName        string `json:"FirstName"`
 	LastName         string `json:"LastName"`
@@ -37,4 +37,15 @@ type PostForm struct {
 	Content          string `json:"Content"`
 	GroupID          int    `json:"GroupID"`
 	Filename         string
+}
+
+type CommentForm struct {
+	CommentID int
+	PostID    int    `json:"PostID"`
+	UserID    int    `json:"UserID"`
+	FirstName string `json:"FirstName"`
+	LastName  string `json:"LastName"`
+	Date      string
+	Content   string `json:"Content"`
+	Filename  string
 }
