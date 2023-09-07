@@ -17,7 +17,13 @@ const SearchResult = ({ result }, { id }) => {
         alt="avatar"
         src={result.Avatar === "" ? blank : blank}
       ></img>
-      {" " + result.FirstName + " " + result.LastName}
+      {result.FirstName} {result.LastName} ({result.UserName})
+      {JSON.parse(sessionStorage.getItem("CurrentUser")).FirstName ===
+      result.FirstName ? (
+        <span className="isYou"> (You)</span>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

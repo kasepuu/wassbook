@@ -101,6 +101,14 @@ func UpdateUserDescription(UserID int, newDescription string) error {
 	return nil
 }
 
+func UpdateUsername(UserID int, newUsername string) error {
+	_, err := sqlDB.DataBase.Exec("UPDATE users SET nickname = ? WHERE id = ?", newUsername, UserID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr error) {
 	User.UserID = UserID
 	User.UserName = GetUserName(UserID)
@@ -144,9 +152,9 @@ func FetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 	var sqlErr error
 
 	if filter != "" {
-		query += " WHERE fname LIKE ? OR lname LIKE ?"
+		query += " WHERE fname LIKE ? OR lname LIKE ? OR nickname LIKE ?"
 		filterValue := "%" + filter + "%"
-		rows, sqlErr = sqlDB.DataBase.Query(query, filterValue, filterValue)
+		rows, sqlErr = sqlDB.DataBase.Query(query, filterValue, filterValue, filterValue)
 	} else {
 		return users, returnErr
 		// rows, sqlErr = sqlDB.DataBase.Query(query)

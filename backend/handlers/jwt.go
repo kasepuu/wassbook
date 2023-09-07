@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
@@ -99,4 +100,24 @@ func GetJwt(w http.ResponseWriter, r *http.Request) {
 	} else {
 		log.Println("Access field empty or invalid!")
 	}
+}
+
+func UpdateJwt(w http.ResponseWriter, r *http.Request) {
+	userid := r.URL.Query().Get("UserID")
+	uid, convErr := strconv.Atoi(userid)
+	if convErr != nil {
+		log.Println("Error converting userid to intger", convErr)
+		http.Error(w, "Error creating JWT", http.StatusInternalServerError)
+		return
+	}
+	token, err := CreateJWT(function.GetUserName(uid))
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Error creating JWT", http.StatusInternalServerError)
+		return
+	}
+
+	// responsing the JWT token as plain text
+	w.Header().Set("Content-Type", "text/plain")
+	fmt.Fprint(w, token)
 }

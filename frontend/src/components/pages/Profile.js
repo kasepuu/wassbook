@@ -3,12 +3,42 @@ import FriendsList from "../FollowersList";
 import Navbar from "../Navbar";
 import "../../css/Profile.css";
 import profilePicture from "../../page-images/blank.png";
-import { useParams } from "react-router-dom";
+import { json, useParams } from "react-router-dom";
 import { backendHost } from "../..";
 import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
 import { sendEvent } from "../../websocket.js";
 import { useAuthorization } from "../Authorization";
+import { useNavigate } from "react-router-dom";
+import { updateToken } from "../../jwt";
+
+// const refreshToken = async () => {
+//   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+//   const currentAccessToken = userInfo.accessToken;
+
+//   try {
+//     const response = await fetch(`${backendHost}/refresh-token`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${currentAccessToken}`, // Include the refresh token
+//       },
+//     });
+
+//     if (response.ok) {
+//       const newAccessToken = await response.json();
+//       // Update the old access token with the new one
+//       const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+//       userInfo.accessToken = newAccessToken.accessToken;
+//       sessionStorage.setItem("CurrentUser", JSON.stringify(userInfo));
+//     } else {
+//       console.log("Token refresh failed.");
+//     }
+//   } catch (error) {
+//     console.error("Error refreshing token:", error);
+//   }
+// };
+
 //import { ButtonOr } from "semantic-ui-react";
 function toTitleCase(str) {
   if (str) {
@@ -39,7 +69,10 @@ const handleToggleClick = (userID, PrivateStatus) => {
       "Content-Type": "application/json",
     },
   })
-    .then((response) => response.json())
+    .then((response) => {
+      response.json();
+      updateToken();
+    })
     .catch((error) => {
       console.error("Error updating private status:", error);
     });
@@ -60,6 +93,7 @@ const handleDescriptionUpdate = (userID, newDescription) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
+      updateToken();
       return response.json();
     })
     .then((data) => {
@@ -71,13 +105,40 @@ const handleDescriptionUpdate = (userID, newDescription) => {
     });
 };
 
+const handleUsernameUpdate = (userID, newUsername) => {
+  return fetch(`${backendHost}/update-user-name`, {
+    method: "POST",
+    body: JSON.stringify({
+      userID: userID,
+      newUsername: newUsername,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      updateToken();
+      return response.json();
+    })
+    .then((data) => {
+      console.log("Username updated successfully:", data.message);
+    })
+    .catch((error) => {
+      console.error("Error updating username:", error);
+      throw error;
+    });
+};
+
 const Profile = () => {
   const isAuthorized = useAuthorization();
   console.log("isAuthorized:", isAuthorized);
 
   let { id } = useParams();
   let isLocalUser = false;
-  const LoggedUser = JSON.parse(localStorage.getItem("CurrentUser"));
+  const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
   if (id === undefined || !id) id = LoggedUser.UserName;
   if (id === LoggedUser.UserName) isLocalUser = true;
   const [userInfo, setUserInfo] = useState({});
@@ -85,6 +146,10 @@ const Profile = () => {
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [newDescription, setNewDescription] = useState(userInfo.Description);
   const [originalDescription] = useState(userInfo.Description);
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [newUsername, setNewUsername] = useState(userInfo.UserName);
+  const [originalUsername] = useState(userInfo.UserName);
+  const navigate = useNavigate();
 
   const handleEditClick = () => {
     setIsEditingDescription(true);
@@ -109,6 +174,33 @@ const Profile = () => {
   const handleCancelClick = () => {
     setNewDescription(originalDescription);
     setIsEditingDescription(false);
+  };
+
+  const handleUsernameEditClick = () => {
+    setIsEditingUsername(true);
+  };
+
+  const handleUsernameSaveClick = () => {
+    handleUsernameUpdate(userInfo.UserID, newUsername)
+      .then(() => {
+        console.log("Username updated successfully");
+        setUserInfo((prevUserInfo) => ({
+          ...prevUserInfo,
+          UserName: newUsername,
+        }));
+        setIsEditingUsername(false);
+        navigate(`/profile/${newUsername}`);
+      })
+      .catch((error) => {
+        console.error("Error updating username:", error);
+      });
+    setIsEditingUsername(false);
+    // refreshToken();
+  };
+
+  const handleUsernameCancelClick = () => {
+    setNewUsername(originalUsername);
+    setIsEditingUsername(false);
   };
 
   useEffect(() => {
@@ -144,6 +236,36 @@ const Profile = () => {
         <div className="profile-info-container">
           <img src={profilePicture} alt="Profile" className="profilepic" />
           <div className="profile-info">
+            {userInfo.UserID === LoggedUser.UserID ? (
+              <>
+                <div>
+                  Username:
+                  {isEditingUsername ? (
+                    <div>
+                      <input
+                        value={newUsername}
+                        onChange={(e) => setNewUsername(e.target.value)}
+                      />
+                      <div>
+                        <button onClick={handleUsernameSaveClick}>Save</button>
+                        <button onClick={handleUsernameCancelClick}>
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <p>{userInfo.UserName}</p>
+                      <button onClick={handleUsernameEditClick}>Edit</button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              // Display username for other users
+              <div>Username: {userInfo.UserName}</div>
+            )}
+
             <p className="username">Username: {userInfo.UserName}</p>
             <p className="firstname">
               Firstname: {toTitleCase(userInfo.FirstName)}

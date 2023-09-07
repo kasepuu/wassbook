@@ -19,6 +19,7 @@ func FetchSearchBarUsers(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Internal server issues!"))
 		return
 	}
+	Users = function.SortUsers(Users)
 
 	// return only public information
 	sensitiveInfo := make([]PublicUserInfo, len(Users))
@@ -173,6 +174,29 @@ func UpdateUserDescriptionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = function.UpdateUserDescription(request.UserID, request.NewDescription)
+	if err != nil {
+		http.Error(w, "Failed to update user description", http.StatusInternalServerError)
+		return
+	}
+
+	response := map[string]string{"message": "User description updated successfully"}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func UpdateUserNameHandler(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		UserID      int    `json:"userID"`
+		NewUsername string `json:"newUsername"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
+		return
+	}
+
+	err = function.UpdateUsername(request.UserID, request.NewUsername)
 	if err != nil {
 		http.Error(w, "Failed to update user description", http.StatusInternalServerError)
 		return

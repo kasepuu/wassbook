@@ -2,47 +2,41 @@
 
 # TODO
 
-- reactist aru saada
-- reactiga luua 3 veergu, (praegune kasutaja & grupid , feed, online-users/friends) (nagu facebook noh)
-- reactiga teha ülemine navbar, (search users), home button (nagu facebook noh)
-- lehte külastades luua ws connection backendi
-- ja nii edasi...
+- toodo
 
-* toodo
-
--
-- - user profile (public/private)
-- - posts (public/private)
-- - followers (friends)
-- - chats
-- - notifications
-- - groups
--
-- authentication
-- - register -> email, passwd, fname, lname, dobirth, avatar (opt), nickname (opt), aboutMe (opt)
-- - - opt => skippable
--
-- database tuleb ümber mõelda ja teha
-- migration, database migration? -> structured process of managing changes to a database schema.
--
--
-- followers
-- - follow -> näed tema positusi/feedi
--
-- profile, peab sisaldama
-- - user information
-- - user activity
-- - - every post made by the user
-- - followers and following
-- two types of profile -> public & private
-- - private -> only followers can see the feed
-- - public -> everybody can see the feed
-- - almost private -> only followers chosen by the creator will be able to see it? -> suht idiootne?
--
--
-- groups
--
--
+*
+* - posts (public/private)
+* - followers (friends)
+* - chats
+* - notifications
+* - groups
+* - profile edit -> avatar, nickname, aboutMe
+*
+* followers;
+* - follow -> näed tema positusi/feedi
+* - follow private -> pending
+* - - teine peab vastu võtma / vastu folloma?
+* - - chati võimalus tekiks kui mõlemad üksteist followivad
+*
+* profile;
+* - user activity (kui on followed, public?)
+* - followers and following -> praegu disabled vist
+* two types of profile -> public & private
+* - private -> only followers can see the feed
+* - public -> everybody can see the feed
+* - almost private -> only followers chosen by the creator will be able to see it? -> suht idiootne?
+* edit võimalus -> avatar, nickname, aboutMe
+*
+* groups;
+* andrei teeb ✍(◔◡◔)
+*
+*
+* järjekord?
+* - muu pudipadi...
+* - followerid
+* - chat
+* - notifications
+* - groups
 
 ## ABOUT
 
