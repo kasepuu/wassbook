@@ -12,7 +12,7 @@ import { useAuthorization } from "../Authorization";
 import { useNavigate } from "react-router-dom";
 import { updateToken } from "../../jwt";
 
->function toTitleCase(str) {
+function toTitleCase(str) {
   if (str) {
     return str.replace(/\w\S*/g, function (txt) {
       return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
