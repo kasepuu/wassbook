@@ -95,3 +95,22 @@ type SaveMessage struct {
 	SenderName   string `json:"SenderName"`
 	ReceiverName string `json:"ReceiverName"`
 }
+
+type Group struct {
+	Id          string       `json:"Id"`
+	Name        string       `json:"Name"`
+	Owner       string       `json:"Owner"`
+	OwnerId     string       `json:"OwnerId"`
+	Members     []UserStruct `json:"Members"`
+	Description string       `json:"Description"`
+}
+
+type Event struct {
+	Id          string       `json:"Id"`
+	Description string       `json:"Description"`
+	Date        string       `json:"Date"`
+	Name        string       `json:"Name"`
+	Owner       string       `json:"Owner"`
+	OwnerId     string       `json:"OwnerId"`
+	Members     []UserStruct `json:"Members"`
+}
