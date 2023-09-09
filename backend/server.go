@@ -67,6 +67,10 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/update-user-description", handler.UpdateUserDescriptionHandler)
 	corsMux.HandleFunc("/update-user-name", handler.UpdateUserNameHandler)
 	corsMux.HandleFunc("/fetch-users-trying-to-follow", handler.FetchUsersTryingToFollow)
+	corsMux.HandleFunc("/groups", handler.GetGroups)
+	corsMux.HandleFunc("/group/", handler.GetGroup)
+
+
 
 	// post requests
 	corsMux.HandleFunc("/savepost", handler.Savepost)
@@ -76,6 +80,9 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/users/", handler.ImageHandler)
 	corsMux.HandleFunc("/send-follower-accept-request", handler.SetFollowStatusAccepted)
 	corsMux.HandleFunc("/send-follower-decline-request", handler.SetFollowStatusDeclined)
+	corsMux.HandleFunc("/creategroup", handler.CreateGroup)
+	corsMux.HandleFunc("/createevent", handler.CreateEvent)
+
 
 	log.Printf("backend is running at: http://localhost:" + port + "/\n")
 	log.Printf("frontend should be running at: http://localhost:" + "8080" + "/\n")

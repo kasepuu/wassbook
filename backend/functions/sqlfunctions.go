@@ -22,7 +22,7 @@ type UserInfo struct {
 	Email         string
 	Avatar        string
 	Description   string
-	FollowStatus  string //Praegu kustutasin followerid täiesti ära aga kui followerite arvu või kes followib tagasi saadaks oleks lahe küll. Vb saab kuskil mujal seda teha?
+	FollowStatus  string // Praegu kustutasin followerid täiesti ära aga kui followerite arvu või kes followib tagasi saadaks oleks lahe küll. Vb saab kuskil mujal seda teha?
 	PrivateStatus int
 }
 
@@ -30,6 +30,7 @@ func GetUserID(UserName string) (UserID int) {
 	sqlDB.DataBase.QueryRow("SELECT id FROM users WHERE LOWER(nickname) = LOWER(?) OR LOWER(email) = LOWER(?)", UserName, UserName).Scan(&UserID)
 	return UserID
 }
+
 func GetUserName(UserID int) (UserName string) {
 	sqlDB.DataBase.QueryRow("SELECT nickname FROM users WHERE id = ?", UserID).Scan(&UserName)
 	return UserName
@@ -77,7 +78,6 @@ func GetFirstAndLastName(UserID int) (User UserInfo, err error) {
 	err = sqlDB.DataBase.QueryRow("SELECT fname, lname FROM users WHERE id = ?", UserID).Scan(&User.FirstName, &User.LastName)
 	User.DateOfBirth = strings.Split(DateOfBirthFormatted, ".")
 	return User, err
-
 }
 
 func FollowStatus(UserID int, TargetID int) (status string) {
@@ -291,3 +291,160 @@ func GetOnlineStatus(userId int) (isOnline bool) {
 	}
 	return isOnline
 }
+
+func CreateGroup(group Group) error {
+	var err error
+	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groups (name, ownerId, description) VALUES (?,?,?)")
+	// currentTime := time.Now().Format(time.RFC3339)
+	if err != nil {
+		return err
+	}
+	_, err = statement.Exec(group.Name, group.OwnerId, group.Description)
+
+	return err
+}
+
+func CreateEvent(event Event) error {
+	var err error
+	statement, err := sqlDB.DataBase.Prepare("INSERT INTO events (name, ownerId,groupId, description, date) VALUES (?,?,?, ?, ?)")
+	if err != nil {
+		return err
+	}
+
+	_, err = statement.Exec(event.Name, event.OwnerId, event.GroupId, event.Description, event.Date)
+
+	return err
+}
+
+func CreateGroupMember(userId, groupId int, status string) error {
+	var err error
+	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groupMember (groupId, userId, status) VALUES (?, ?, ?)")
+	if err != nil {
+		return err
+	}
+
+	_, err = statement.Exec(groupId, userId, status)
+
+	return err
+}
+
+func CreateEventMember(userId, eventId int, status string) error {
+	var err error
+	statement, err := sqlDB.DataBase.Prepare("INSERT INTO eventMember (eventId, userId, status) VALUES (?, ?, ?)")
+	if err != nil {
+		return err
+	}
+
+	_, err = statement.Exec(eventId, userId, status)
+
+	return err
+}
+
+func GetGroups() ([]Group, error) {
+	var err error
+	var groups []Group
+
+	rows, err := sqlDB.DataBase.Query("select groups.id, groups.name, groups.description, fname || \" \" || lname as owner, ownerId from groups left join users on groups.ownerId = users.id")
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var group Group
+		rows.Scan(
+			&group.Id,
+			&group.Name,
+			&group.Description,
+			&group.Owner,
+			&group.OwnerId,
+		)
+		groups = append(groups, group)
+	}
+
+	return groups, err
+}
+
+func GetGroup(id int) (Group, error) {
+	var group Group
+
+	err := sqlDB.DataBase.QueryRow(`
+	select
+		groups.id,
+		groups.name, 
+		groups.description, 
+		fname || " " || lname as owner, 
+		ownerId 
+	from groups left join users 
+	on groups.ownerId = users.id where groups.id = ?
+	`, id).Scan(
+		&group.Id,
+		&group.Name,
+		&group.Description,
+		&group.Owner,
+		&group.OwnerId,
+	)
+	if err != nil {
+		return group, err
+	}
+
+	group.Events, group.Members = GetGroupEventsAndMembers(id)
+
+	return group, err
+}
+
+func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
+	var members []UserStruct
+	var events []Event
+
+	memberRows, err := sqlDB.DataBase.Query("select users.id, users.nickname from groupmember left join users on groupmember.userId = users.id where groupid = ?", id)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	for memberRows.Next() {
+		var member UserStruct
+		memberRows.Scan(
+			&member.UserID,
+			&member.UserName,
+		)
+		members = append(members, member)
+	}
+
+	eventRows, err := sqlDB.DataBase.Query("select events.id, events.name, events.date, events.description, ownerId, nickname from events left join users on events.ownerId = users.id where groupId = ?", id)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	for eventRows.Next() {
+		var event Event
+		eventRows.Scan(
+			&event.Id,
+			&event.Name,
+			&event.Date,
+			&event.Description,
+			&event.OwnerId,
+			&event.Owner,
+		)
+		events = append(events, event)
+	}
+
+	return events, members
+}
+
+// func GetCategories() []Category {
+// 	var categories []Category
+// 	rows, err := DataBase.Query("select * from category")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	for rows.Next() {
+// 		var category Category
+// 		rows.Scan(
+// 			&category.Id,
+// 			&category.Name,
+// 		)
+// 		categories = append(categories, category)
+// 	}
+
+// 	return categories
+// }

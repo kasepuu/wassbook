@@ -103,6 +103,7 @@ type Group struct {
 	OwnerId     string       `json:"OwnerId"`
 	Members     []UserStruct `json:"Members"`
 	Description string       `json:"Description"`
+	Events      []Event      `json:"Events"`
 }
 
 type Event struct {
@@ -112,5 +113,6 @@ type Event struct {
 	Name        string       `json:"Name"`
 	Owner       string       `json:"Owner"`
 	OwnerId     string       `json:"OwnerId"`
+	GroupId     string       `json:"GroupId"`
 	Members     []UserStruct `json:"Members"`
 }
