@@ -97,10 +97,10 @@ type SaveMessage struct {
 }
 
 type Group struct {
-	Id          string       `json:"Id"`
+	Id          int          `json:"Id"`
 	Name        string       `json:"Name"`
 	Owner       string       `json:"Owner"`
-	OwnerId     string       `json:"OwnerId"`
+	OwnerId     int          `json:"OwnerId"`
 	Members     []UserStruct `json:"Members"`
 	Description string       `json:"Description"`
 	Events      []Event      `json:"Events"`

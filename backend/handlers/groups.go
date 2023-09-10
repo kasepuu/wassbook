@@ -12,8 +12,7 @@ import (
 )
 
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	// TODO mõelda, mis siis kui sisse logitud
+	switch r.Method {	
 	case "POST":
 		b, err := io.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -44,14 +43,24 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(201)
 
+		groups, err := function.GetGroups()
+		toSend, _ := json.Marshal(groups)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusConflict)
+			return
+		}
+		w.WriteHeader(201)
+		w.Header().Set("content-type", "application/json")
+		w.Write(toSend)
+
 	default:
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(401)
 	}
 }
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	// TODO mõelda, mis siis kui sisse logitud
+	
 	case "POST":
 		b, err := io.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -119,10 +128,13 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println(id)
 
-
 		users, _ := json.Marshal(groups)
 		w.WriteHeader(200)
 		w.Header().Set("content-type", "application/json")
 		w.Write(users)
 	}
+}
+
+func addGroupMember(w http.ResponseWriter, r *http.Request) {
+	
 }

@@ -299,7 +299,13 @@ func CreateGroup(group Group) error {
 	if err != nil {
 		return err
 	}
-	_, err = statement.Exec(group.Name, group.OwnerId, group.Description)
+	result, err := statement.Exec(group.Name, group.OwnerId, group.Description)
+	groupId, _ := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	err = CreateGroupMember(group.OwnerId, int(groupId), "accepted") // when creating group add creator as member
 
 	return err
 }
