@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Logout from "./pages/Logout";
 import Game1 from "./pages/Game1";
 import Profile from "./pages/Profile";
+import Groups from "./pages/Groups";
 const Routing = () => {
   return (
     <Routes>
@@ -18,9 +19,12 @@ const Routing = () => {
       <Route path="/game-1" element={<Game1 />} />
       <Route path="/profile/:id" element={<Profile />} />
       <Route path="/profile" element={<Profile />} />
+      <Route path="/groups" element={<Groups />} />
+
       {/*   <Route path="*" element={<NotFound />} />    */}
     </Routes>
   );
 };
 
 export default Routing;
+

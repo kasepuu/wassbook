@@ -39,13 +39,12 @@ const Navbar = () => {
           <FaHome /> Home
         </Link>
         <Link
-          to={`/profile/${
-            JSON.parse(sessionStorage.getItem("CurrentUser")).UserName
-          }`}
+          to={`/profile/${JSON.parse(sessionStorage.getItem("CurrentUser")).UserName
+            }`}
         >
           <FaUserCircle /> Profile
         </Link>
-        <Link to="/">
+        <Link to="/groups">
           <FaUsers /> Groups
         </Link>
 

@@ -104,6 +104,8 @@ type Group struct {
 	Members     []UserStruct `json:"Members"`
 	Description string       `json:"Description"`
 	Events      []Event      `json:"Events"`
+	Membercount int          `json:"Membercount"`
+	// TODO mõelda kuidas päringus saada arvu
 }
 
 type Event struct {
