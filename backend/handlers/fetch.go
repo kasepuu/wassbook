@@ -296,3 +296,33 @@ func FetchPostsCreatedBy(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
 }
+
+func DisplayMutualFollowers(w http.ResponseWriter, r *http.Request) {
+	var request struct {
+		UserID int `json:"UserID"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+
+	if err != nil {
+		w.WriteHeader(http.StatusConflict)
+		return
+	}
+
+	mutualFollowers, err := function.GetMutualFollowers(request.UserID)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	// Convert the mutualFollowers slice to JSON and send it as a response
+	responseJSON, err := json.Marshal(mutualFollowers)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(responseJSON)
+}

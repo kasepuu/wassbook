@@ -118,3 +118,8 @@ type Event struct {
 	GroupId     string       `json:"GroupId"`
 	Members     []UserStruct `json:"Members"`
 }
+
+type MutualFollower struct {
+	UserId int
+	UserName string
+}

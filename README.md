@@ -6,26 +6,17 @@
 
 *
 * - posts (public/private)
-* - followers (friends)
 * - chats
-* - notifications
+* - notifications ja follwers WS
 * - groups
-* - profile edit -> avatar, nickname, aboutMe
 *
 * followers;
-* - follow -> näed tema positusi/feedi
-* - follow private -> pending
-* - - teine peab vastu võtma / vastu folloma?
 * - - chati võimalus tekiks kui mõlemad üksteist followivad
 *
 * profile;
 * - user activity (kui on followed, public?)
-* - followers and following -> praegu disabled vist
-* two types of profile -> public & private
-* - private -> only followers can see the feed
-* - public -> everybody can see the feed
+* - profiilil followers and following
 * - almost private -> only followers chosen by the creator will be able to see it? -> suht idiootne?
-* edit võimalus -> avatar, nickname, aboutMe
 *
 * groups;
 * andrei teeb ✍(◔◡◔)
