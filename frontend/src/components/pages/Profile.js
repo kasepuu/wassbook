@@ -36,6 +36,7 @@ const Profile = () => {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState(userInfo.UserName);
   const [originalUsername] = useState(userInfo.UserName);
+  const [error, setError] = useState("");
 
   function handleUnFollow(requesterID, targetID) {
     console.log("handleunfollow", requesterID, targetID);
@@ -200,6 +201,14 @@ const Profile = () => {
   };
 
   const handleUsernameSaveClick = () => {
+
+    if (newUsername === undefined || newUsername === "") {
+      setError("Username must be at least 3 characters long");
+      return;
+    } else {
+      setError(""); // Clear the error message if the length is valid
+    }
+
     handleUsernameUpdate(userInfo.UserID, newUsername)
       .then(() => {
         console.log("Username updated successfully");
@@ -213,12 +222,23 @@ const Profile = () => {
         console.error("Error updating username:", error);
       });
     setIsEditingUsername(false);
-    // refreshToken();
   };
 
   const handleUsernameCancelClick = () => {
     setNewUsername(originalUsername);
     setIsEditingUsername(false);
+  };
+
+  const handleUsernameChange = (e) => {
+    const inputValue = e.target.value;
+    setNewUsername(inputValue);
+
+    if (inputValue.length < 3) {
+      setError("Username must be at least 3 characters long");
+    } else {
+      setError(""); // Clear the error message if the length is valid
+    }
+
   };
 
   useEffect(() => {
@@ -260,10 +280,14 @@ const Profile = () => {
                   Username:
                   {isEditingUsername ? (
                     <div>
-                      <input
-                        value={newUsername}
-                        onChange={(e) => setNewUsername(e.target.value)}
-                      />
+                      <div>
+                        <input
+                          type="text"
+                          value={newUsername}
+                          onChange={handleUsernameChange}
+                        />
+                        {error && <div style={{ color: "red" }}>{error}</div>}
+                      </div>
                       <div>
                         <button onClick={handleUsernameSaveClick}>Save</button>
                         <button onClick={handleUsernameCancelClick}>
@@ -291,7 +315,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-            userInfo.UserID === LoggedUser.UserID ? (
+              userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -407,7 +431,7 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-        userInfo.UserID === LoggedUser.UserID ? (
+          userInfo.UserID === LoggedUser.UserID ? (
           <>
             <p>Posts by {userInfo.FirstName}:</p>
 
