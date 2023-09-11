@@ -9,13 +9,23 @@
 * - chats
 * - notifications ja follwers WS
 * - groups
+* - Viimane asi DOCKER - Andrei teeb
 *
 * followers;
 * - - chati võimalus tekiks kui mõlemad üksteist followivad
 *
 * profile;
-* - user activity (kui on followed, public?)
-* - profiilil followers and following
+
+* - user activity (kui on followed, public?) -> Using the two browsers with the users, with one of the users having a public profile and be sure not to follow him.
+Are you able to see a non-followed user public profile?
+
+
+* - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
+
+* - Try creating a post.
+Can you specify the type of privacy of the post (private, public, almost private)?
+If you choose the almost private privacy option, can you specify the users that are allowed to see the post?
+
 * - almost private -> only followers chosen by the creator will be able to see it? -> suht idiootne?
 *
 * groups;
