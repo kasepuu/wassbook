@@ -71,7 +71,6 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/group/", handler.GetGroup)
 	//TODO teha eventile handler, millega saaks kätte eventi koos memberitega
 
-
 	// post requests
 	corsMux.HandleFunc("/savepost", handler.Savepost)
 	corsMux.HandleFunc("/savecomment", handler.SaveComment)
@@ -82,7 +81,8 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/send-follower-decline-request", handler.SetFollowStatusDeclined)
 	corsMux.HandleFunc("/creategroup", handler.CreateGroup)
 	corsMux.HandleFunc("/createevent", handler.CreateEvent)
-
+	corsMux.HandleFunc("/request-unfollow", handler.RequestUnfollow)
+	corsMux.HandleFunc("/request-follow", handler.RequestFollow)
 
 	log.Printf("backend is running at: http://localhost:" + port + "/\n")
 	log.Printf("frontend should be running at: http://localhost:" + "8080" + "/\n")

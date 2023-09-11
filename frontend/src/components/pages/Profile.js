@@ -19,90 +19,6 @@ function toTitleCase(str) {
   }
 }
 
-function handleFollowClick(receiverId, currentUserId, status) {
-  const followResponse = {
-    UserID: currentUserId.toString(),
-    ReceivingUserID: receiverId.toString(),
-    Status: status,
-  };
-  sendEvent("follow_user", followResponse);
-}
-
-const handleToggleClick = (userID, PrivateStatus) => {
-  const newPrivateValue = PrivateStatus === 1 ? 0 : 1;
-  fetch(`${backendHost}/update-private-status`, {
-    method: "POST",
-    body: JSON.stringify({
-      userID: userID,
-      newPrivateValue: newPrivateValue,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      response.json();
-      updateToken();
-    })
-    .catch((error) => {
-      console.error("Error updating private status:", error);
-    });
-};
-
-const handleDescriptionUpdate = (userID, newDescription) => {
-  return fetch(`${backendHost}/update-user-description`, {
-    method: "POST",
-    body: JSON.stringify({
-      userID: userID,
-      newDescription: newDescription,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      updateToken();
-      return response.json();
-    })
-    .then((data) => {
-      console.log("User description updated successfully:", data.message);
-    })
-    .catch((error) => {
-      console.error("Error updating user description:", error);
-      throw error;
-    });
-};
-
-const handleUsernameUpdate = (userID, newUsername) => {
-  return fetch(`${backendHost}/update-user-name`, {
-    method: "POST",
-    body: JSON.stringify({
-      userID: userID,
-      newUsername: newUsername,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      updateToken(true);
-      return response.json();
-    })
-    .then((data) => {
-      console.log("Username updated successfully:", data.message);
-    })
-    .catch((error) => {
-      console.error("Error updating username:", error);
-      throw error;
-    });
-};
-
 const Profile = () => {
   const isAuthorized = useAuthorization();
   console.log("isAuthorized:", isAuthorized);
@@ -120,6 +36,139 @@ const Profile = () => {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState(userInfo.UserName);
   const [originalUsername] = useState(userInfo.UserName);
+
+  function handleUnFollow(requesterID, targetID) {
+    console.log("handleunfollow", requesterID, targetID);
+
+    fetch(`${backendHost}/request-unfollow`, {
+      method: "POST",
+      body: JSON.stringify({
+        UserID: requesterID,
+        TargetID: targetID,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        console.log("response:", response);
+        if (response.ok) {
+          console.log("unfollowitud!");
+          setUserInfo((prevUserInfo) => ({
+            ...prevUserInfo,
+            FollowStatus: "",
+          }));
+        }
+      })
+      .catch((error) => {
+        console.error("Error unfollowing:", error);
+      });
+  }
+
+  function handleFollowClick(requesterID, targetID, status) {
+    console.log("handlefollow", requesterID, targetID);
+
+    fetch(`${backendHost}/request-follow`, {
+      method: "POST",
+      body: JSON.stringify({
+        UserID: requesterID,
+        TargetID: targetID,
+        Status: status,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        console.log("response:", response);
+        if (response.ok) {
+          setUserInfo((prevUserInfo) => ({
+            ...prevUserInfo,
+            FollowStatus: status,
+          }));
+        }
+      })
+      .catch((error) => {
+        console.error("Error unfollowing:", error);
+      });
+
+    // sendEvent("follow_user", followResponse); // notification
+  }
+
+  const handleToggleClick = (userID, PrivateStatus) => {
+    const newPrivateValue = PrivateStatus === 1 ? 0 : 1;
+    fetch(`${backendHost}/update-private-status`, {
+      method: "POST",
+      body: JSON.stringify({
+        userID: userID,
+        newPrivateValue: newPrivateValue,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        response.json();
+        updateToken();
+      })
+      .catch((error) => {
+        console.error("Error updating private status:", error);
+      });
+  };
+
+  const handleDescriptionUpdate = (userID, newDescription) => {
+    return fetch(`${backendHost}/update-user-description`, {
+      method: "POST",
+      body: JSON.stringify({
+        userID: userID,
+        newDescription: newDescription,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        updateToken();
+        return response.json();
+      })
+      .then((data) => {
+        console.log("User description updated successfully:", data.message);
+      })
+      .catch((error) => {
+        console.error("Error updating user description:", error);
+        throw error;
+      });
+  };
+
+  const handleUsernameUpdate = (userID, newUsername) => {
+    return fetch(`${backendHost}/update-user-name`, {
+      method: "POST",
+      body: JSON.stringify({
+        userID: userID,
+        newUsername: newUsername,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        updateToken(true);
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Username updated successfully:", data.message);
+      })
+      .catch((error) => {
+        console.error("Error updating username:", error);
+        throw error;
+      });
+  };
 
   const handleEditClick = () => {
     setIsEditingDescription(true);
@@ -235,7 +284,6 @@ const Profile = () => {
               <div>Username: {userInfo.UserName}</div>
             )}
 
-            <p className="username">Username: {userInfo.UserName}</p>
             <p className="firstname">
               Firstname: {toTitleCase(userInfo.FirstName)}
             </p>
@@ -288,13 +336,29 @@ const Profile = () => {
             )}
 
             {userInfo.FollowStatus === "following" || isLocalUser ? (
-              <p>You are following this user</p>
+              // Check if not a local user
+              !isLocalUser ? (
+                <button
+                  onClick={() => {
+                    handleUnFollow(LoggedUser.UserID, userInfo.UserID);
+                  }}
+                >
+                  Unfollow
+                </button>
+              ) : null // Render null if local user
             ) : (
               <div>
                 {userInfo.FollowStatus === "pending" ? (
                   <div className="not-friends-message">
                     You are not following this user yet.
                     <button disabled>Request pending ⏳</button>
+                    <button
+                      onClick={() => {
+                        handleUnFollow(LoggedUser.UserID, userInfo.UserID);
+                      }}
+                    >
+                      Cancel request
+                    </button>
                   </div>
                 ) : (
                   <p>
@@ -304,14 +368,10 @@ const Profile = () => {
                         let status = "following";
                         if (userInfo.PrivateStatus === 1) status = "pending";
                         handleFollowClick(
-                          userInfo.UserID,
                           LoggedUser.UserID,
+                          userInfo.UserID,
                           status
                         );
-                        setUserInfo((prevUserInfo) => ({
-                          ...prevUserInfo,
-                          FollowStatus: "pending",
-                        }));
                       }}
                       value={userInfo.UserID}
                     >

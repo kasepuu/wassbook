@@ -88,7 +88,7 @@ const Register = () => {
               required: true,
               maxLength: 20,
               minLength: 3,
-              // pattern: /^[A-Za-z]+$/i, // disallow number usage in first name
+              pattern: /^[A-Za-z]+$/, // disallow number usage in first name
             })}
           />
           <p className="ErrorMessage">
@@ -106,6 +106,7 @@ const Register = () => {
               required: true,
               maxLength: 20,
               minLength: 3,
+              pattern: /^[A-Za-z]+$/, // disallow number usage in first name
             })}
           />
           <p className="ErrorMessage">

@@ -11,10 +11,10 @@ export class Event {
 export function wsAddConnection() {
   return new Promise((resolve, reject) => {
     if (window["WebSocket"]) {
-      if (window.socket) window.socket.close();
-
-      let currentUser = JSON.parse(localStorage.getItem("CurrentUser"));
-      const ws = new WebSocket(`ws://localhost:8081/ws?UserID=${currentUser.UserID}`);
+      let currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+      const ws = new WebSocket(
+        `ws://localhost:8081/ws?UserID=${currentUser.UserID}`
+      );
 
       ws.onopen = () => {
         console.log("WebSocket Connection established!");
@@ -60,7 +60,7 @@ const functionMap = {
 function receiveNotification(data) {
   //Saab lihtsalt ++notificationCount vms siia teha või nagu real time forumis notification tehtud, päris notification teeks fetchiga eraldi kuhugi.
   const jsonString = JSON.stringify(data);
-  console.log("NEW NOTIFICATION: " + jsonString)
+  console.log("NEW NOTIFICATION: " + jsonString);
 }
 
 function followNotify() {
