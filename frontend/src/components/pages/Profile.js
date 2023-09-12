@@ -315,7 +315,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-              userInfo.UserID === LoggedUser.UserID ? (
+              userInfo.UserID === LoggedUser.UserID || userInfo.PrivateStatus === 1 && userInfo.FollowStatus === "following" ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -325,7 +325,7 @@ const Profile = () => {
                 <p className="dateJoined">Date joined: {userInfo.DateJoined}</p>
               </>
             ) : (
-              <>This profile is private!</>
+              <>This profile is PRIVATE!</>
             )}
 
             {userInfo.UserID === LoggedUser.UserID ? (
@@ -431,7 +431,7 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-          userInfo.UserID === LoggedUser.UserID ? (
+          userInfo.UserID === LoggedUser.UserID || userInfo.FollowStatus === "following" ? (
           <>
             <p>Posts by {userInfo.FirstName}:</p>
 
@@ -442,14 +442,14 @@ const Profile = () => {
                 </>
               ) : (
                 <>
-                  He must follow you back before you can see their private posts
+                  <PostsByProfile />
                 </>
               )}
             </div>
           </>
         ) : (
           <>
-            <h1>This profile is private!</h1>
+            <h1>You must follow each other to see private profile data and posts!</h1>
           </>
         )}
       </div>

@@ -97,14 +97,13 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	//if requestedBy is not friends with openedprofile then -> hidePrivateInformation(UserInfo)
-	// AND FOLLOW STATUS !!!!! TODO!
-	if UserInfo.PrivateStatus == 1 && UserInfo.UserID != loggedUserId {
-		UserInfo.Email = "Private"
-		UserInfo.DateOfBirth = nil
-		UserInfo.Description = "Private"
-		UserInfo.DateJoined = "Private"
-	}
+
+	// if UserInfo.PrivateStatus == 1 && UserInfo.UserID != loggedUserId {
+	// 	UserInfo.Email = "Private"
+	// 	UserInfo.DateOfBirth = nil
+	// 	UserInfo.Description = "Private"
+	// 	UserInfo.DateJoined = "Private"
+	// }
 
 	w.WriteHeader(http.StatusOK)
 	err := json.NewEncoder(w).Encode(UserInfo)

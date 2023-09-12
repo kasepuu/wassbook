@@ -16,11 +16,9 @@
 *
 * profile;
 
-* - user activity (kui on followed, public?) -> Using the two browsers with the users, with one of the users having a public profile and be sure not to follow him.
-Are you able to see a non-followed user public profile?
-
-
 * - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
+
+* - Kui vajutada public profiililt follow siis tekib automaatselt vastu ka follow -> Joel
 
 * - Try creating a post.
 Can you specify the type of privacy of the post (private, public, almost private)?
