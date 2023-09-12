@@ -1,5 +1,5 @@
 import "../css/Feed.css";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import profilePicture from "../page-images/blank.png";
 import { backendHost } from "../index.js";
 import { FaImage } from "react-icons/fa";
@@ -18,9 +18,32 @@ const Feed = () => {
   const [postImageName, setPostImageName] = useState("");
   const [commentImageName, setCommentImageName] = useState("");
   const [openedPostId, setOpenedPostId] = useState(null);
+  const [postPrivacy, setPostPrivacy] = useState('public');
+  const [selectedFollowers, setSelectedFollowers] = useState([]);
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
   let firstName = userInfo.FirstName;
   let lastName = userInfo.LastName;
+
+  const handlePrivacyChange = (event) => {
+    setPostPrivacy(event.target.value);
+  };
+
+  const handleFollowersChange = (event) => {
+    const { value, checked } = event.target;
+    if (checked) {
+      setSelectedFollowers([...selectedFollowers, value]);
+    } else {
+      setSelectedFollowers(selectedFollowers.filter((follower) => follower !== value));
+    }
+  };
+
+  // Sample list of followers
+  const followersList = [
+    '1',
+    '2',
+    '3',
+    // Add more followers as needed
+  ];
 
   const handleFileChange = (event, inputType) => {
     const file = event.target.files[0];
@@ -39,27 +62,8 @@ const Feed = () => {
     }
   };
 
-  useEffect(() => {
-    // Load feed data from the backend on component mount
-    loadFeed();
-
-    // close post if clicked outside any post
-    const handleClickOutsidePost = (event) => {
-      if (event.target.closest(".feed-post") === null) {
-        setOpenedPostId(null);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutsidePost);
-
-    // cleanup function to remove event listener
-    return () => {
-      document.removeEventListener("click", handleClickOutsidePost);
-    };
-  }, []);
-
-  function loadFeed() {
-    fetch(`${backendHost}/getposts`)
+  const loadFeed = useCallback(() => {
+    fetch(`${backendHost}/getposts?userID=${userInfo.UserID}`)
       .then((response) => {
         if (response.ok) {
           return response.json();
@@ -86,7 +90,26 @@ const Feed = () => {
       .catch((error) => {
         console.error("Error loading feed:", error);
       });
-  }
+  }, [userInfo.UserID, setPosts]);
+
+  useEffect(() => {
+    // Load feed data from the backend on component mount
+    loadFeed();
+
+    // close post if clicked outside any post
+    const handleClickOutsidePost = (event) => {
+      if (event.target.closest(".feed-post") === null) {
+        setOpenedPostId(null);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutsidePost);
+
+    // cleanup function to remove event listener
+    return () => {
+      document.removeEventListener("click", handleClickOutsidePost);
+    };
+  }, [loadFeed]);
 
 
   function loadComments(postID) {
@@ -142,6 +165,8 @@ const Feed = () => {
         lastName,
         content: postInputValue,
         GroupID: -1,
+        Privacy: postPrivacy, // Include the selected privacy setting
+        SelectedFollowers: postPrivacy === 'almost_private' ? selectedFollowers : [], // Include the selected followers if privacy is "Almost Private"
       };
 
       const postBodyString = JSON.stringify(postBody);
@@ -165,6 +190,8 @@ const Feed = () => {
             loadFeed();
             setPostInputValue("");
             setPostImageName(undefined);
+            setPostPrivacy('public'); // Reset post privacy to 'public'
+            setSelectedFollowers([]); // Clear selected followers
           } else {
             console.error("Error saving post!");
           }
@@ -243,19 +270,74 @@ const Feed = () => {
               value={postInputValue}
               onChange={(e) => handleInputChange(e, 'post')}
             ></input>
+
+            {/* Add a dropdown for post privacy */}
+            <div className="privacy-selection">
+              <label>
+                <input
+                  type="radio"
+                  name="privacy"
+                  value="public"
+                  checked={postPrivacy === 'public'}
+                  onChange={handlePrivacyChange}
+                />
+                Public
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="privacy"
+                  value="private"
+                  checked={postPrivacy === 'private'}
+                  onChange={handlePrivacyChange}
+                />
+                Private
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="privacy"
+                  value="almost_private"
+                  checked={postPrivacy === 'almost_private'}
+                  onChange={handlePrivacyChange}
+                />
+                Almost Private
+              </label>
+            </div>
+
+            {/* Show follower selection when "Almost Private" is chosen */}
+            {postPrivacy === 'almost_private' && (
+              <div className="follower-selection">
+                <label>
+                  Select followers who can see this post:
+                  {followersList.map((follower) => (
+                    <div key={follower}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          value={follower}
+                          checked={selectedFollowers.includes(follower)}
+                          onChange={handleFollowersChange}
+                        />
+                        {follower}
+                      </label>
+                    </div>
+                  ))}
+                </label>
+              </div>
+            )}
+
             <input
               type="file"
               accept="image/*"
               onChange={(e) => handleFileChange(e, 'post')}
-              style={{ display: "none" }}
-              ref={postFileInputRef} // Use the useRef hook to get a reference to the input element
+              style={{ display: 'none' }}
+              ref={postFileInputRef}
             />
             <button
               type="button"
               className="file-upload-button"
-
               onClick={() => {
-                console.log("Button clicked"); // Add this line for debugging
                 postFileInputRef.current && postFileInputRef.current.click();
               }}
             >
@@ -269,17 +351,17 @@ const Feed = () => {
                   const file = e.dataTransfer.files[0];
                   setSelectedPostFile(file);
                   setPostImageName(file.name);
-                  setCommentImageName(undefined)
+                  setCommentImageName(undefined);
                 }}
               >
                 {postImageName
                   ? `Selected image: ${postImageName}`
-                  : "Drag and drop an image or click here to select one."}
+                  : 'Drag and drop an image or click here to select one.'}
               </div>
             </button>
-
           </form>
         </div>
+
 
         <div className="feed-posts" id="feed-posts">
           {posts.map((post, index) => (

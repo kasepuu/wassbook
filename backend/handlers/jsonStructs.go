@@ -30,14 +30,16 @@ type PublicUserInfo struct {
 }
 
 type PostForm struct {
-	PostID           int    `json:"PostID"`
-	OriginalPosterID int    `json:"UserID"`
-	FirstName        string `json:"FirstName"`
-	LastName         string `json:"LastName"`
-	Date             string
-	Content          string `json:"Content"`
-	GroupID          int    `json:"GroupID"`
-	Filename         string
+	PostID            int    `json:"PostID"`
+	OriginalPosterID  int    `json:"UserID"`
+	FirstName         string `json:"FirstName"`
+	LastName          string `json:"LastName"`
+	Date              string
+	Content           string   `json:"Content"`
+	GroupID           int      `json:"GroupID"`
+	Privacy           string   `json:"Privacy"`
+	SelectedFollowers []string `json:"SelectedFollowers"`
+	Filename          string
 }
 
 type CommentForm struct {

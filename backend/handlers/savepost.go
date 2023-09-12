@@ -112,16 +112,9 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Insert the data into the database
-	statement, errS := sqlDB.DataBase.Prepare("INSERT INTO posts (userId, fname, lname, date, content, groupId, filename) VALUES (?,?,?,?,?,?,?)")
-	if errS != nil {
-		log.Println("SQL preparation error:", errS)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal issue, please try again later!"))
-		return
-	}
-	defer statement.Close()
 
-	_, errExec := statement.Exec(
+	statement := `INSERT INTO posts (userId, fname, lname, date, content, groupId, filename, privacy) VALUES (?,?,?,?,?,?,?,?)`
+	id, errExec := sqlDB.DataBase.Exec(statement,
 		PostData.OriginalPosterID,
 		PostData.FirstName,
 		PostData.LastName,
@@ -129,12 +122,43 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 		PostData.Content,
 		PostData.GroupID,
 		PostData.Filename,
+		PostData.Privacy,
 	)
+	postId, err := id.LastInsertId()
+	if err != nil {
+		log.Println(err)
+	}
 	if errExec != nil {
 		log.Println("SQL execution error:", errExec)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Internal issue, please try again later!"))
 		return
+	}
+
+	if len(PostData.SelectedFollowers) != 0 {
+		var arrayFollowersId []int
+		for _, value := range PostData.SelectedFollowers {
+			if value != "" {
+				num, err := strconv.Atoi(value)
+				if err != nil {
+					log.Println(err)
+					return
+				}
+				arrayFollowersId = append(arrayFollowersId, num)
+			}
+		}
+
+		for _, selectedUserId := range arrayFollowersId {
+			statement := `INSERT INTO privatePosts (postId, userId) VALUES (?, ?)`
+			_, err = sqlDB.DataBase.Exec(statement, postId, selectedUserId)
+
+			if err != nil {
+				log.Println(err)
+			}
+		}
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	w.WriteHeader(http.StatusOK)

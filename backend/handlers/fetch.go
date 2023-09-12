@@ -117,15 +117,31 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func FetchPosts(w http.ResponseWriter, r *http.Request) {
-	rows, err := sqlDB.DataBase.Query("SELECT * FROM posts") // Adjust the query according to your table structure
+	/* rows, err := sqlDB.DataBase.Query("SELECT * FROM posts") // Adjust the query according to your table structure
 	if err != nil {
 		log.Println("Error querying posts:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Internal issue, please try again later!"))
 		return
 	}
-	defer rows.Close()
+	defer rows.Close() */
+	currentUserId := r.URL.Query().Get("userID")
 
+	stmt := `
+	SELECT DISTINCT p.*
+	FROM posts AS p
+	LEFT JOIN (
+	  SELECT DISTINCT id, targetid
+	  FROM followers
+	  WHERE userId = ? AND status = 'following'
+	) AS f ON p.userid = f.targetId
+	WHERE p.privacy = 'public' OR (p.privacy = 'private' AND f.id IS NOT NULL) OR (p.privacy = 'private' AND p.userId = ?);`
+
+	rows, err := sqlDB.DataBase.Query(stmt, currentUserId, currentUserId)
+	if err != nil {
+		log.Fatalf("Err: %s", err)
+	}
+	defer rows.Close()
 	var posts []PostForm
 	for rows.Next() {
 		var post PostForm
@@ -138,14 +154,13 @@ func FetchPosts(w http.ResponseWriter, r *http.Request) {
 			&post.Content,
 			&post.GroupID,
 			&post.Filename,
+			&post.Privacy,
 		)
 		if err != nil {
-			log.Println("Error scanning row:", err)
-			continue
+			log.Fatalf("Err: %s", err)
 		}
 		posts = append(posts, post)
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
 }
