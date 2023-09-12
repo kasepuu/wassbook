@@ -45,7 +45,9 @@ func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		http.Error(w, "Image not found", http.StatusNotFound)
+		if len(parts) == 4 {
+			http.Error(w, "Image not found", http.StatusNotFound)
+		}
 		return
 	}
 	defer imageFile.Close()
