@@ -3,7 +3,8 @@
   flex: 3;
   background-color: #e7e7e7;
   display: flex;
-  flex-direction: column; /* column layout */
+  flex-direction: column;
+  /* column layout */
 }
 
 .profile-container p {
@@ -47,4 +48,7 @@
   flex-direction: column;
   align-items: center; /* To center the items horizontally */
   text-align: center; /* To center the text within the container */
+}
+.profile-container h1 {
+  color: black;
 }

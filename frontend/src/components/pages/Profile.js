@@ -37,8 +37,12 @@ const Profile = () => {
   const [isEditingProfilepic, setIsEditingProfilepic] = useState(false);
   const [newUsername, setNewUsername] = useState(userInfo.UserName);
   const [originalUsername] = useState(userInfo.UserName);
+<<<<<<< HEAD
   const profilepicFileInputRef = useRef(null);
   const [profilePicUrl, setProfilePicUrl] = useState(`${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`);
+=======
+  const [error, setError] = useState("");
+>>>>>>> d14e4214cc9694bcc758b28e3345a483da743abc
 
   function handleUnFollow(requesterID, targetID) {
     console.log("handleunfollow", requesterID, targetID);
@@ -203,6 +207,14 @@ const Profile = () => {
   };
 
   const handleUsernameSaveClick = () => {
+
+    if (newUsername === undefined || newUsername === "") {
+      setError("Username must be at least 3 characters long");
+      return;
+    } else {
+      setError(""); // Clear the error message if the length is valid
+    }
+
     handleUsernameUpdate(userInfo.UserID, newUsername)
       .then(() => {
         console.log("Username updated successfully");
@@ -216,7 +228,6 @@ const Profile = () => {
         console.error("Error updating username:", error);
       });
     setIsEditingUsername(false);
-    // refreshToken();
   };
 
   const handleProfilepicCancelClick = () => {
@@ -259,6 +270,18 @@ const Profile = () => {
   const handleUsernameCancelClick = () => {
     setNewUsername(originalUsername);
     setIsEditingUsername(false);
+  };
+
+  const handleUsernameChange = (e) => {
+    const inputValue = e.target.value;
+    setNewUsername(inputValue);
+
+    if (inputValue.length < 3) {
+      setError("Username must be at least 3 characters long");
+    } else {
+      setError(""); // Clear the error message if the length is valid
+    }
+
   };
 
   useEffect(() => {
@@ -347,10 +370,14 @@ const Profile = () => {
                   Username:
                   {isEditingUsername ? (
                     <div>
-                      <input
-                        value={newUsername}
-                        onChange={(e) => setNewUsername(e.target.value)}
-                      />
+                      <div>
+                        <input
+                          type="text"
+                          value={newUsername}
+                          onChange={handleUsernameChange}
+                        />
+                        {error && <div style={{ color: "red" }}>{error}</div>}
+                      </div>
                       <div>
                         <button onClick={handleUsernameSaveClick}>Save</button>
                         <button onClick={handleUsernameCancelClick}>
@@ -378,7 +405,11 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
+<<<<<<< HEAD
               userInfo.UserID === LoggedUser.UserID ? (
+=======
+              userInfo.UserID === LoggedUser.UserID || userInfo.PrivateStatus === 1 && userInfo.FollowStatus === "following" ? (
+>>>>>>> d14e4214cc9694bcc758b28e3345a483da743abc
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -388,7 +419,7 @@ const Profile = () => {
                 <p className="dateJoined">Date joined: {userInfo.DateJoined}</p>
               </>
             ) : (
-              <>This profile is private!</>
+              <>This profile is PRIVATE!</>
             )}
 
             {userInfo.UserID === LoggedUser.UserID ? (
@@ -494,7 +525,11 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
+<<<<<<< HEAD
           userInfo.UserID === LoggedUser.UserID ? (
+=======
+          userInfo.UserID === LoggedUser.UserID || userInfo.FollowStatus === "following" ? (
+>>>>>>> d14e4214cc9694bcc758b28e3345a483da743abc
           <>
             <p>Posts by {userInfo.FirstName}:</p>
             <div className="profile-posts">
@@ -505,14 +540,14 @@ const Profile = () => {
                 </>
               ) : (
                 <>
-                  He must follow you back before you can see their private posts
+                  <PostsByProfile />
                 </>
               )}
             </div>
           </>
         ) : (
           <>
-            <h1>This profile is private!</h1>
+            <h1>You must follow each other to see private profile data and posts!</h1>
           </>
         )}
       </div>
