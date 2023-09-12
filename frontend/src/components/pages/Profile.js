@@ -39,7 +39,6 @@ const Profile = () => {
   const [originalUsername] = useState(userInfo.UserName);
   const profilepicFileInputRef = useRef(null);
   const [profilePicUrl, setProfilePicUrl] = useState(`${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`);
-  const [error, setError] = useState("");
 
   function handleUnFollow(requesterID, targetID) {
     console.log("handleunfollow", requesterID, targetID);
@@ -204,14 +203,6 @@ const Profile = () => {
   };
 
   const handleUsernameSaveClick = () => {
-
-    if (newUsername === undefined || newUsername === "" || newUsername.length < 3) {
-      setError("Username must be at least 3 characters long");
-      return;
-    } else {
-      setError(""); // Clear the error message if the length is valid
-    }
-
     handleUsernameUpdate(userInfo.UserID, newUsername)
       .then(() => {
         console.log("Username updated successfully");
@@ -225,6 +216,7 @@ const Profile = () => {
         console.error("Error updating username:", error);
       });
     setIsEditingUsername(false);
+    // refreshToken();
   };
 
   const handleProfilepicCancelClick = () => {
@@ -267,18 +259,6 @@ const Profile = () => {
   const handleUsernameCancelClick = () => {
     setNewUsername(originalUsername);
     setIsEditingUsername(false);
-  };
-
-  const handleUsernameChange = (e) => {
-    const inputValue = e.target.value;
-    setNewUsername(inputValue);
-
-    if (inputValue.length < 3) {
-      setError("Username must be at least 3 characters long");
-    } else {
-      setError(""); // Clear the error message if the length is valid
-    }
-
   };
 
   useEffect(() => {
@@ -333,7 +313,7 @@ const Profile = () => {
             // Render a loading message or spinner while waiting for userInfo
             <div>Loading profile picture...</div>
           )}
-          {isEditingProfilepic ? (
+          {isLocalUser ? (<>{isEditingProfilepic ? (
             <div>
               <input
                 type="file"
@@ -359,7 +339,8 @@ const Profile = () => {
             <div>
               <button onClick={handleProfilepicEditClick}>Edit</button>
             </div>
-          )}
+          )}</>) : (<></>)}
+
           <div className="profile-info">
             {userInfo.UserID === LoggedUser.UserID ? (
               <>
@@ -367,14 +348,10 @@ const Profile = () => {
                   Username:
                   {isEditingUsername ? (
                     <div>
-                      <div>
-                        <input
-                          type="text"
-                          value={newUsername}
-                          onChange={handleUsernameChange}
-                        />
-                        {error && <div style={{ color: "red" }}>{error}</div>}
-                      </div>
+                      <input
+                        value={newUsername}
+                        onChange={(e) => setNewUsername(e.target.value)}
+                      />
                       <div>
                         <button onClick={handleUsernameSaveClick}>Save</button>
                         <button onClick={handleUsernameCancelClick}>
@@ -402,7 +379,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-              userInfo.UserID === LoggedUser.UserID || userInfo.PrivateStatus === 1 && userInfo.FollowStatus === "following" ? (
+              userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -412,7 +389,7 @@ const Profile = () => {
                 <p className="dateJoined">Date joined: {userInfo.DateJoined}</p>
               </>
             ) : (
-              <>This profile is PRIVATE!</>
+              <>This profile is private!</>
             )}
 
             {userInfo.UserID === LoggedUser.UserID ? (
@@ -518,7 +495,7 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-          userInfo.UserID === LoggedUser.UserID || userInfo.FollowStatus === "following" ? (
+          userInfo.UserID === LoggedUser.UserID ? (
           <>
             <p>Posts by {userInfo.FirstName}:</p>
             <div className="profile-posts">
@@ -529,15 +506,14 @@ const Profile = () => {
                 </>
               ) : (
                 <>
-                  <PostsByProfile
-                    profilepic={`${profilePicUrl}?timestamp=${Date.now()}`} />
+                  He must follow you back before you can see their private posts
                 </>
               )}
             </div>
           </>
         ) : (
           <>
-            <h1>You must follow each other to see private profile data and posts!</h1>
+            <h1>This profile is private!</h1>
           </>
         )}
       </div>
