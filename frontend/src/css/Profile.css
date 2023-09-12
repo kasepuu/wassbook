@@ -42,3 +42,9 @@
   flex: 1;
   overflow-y: auto;
 }
+.profile-pic-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* To center the items horizontally */
+  text-align: center; /* To center the text within the container */
+}

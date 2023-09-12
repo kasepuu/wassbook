@@ -3,8 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
@@ -246,6 +249,78 @@ func UpdateUserNameHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to update user description", http.StatusInternalServerError)
 		return
+	}
+
+	response := map[string]string{"message": "User description updated successfully"}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+func UpdateProfilePictureHandler(w http.ResponseWriter, r *http.Request) {
+	userID := r.URL.Query().Get("userid")
+	err := r.ParseMultipartForm(10 << 20) // Limit the file size to 10MB
+	if err != nil {
+		log.Println("Error parsing multipart form:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("File size too big!"))
+		return
+	}
+	file, handler, err := r.FormFile("file")
+	fileName := handler.Filename
+	fileExt := filepath.Ext(fileName)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal issue, please try again later!"))
+		return
+	} else {
+		defer file.Close()
+
+		// Construct the image directory for the user
+		imageDir := filepath.Join("backend/users", userID+"/profilepic")
+		err = os.MkdirAll(imageDir, os.ModePerm) // Create the directory if it doesn't exist
+		if err != nil {
+			log.Println("Error creating images directory:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal issue, please try again later!"))
+			return
+		}
+		// Remove all files in the user's directory
+		files, err := os.ReadDir(imageDir)
+		if err != nil {
+			log.Println("Error reading user's image directory:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal issue, please try again later!"))
+			return
+		}
+		for _, f := range files {
+			err := os.Remove(filepath.Join(imageDir, f.Name()))
+			if err != nil {
+				log.Println("Error deleting existing file:", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				w.Write([]byte("Internal issue, please try again later!"))
+				return
+			}
+		}
+
+		// Save the new image to the specified location
+
+		imagePath := filepath.Join(imageDir, "profilepic"+fileExt)
+		f, err := os.Create(imagePath)
+		if err != nil {
+			log.Println("Error creating image file:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal issue, please try again later!"))
+			return
+		}
+		defer f.Close()
+
+		_, err = io.Copy(f, file)
+		if err != nil {
+			log.Println("Error copying image file:", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal issue, please try again later!"))
+			return
+		}
 	}
 
 	response := map[string]string{"message": "User description updated successfully"}

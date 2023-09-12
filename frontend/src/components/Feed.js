@@ -291,7 +291,7 @@ const Feed = () => {
             >
               <div className="post-header">
                 <img
-                  src={profilePicture}
+                  src={`${backendHost}/users/${post.userID}/profilepic/profilepic?timestamp=${Date.now()}`} onError={(e) => { e.target.onError = null; e.target.src = profilePicture }}
                   alt="Profile"
                   className="profile-picture"
                 />
@@ -350,7 +350,7 @@ const Feed = () => {
                       >
                         <div className="post-header">
                           <img
-                            src={profilePicture}
+                            src={`${backendHost}/users/${comment.userID}/profilepic/profilepic?timestamp=${Date.now()}`} onError={(e) => { e.target.onError = null; e.target.src = profilePicture }}
                             alt="Profile"
                             className="profile-picture"
                           />

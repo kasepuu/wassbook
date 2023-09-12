@@ -5,7 +5,7 @@ import "../../css/Profile.css";
 import profilePicture from "../../page-images/blank.png";
 import { useParams } from "react-router-dom";
 import { backendHost } from "../..";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import PostsByProfile from "../PostsByProfile";
 import { sendEvent } from "../../websocket.js";
 import { useAuthorization } from "../Authorization";
@@ -34,8 +34,11 @@ const Profile = () => {
   const [newDescription, setNewDescription] = useState(userInfo.Description);
   const [originalDescription] = useState(userInfo.Description);
   const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [isEditingProfilepic, setIsEditingProfilepic] = useState(false);
   const [newUsername, setNewUsername] = useState(userInfo.UserName);
   const [originalUsername] = useState(userInfo.UserName);
+  const profilepicFileInputRef = useRef(null);
+  const [profilePicUrl, setProfilePicUrl] = useState(`${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`);
 
   function handleUnFollow(requesterID, targetID) {
     console.log("handleunfollow", requesterID, targetID);
@@ -216,6 +219,43 @@ const Profile = () => {
     // refreshToken();
   };
 
+  const handleProfilepicCancelClick = () => {
+    setIsEditingProfilepic(false);
+  };
+
+  const handleProfilepicEditClick = () => {
+    setIsEditingProfilepic(true);
+  };
+
+  const handleProfilepicSaveClick = (event) => {
+    event.preventDefault();
+
+    // Check if a file is selected
+    if (profilepicFileInputRef.current.files.length > 0) {
+      const formData = new FormData();
+      formData.append("file", profilepicFileInputRef.current.files[0]); // Append the first selected file to the form data
+      fetch(`${backendHost}/update-profile-picture/?userid=${userInfo.UserID}`, {
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("Profile picture saved successfully!");
+            setIsEditingProfilepic(false);
+            setProfilePicUrl(`${backendHost}/users/${userInfo.UserID}/profilepic/profilepic?timestamp=${Date.now()}`);
+          } else {
+            console.error("Error saving profile picture!");
+          }
+        })
+        .catch((error) => {
+          console.error("Error saving profile picture:", error);
+        });
+    } else {
+      console.error("No file selected.");
+    }
+  };
+
+
   const handleUsernameCancelClick = () => {
     setNewUsername(originalUsername);
     setIsEditingUsername(false);
@@ -245,6 +285,13 @@ const Profile = () => {
     }
     fetchProfileData();
   }, [id, LoggedUser.UserName]);
+  useEffect(() => {
+    // Check if userInfo is available and not undefined
+    if (userInfo !== undefined) {
+      // Set the profilePicUrl when userInfo becomes available
+      setProfilePicUrl(`${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`);
+    }
+  }, [userInfo]); // Watch for changes in userInfo
 
   return (
     <>
@@ -252,7 +299,47 @@ const Profile = () => {
       <Sidebar />
       <div className="profile-container">
         <div className="profile-info-container">
-          <img src={profilePicture} alt="Profile" className="profilepic" />
+          {profilePicUrl !== null ? (
+            // Use profilePicUrl as the source for the img element once it's available
+            <img
+              src={`${profilePicUrl}?timestamp=${Date.now()}`}
+              className="profilepic"
+              onError={(e) => {
+                e.target.onError = null;
+                e.target.src = profilePicture;
+              }}
+            />
+          ) : (
+            // Render a loading message or spinner while waiting for userInfo
+            <div>Loading profile picture...</div>
+          )}
+          {isEditingProfilepic ? (
+            <div>
+              <input
+                type="file"
+                accept="image/*"
+
+                ref={profilepicFileInputRef}
+                className="hidden-file-input"
+              />
+              <button
+                type="button"
+                onClick={() => profilepicFileInputRef.current.click()}
+              >
+                pilt
+              </button>
+              <div>
+                <button onClick={handleProfilepicSaveClick}>Save</button>
+                <button onClick={handleProfilepicCancelClick}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <button onClick={handleProfilepicEditClick}>Edit</button>
+            </div>
+          )}
           <div className="profile-info">
             {userInfo.UserID === LoggedUser.UserID ? (
               <>
@@ -291,7 +378,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-            userInfo.UserID === LoggedUser.UserID ? (
+              userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -407,14 +494,14 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-        userInfo.UserID === LoggedUser.UserID ? (
+          userInfo.UserID === LoggedUser.UserID ? (
           <>
             <p>Posts by {userInfo.FirstName}:</p>
-
             <div className="profile-posts">
               {userInfo.FollowStatus === "following" || isLocalUser ? (
                 <>
-                  <PostsByProfile />
+                  <PostsByProfile
+                    profilepic={`${profilePicUrl}?timestamp=${Date.now()}`} />
                 </>
               ) : (
                 <>
