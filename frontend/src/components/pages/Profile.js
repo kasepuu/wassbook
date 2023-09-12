@@ -37,12 +37,9 @@ const Profile = () => {
   const [isEditingProfilepic, setIsEditingProfilepic] = useState(false);
   const [newUsername, setNewUsername] = useState(userInfo.UserName);
   const [originalUsername] = useState(userInfo.UserName);
-<<<<<<< HEAD
   const profilepicFileInputRef = useRef(null);
   const [profilePicUrl, setProfilePicUrl] = useState(`${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`);
-=======
   const [error, setError] = useState("");
->>>>>>> d14e4214cc9694bcc758b28e3345a483da743abc
 
   function handleUnFollow(requesterID, targetID) {
     console.log("handleunfollow", requesterID, targetID);
@@ -208,7 +205,7 @@ const Profile = () => {
 
   const handleUsernameSaveClick = () => {
 
-    if (newUsername === undefined || newUsername === "") {
+    if (newUsername === undefined || newUsername === "" || newUsername.length < 3) {
       setError("Username must be at least 3 characters long");
       return;
     } else {
@@ -405,11 +402,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-<<<<<<< HEAD
-              userInfo.UserID === LoggedUser.UserID ? (
-=======
               userInfo.UserID === LoggedUser.UserID || userInfo.PrivateStatus === 1 && userInfo.FollowStatus === "following" ? (
->>>>>>> d14e4214cc9694bcc758b28e3345a483da743abc
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -525,11 +518,7 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-<<<<<<< HEAD
-          userInfo.UserID === LoggedUser.UserID ? (
-=======
           userInfo.UserID === LoggedUser.UserID || userInfo.FollowStatus === "following" ? (
->>>>>>> d14e4214cc9694bcc758b28e3345a483da743abc
           <>
             <p>Posts by {userInfo.FirstName}:</p>
             <div className="profile-posts">
@@ -540,7 +529,8 @@ const Profile = () => {
                 </>
               ) : (
                 <>
-                  <PostsByProfile />
+                  <PostsByProfile
+                    profilepic={`${profilePicUrl}?timestamp=${Date.now()}`} />
                 </>
               )}
             </div>
