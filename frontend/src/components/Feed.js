@@ -1,66 +1,21 @@
 import "../css/Feed.css";
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import profilePicture from "../page-images/blank.png";
+import React, { useState, useEffect, useCallback } from "react";
 import { backendHost } from "../index.js";
-import { FaImage } from "react-icons/fa";
 import { useAuthorization } from "./Authorization";
+import FeedPostForm from "./FeedPostForm";
+import FeedPost from "./FeedPost";
+
 
 const Feed = () => {
   useAuthorization();
-  const [postInputValue, setPostInputValue] = useState("");
-  const [commentInputValue, setCommentInputValue] = useState("");
+
+  const [openedPostId, setOpenedPostId] = useState(null);
+  const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
-  const [selectedPostFile, setSelectedPostFile] = useState(null);
-  const [selectedCommentFile, setSelectedCommentFile] = useState(null);
-  const postFileInputRef = useRef(null);
-  const commentFileInputRef = useRef(null);
-  const [postImageName, setPostImageName] = useState("");
   const [commentImageName, setCommentImageName] = useState("");
-  const [openedPostId, setOpenedPostId] = useState(null);
-  const [postPrivacy, setPostPrivacy] = useState('public');
-  const [selectedFollowers, setSelectedFollowers] = useState([]);
-  const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
-  let firstName = userInfo.FirstName;
-  let lastName = userInfo.LastName;
+  const [commentInputValue, setCommentInputValue] = useState("");
 
-  const handlePrivacyChange = (event) => {
-    setPostPrivacy(event.target.value);
-  };
-
-  const handleFollowersChange = (event) => {
-    const { value, checked } = event.target;
-    if (checked) {
-      setSelectedFollowers([...selectedFollowers, value]);
-    } else {
-      setSelectedFollowers(selectedFollowers.filter((follower) => follower !== value));
-    }
-  };
-
-  // Sample list of followers
-  const followersList = [
-    '1',
-    '2',
-    '3',
-    // Add more followers as needed
-  ];
-
-  const handleFileChange = (event, inputType) => {
-    const file = event.target.files[0];
-    if (file === undefined) {
-      setPostImageName(undefined);
-      return;
-    }
-    if (inputType === 'post') {
-      setSelectedPostFile(file);
-      setPostImageName(file.name);
-      setCommentImageName(undefined)
-    } else if (inputType === 'comment') {
-      setSelectedCommentFile(file);
-      setCommentImageName(file.name);
-      setPostImageName(undefined)
-    }
-  };
 
   const loadFeed = useCallback(() => {
     fetch(`${backendHost}/getposts?userID=${userInfo.UserID}`)
@@ -146,106 +101,6 @@ const Feed = () => {
       });
   }
 
-
-  const handleInputChange = (event, inputType) => {
-    if (inputType === 'post') {
-      setPostInputValue(event.target.value);
-    } else if (inputType === 'comment') {
-      setCommentInputValue(event.target.value);
-    }
-  };
-
-  const handlePostFormSubmit = (event) => {
-    event.preventDefault();
-
-    if (postInputValue.trim() !== "") {
-      const postBody = {
-        userID: userInfo.UserID,
-        firstName,
-        lastName,
-        content: postInputValue,
-        GroupID: -1,
-        Privacy: postPrivacy, // Include the selected privacy setting
-        SelectedFollowers: postPrivacy === 'almost_private' ? selectedFollowers : [], // Include the selected followers if privacy is "Almost Private"
-      };
-
-      const postBodyString = JSON.stringify(postBody);
-      const blob = new Blob([postBodyString], {
-        type: "application/json",
-      });
-
-      const formData = new FormData();
-      if (postImageName !== undefined) {
-        formData.append("file", selectedPostFile); // Append the image file to the form data
-      }
-      formData.append("content", blob); // Append the text content to the form data
-
-      fetch(`${backendHost}/savepost`, {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => {
-          if (response.ok) {
-            console.log("Post saved successfully!");
-            loadFeed();
-            setPostInputValue("");
-            setPostImageName(undefined);
-            setPostPrivacy('public'); // Reset post privacy to 'public'
-            setSelectedFollowers([]); // Clear selected followers
-          } else {
-            console.error("Error saving post!");
-          }
-        })
-        .catch((error) => {
-          console.error("Error saving post:", error);
-        });
-    }
-  };
-
-  const handleCommentFormSubmit = (event) => {
-    event.preventDefault();
-
-    if (commentInputValue.trim() !== "") {
-
-      const commentBody = {
-        userID: userInfo.UserID,
-        firstName,
-        lastName,
-        content: commentInputValue,
-        PostID: openedPostId,
-      };
-
-      const commentBodyString = JSON.stringify(commentBody);
-      const blob = new Blob([commentBodyString], {
-        type: "application/json",
-      });
-
-      const formData = new FormData();
-      if (commentImageName !== undefined) {
-        formData.append("file", selectedCommentFile); // Append the image file to the form data
-      }
-      formData.append("content", blob); // Append the text content to the form data
-
-      fetch(`${backendHost}/savecomment`, {
-        method: "POST",
-        body: formData,
-      })
-        .then((response) => {
-          if (response.ok) {
-            console.log("Comment saved successfully!");
-            loadComments(openedPostId);
-            setCommentInputValue("");
-            setCommentImageName(undefined);
-          } else {
-            console.error("Error saving comment!");
-          }
-        })
-        .catch((error) => {
-          console.error("Error saving post:", error);
-        });
-    }
-  };
-
   const handlePostClick = (post) => {
     if (openedPostId !== post.id) {
       setOpenedPostId(post.id);
@@ -261,200 +116,22 @@ const Feed = () => {
   if (isAuthorized) {
     return (
       <div className="Feed">
-        <div className="feed-container">
-          <form onSubmit={handlePostFormSubmit}>
-            <input
-              type="text"
-              placeholder={`What's on your mind, ${firstName}?`}
-              className="NewPost"
-              value={postInputValue}
-              onChange={(e) => handleInputChange(e, 'post')}
-            ></input>
-
-            {/* Add a dropdown for post privacy */}
-            <div className="privacy-selection">
-              <label>
-                <input
-                  type="radio"
-                  name="privacy"
-                  value="public"
-                  checked={postPrivacy === 'public'}
-                  onChange={handlePrivacyChange}
-                />
-                Public
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="privacy"
-                  value="private"
-                  checked={postPrivacy === 'private'}
-                  onChange={handlePrivacyChange}
-                />
-                Private
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="privacy"
-                  value="almost_private"
-                  checked={postPrivacy === 'almost_private'}
-                  onChange={handlePrivacyChange}
-                />
-                Almost Private
-              </label>
-            </div>
-
-            {/* Show follower selection when "Almost Private" is chosen */}
-            {postPrivacy === 'almost_private' && (
-              <div className="follower-selection">
-                <label>
-                  Select followers who can see this post:
-                  {followersList.map((follower) => (
-                    <div key={follower}>
-                      <label>
-                        <input
-                          type="checkbox"
-                          value={follower}
-                          checked={selectedFollowers.includes(follower)}
-                          onChange={handleFollowersChange}
-                        />
-                        {follower}
-                      </label>
-                    </div>
-                  ))}
-                </label>
-              </div>
-            )}
-
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleFileChange(e, 'post')}
-              style={{ display: 'none' }}
-              ref={postFileInputRef}
-            />
-            <button
-              type="button"
-              className="file-upload-button"
-              onClick={() => {
-                postFileInputRef.current && postFileInputRef.current.click();
-              }}
-            >
-              <div
-                className="DragDropArea"
-                onDragOver={(e) => {
-                  e.preventDefault();
-                }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const file = e.dataTransfer.files[0];
-                  setSelectedPostFile(file);
-                  setPostImageName(file.name);
-                  setCommentImageName(undefined);
-                }}
-              >
-                {postImageName
-                  ? `Selected image: ${postImageName}`
-                  : 'Drag and drop an image or click here to select one.'}
-              </div>
-            </button>
-          </form>
-        </div>
-
-
-        <div className="feed-posts" id="feed-posts">
-          {posts.map((post, index) => (
-            <div
-              key={index}
-              id={`post-${post.id}`}
-              className="feed-post"
-              onClick={() => handlePostClick(post)}
-            >
-              <div className="post-header">
-                <img
-                  src={`${backendHost}/users/${post.userID}/profilepic/profilepic?timestamp=${Date.now()}`} onError={(e) => { e.target.onError = null; e.target.src = profilePicture }}
-                  alt="Profile"
-                  className="profile-picture"
-                />
-                <div className="post-title">{post.title}</div>
-              </div>
-              <div className="post-body">{post.body}</div>
-              {post.file !== "-" || post.file === undefined ? (
-                <img
-                  src={`${backendHost}/users/${post.userID}/${post.file}`}
-                  alt="Post"
-                  className="image-content"
-                />
-              ) : null}
-
-              {openedPostId === post.id && (
-                <div className="post-overlay">
-                  <div className="post-commentbox">
-                    <form onSubmit={handleCommentFormSubmit}>
-                      <div className="comment-input-wrapper">
-                        <div className="comment-input-container">
-                          <input
-                            type="text"
-                            placeholder={`Write a comment...`}
-                            className="NewComment"
-                            value={commentInputValue}
-                            onChange={(e) => handleInputChange(e, 'comment')}
-                          />
-                          <button
-                            type="button"
-                            className="file-upload-button"
-                            onClick={() => commentFileInputRef.current.click()}
-                          >
-                            <FaImage />
-                          </button>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => handleFileChange(e, 'comment')}
-                            ref={commentFileInputRef}
-                            className="hidden-file-input"
-                          />
-                          {commentImageName
-                            ? `Selected image: ${commentImageName}`
-                            : "Click here to select image."}
-                        </div>
-                        <button type="submit" className="comment-input-button">
-                          Post comment
-                        </button>
-                      </div>
-                    </form>
-                    {comments.map((comment, index) => (
-                      <div
-                        key={index}
-                        id={`comment-${comment.id}`}
-                        className="feed-post"
-                      >
-                        <div className="post-header">
-                          <img
-                            src={`${backendHost}/users/${comment.userID}/profilepic/profilepic?timestamp=${Date.now()}`} onError={(e) => { e.target.onError = null; e.target.src = profilePicture }}
-                            alt="Profile"
-                            className="profile-picture"
-                          />
-                          <div className="post-title">{comment.title}</div>
-                        </div>
-                        <div className="post-body">{comment.body}</div>
-                        {comment.file !== "-" || comment.file === undefined ? (
-                          <img
-                            src={`${backendHost}/users/${comment.userID}/${comment.file}`}
-                            {...console.log(comment)}
-                            alt="Post"
-                            className="image-content"
-                          />
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+        <FeedPostForm
+          userInfo={userInfo}
+          loadFeed={loadFeed}
+        />
+        <FeedPost
+          handlePostClick={handlePostClick}
+          openedPostId={openedPostId}
+          userInfo={userInfo}
+          loadComments={loadComments}
+          posts={posts}
+          comments={comments}
+          commentImageName={commentImageName}
+          setCommentImageName={setCommentImageName}
+          commentInputValue={commentInputValue}
+          setCommentInputValue={setCommentInputValue}
+        />
       </div>
     );
   }
