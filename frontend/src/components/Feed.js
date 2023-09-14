@@ -5,17 +5,14 @@ import { useAuthorization } from "./Authorization";
 import FeedPostForm from "./FeedPostForm";
 import FeedPost from "./FeedPost";
 
-
 const Feed = () => {
   useAuthorization();
-
   const [openedPostId, setOpenedPostId] = useState(null);
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [commentImageName, setCommentImageName] = useState("");
   const [commentInputValue, setCommentInputValue] = useState("");
-
 
   const loadFeed = useCallback(() => {
     fetch(`${backendHost}/getposts?userID=${userInfo.UserID}`)
@@ -68,7 +65,6 @@ const Feed = () => {
 
 
   function loadComments(postID) {
-    // Construct the URL with the postID as a query parameter
     const url = `${backendHost}/getcomments?postID=${postID}`;
 
     fetch(url)
@@ -97,7 +93,7 @@ const Feed = () => {
         setComments(commentsArray.reverse());
       })
       .catch((error) => {
-        console.error("Error loading feed:", error);
+        console.error("Error loading comments:", error);
       });
   }
 
@@ -105,7 +101,6 @@ const Feed = () => {
     if (openedPostId !== post.id) {
       setOpenedPostId(post.id);
       localStorage.setItem("OpenedPost", post.id);
-      console.log("clicked post:", post);
       setCommentInputValue("")
       setCommentImageName(undefined);
     }

@@ -64,14 +64,11 @@ const FeedPostForm = ({ userInfo, loadFeed }) => {
             })
                 .then((response) => {
                     if (response.ok) {
-                        console.log("Post saved successfully!");
                         loadFeed();
                         setPostInputValue("");
                         setPostImageName(undefined);
                         setPostPrivacy('public'); // Reset post privacy to 'public'
                         setSelectedFollowers([]); // Clear selected followers
-                    } else {
-                        console.error("Error saving post!");
                     }
                 })
                 .catch((error) => {

@@ -137,9 +137,6 @@ const Profile = () => {
         updateToken();
         return response.json();
       })
-      .then((data) => {
-        console.log("User description updated successfully:", data.message);
-      })
       .catch((error) => {
         console.error("Error updating user description:", error);
         throw error;
@@ -164,9 +161,6 @@ const Profile = () => {
         updateToken(true);
         return response.json();
       })
-      .then((data) => {
-        console.log("Username updated successfully:", data.message);
-      })
       .catch((error) => {
         console.error("Error updating username:", error);
         throw error;
@@ -180,7 +174,6 @@ const Profile = () => {
   const handleSaveClick = () => {
     handleDescriptionUpdate(userInfo.UserID, newDescription)
       .then(() => {
-        console.log("User description updated successfully");
         setUserInfo((prevUserInfo) => ({
           ...prevUserInfo,
           Description: newDescription,
@@ -205,7 +198,6 @@ const Profile = () => {
   const handleUsernameSaveClick = () => {
     handleUsernameUpdate(userInfo.UserID, newUsername)
       .then(() => {
-        console.log("Username updated successfully");
         setUserInfo((prevUserInfo) => ({
           ...prevUserInfo,
           UserName: newUsername,
@@ -216,7 +208,6 @@ const Profile = () => {
         console.error("Error updating username:", error);
       });
     setIsEditingUsername(false);
-    // refreshToken();
   };
 
   const handleProfilepicCancelClick = () => {
@@ -230,21 +221,17 @@ const Profile = () => {
   const handleProfilepicSaveClick = (event) => {
     event.preventDefault();
 
-    // Check if a file is selected
     if (profilepicFileInputRef.current.files.length > 0) {
       const formData = new FormData();
-      formData.append("file", profilepicFileInputRef.current.files[0]); // Append the first selected file to the form data
+      formData.append("file", profilepicFileInputRef.current.files[0]);
       fetch(`${backendHost}/update-profile-picture/?userid=${userInfo.UserID}`, {
         method: "POST",
         body: formData,
       })
         .then((response) => {
           if (response.ok) {
-            console.log("Profile picture saved successfully!");
             setIsEditingProfilepic(false);
             setProfilePicUrl(`${backendHost}/users/${userInfo.UserID}/profilepic/profilepic?timestamp=${Date.now()}`);
-          } else {
-            console.error("Error saving profile picture!");
           }
         })
         .catch((error) => {
@@ -300,9 +287,9 @@ const Profile = () => {
       <div className="profile-container">
         <div className="profile-info-container">
           {profilePicUrl !== null ? (
-            // Use profilePicUrl as the source for the img element once it's available
             <img
               src={`${profilePicUrl}?timestamp=${Date.now()}`}
+              alt="profilepicture"
               className="profilepic"
               onError={(e) => {
                 e.target.onError = null;
@@ -310,7 +297,6 @@ const Profile = () => {
               }}
             />
           ) : (
-            // Render a loading message or spinner while waiting for userInfo
             <div>Loading profile picture...</div>
           )}
           {isLocalUser ? (<>{isEditingProfilepic ? (
@@ -473,7 +459,6 @@ const Profile = () => {
               <>
                 <button
                   onClick={() => {
-                    console.log(userInfo.PrivateStatus);
                     handleToggleClick(userInfo.UserID, userInfo.PrivateStatus);
                     setUserInfo((prevUserInfo) => ({
                       ...prevUserInfo,

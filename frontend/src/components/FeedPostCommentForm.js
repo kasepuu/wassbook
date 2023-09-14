@@ -39,16 +39,13 @@ const FeedPostCommentForm = ({ userInfo, commentImageName, setCommentImageName, 
             })
                 .then((response) => {
                     if (response.ok) {
-                        console.log("Comment saved successfully!");
                         loadComments(openedPostId);
                         setCommentInputValue("");
                         setCommentImageName(undefined);
-                    } else {
-                        console.error("Error saving comment!");
                     }
                 })
                 .catch((error) => {
-                    console.error("Error saving post:", error);
+                    console.error("Error saving comment:", error);
                 });
         }
     };
