@@ -55,12 +55,12 @@ const Feed = () => {
       })
       .then((data) => {
         setFollowersList(data);
-        console.log(followersList)
+        console.log(followersList);
       })
       .catch((error) => {
         console.error("Error fetching followers list:", error);
       });
-  }
+  };
 
   useEffect(() => {
     // Load feed data from the backend on component mount
@@ -124,7 +124,6 @@ const Feed = () => {
     loadComments(post.id);
   };
 
-<<<<<<< HEAD
   return (
     <div className="Feed">
       <FeedPostForm userInfo={userInfo} loadFeed={loadFeed} />
@@ -142,32 +141,6 @@ const Feed = () => {
       />
     </div>
   );
-=======
-  const isAuthorized = useAuthorization();
-  if (isAuthorized) {
-    return (
-      <div className="Feed">
-        <FeedPostForm
-          userInfo={userInfo}
-          loadFeed={loadFeed}
-          followersList={followersList}
-        />
-        <FeedPost
-          handlePostClick={handlePostClick}
-          openedPostId={openedPostId}
-          userInfo={userInfo}
-          loadComments={loadComments}
-          posts={posts}
-          comments={comments}
-          commentImageName={commentImageName}
-          setCommentImageName={setCommentImageName}
-          commentInputValue={commentInputValue}
-          setCommentInputValue={setCommentInputValue}
-        />
-      </div>
-    );
-  }
->>>>>>> 95289e68fadc50b2e2b1445e7f2b18c6a03169bf
 };
 
 export default Feed;
