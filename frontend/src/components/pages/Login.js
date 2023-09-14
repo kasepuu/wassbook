@@ -6,6 +6,7 @@ import { useState } from "react";
 import { backendHost } from "../../index.js";
 import { useNavigate } from "react-router-dom";
 import { connectAndSendEvents } from "../../index.js";
+import { loadUser } from "../../jwt";
 // formid ümber teha!
 // https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 
@@ -165,6 +166,7 @@ function getTokenJWT(username) {
     })
     .then((token) => {
       document.cookie = `Bearer=${token}; Path=/`;
+      loadUser();
       return true;
     })
     .catch((error) => {

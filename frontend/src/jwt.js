@@ -68,6 +68,7 @@ export async function tokenValidation() {
     if (response.ok) {
       const message = await response.text();
       console.log("Everything is working fine:", message);
+      loadUser();
       return true;
     } else {
       console.log(

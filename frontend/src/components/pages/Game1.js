@@ -4,9 +4,6 @@ import Navbar from "../Navbar";
 const Game1 = () => {
   return (
     <>
-      <Navbar />
-      <Sidebar />
-
       <div className="game">
         <iframe
           className="center-vertically"
@@ -14,7 +11,6 @@ const Game1 = () => {
           title="make-your-game"
         />
       </div>
-      <FriendsList />
     </>
   );
 };

@@ -280,8 +280,6 @@ const Profile = () => {
 
   return (
     <>
-      <Navbar />
-      <Sidebar />
       <div className="profile-container">
         <div className="profile-info-container">
           {profilePicUrl !== null ? (
@@ -505,7 +503,6 @@ const Profile = () => {
           </>
         )}
       </div>
-      <FriendsList />
     </>
   );
 };

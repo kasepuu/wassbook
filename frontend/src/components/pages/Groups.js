@@ -41,17 +41,18 @@ const Groups = () => {
 
   return (
     <>
-      <Navbar />
-      <Sidebar />
-
       <div className="Feed feed-container">
         <h1>Groups</h1>
 
-        {data.map((group) => (
-          <Link to={"/groups/" + group.Id}>
-            <p key={group.Id}>{group.Name}</p>
-          </Link>
-        ))}
+        {data && data.length > 0 ? (
+          data.map((group) => (
+            <Link to={"/groups/" + group.Id} key={group.Id}>
+              <p>{group.Name}</p>
+            </Link>
+          ))
+        ) : (
+          <p>No data available</p>
+        )}
 
         <h1>Create group</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -74,8 +75,6 @@ const Groups = () => {
           </div>
         </form>
       </div>
-
-      <FollowersList />
     </>
   );
 };

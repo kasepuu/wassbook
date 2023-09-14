@@ -1,6 +1,6 @@
 import "../css/Navbar.css";
 import logo from "../logo.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchContainer from "./SearchContainer";
 
 // react icons: https://react-icons.github.io/react-icons/icons?name=fa
@@ -19,6 +19,11 @@ import NotificationsDropdown from "./dropdown/notifications";
 const Navbar = () => {
   const [isNotificationsOpen, setNotificationsOpened] = useState(false);
   const [isFollowersOpen, setFollowersOpened] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate("/login");
+  };
 
   function onNotifactionsClick(event) {
     event.stopPropagation();
@@ -39,8 +44,9 @@ const Navbar = () => {
           <FaHome /> Home
         </Link>
         <Link
-          to={`/profile/${JSON.parse(sessionStorage.getItem("CurrentUser")).UserName
-            }`}
+          to={`/profile/${
+            JSON.parse(sessionStorage.getItem("CurrentUser")).UserName
+          }`}
         >
           <FaUserCircle /> Profile
         </Link>
@@ -69,7 +75,7 @@ const Navbar = () => {
           {isFollowersOpen && <FollowersDropDown isOpen={isFollowersOpen} />}
         </Link>
 
-        <Link to="/logout">
+        <Link to="/logout" onClick={handleLogout}>
           <FaDoorOpen /> Logout
         </Link>
       </div>
