@@ -41,8 +41,6 @@ const Profile = () => {
   const [profilePicUrl, setProfilePicUrl] = useState(`${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`);
 
   function handleUnFollow(requesterID, targetID) {
-    console.log("handleunfollow", requesterID, targetID);
-
     fetch(`${backendHost}/request-unfollow`, {
       method: "POST",
       body: JSON.stringify({
@@ -54,9 +52,7 @@ const Profile = () => {
       },
     })
       .then((response) => {
-        console.log("response:", response);
         if (response.ok) {
-          console.log("unfollowitud!");
           setUserInfo((prevUserInfo) => ({
             ...prevUserInfo,
             FollowStatus: "",
@@ -69,8 +65,6 @@ const Profile = () => {
   }
 
   function handleFollowClick(requesterID, targetID, status) {
-    console.log("handlefollow", requesterID, targetID);
-
     fetch(`${backendHost}/request-follow`, {
       method: "POST",
       body: JSON.stringify({
@@ -83,7 +77,6 @@ const Profile = () => {
       },
     })
       .then((response) => {
-        console.log("response:", response);
         if (response.ok) {
           setUserInfo((prevUserInfo) => ({
             ...prevUserInfo,
@@ -410,7 +403,6 @@ const Profile = () => {
             )}
 
             {userInfo.FollowStatus === "following" || isLocalUser ? (
-              // Check if not a local user
               !isLocalUser ? (
                 <button
                   onClick={() => {

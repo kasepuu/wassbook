@@ -117,27 +117,33 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 func FetchPosts(w http.ResponseWriter, r *http.Request) {
-	/* rows, err := sqlDB.DataBase.Query("SELECT * FROM posts") // Adjust the query according to your table structure
-	if err != nil {
-		log.Println("Error querying posts:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Internal issue, please try again later!"))
-		return
-	}
-	defer rows.Close() */
 	currentUserId := r.URL.Query().Get("userID")
 
 	stmt := `
 	SELECT DISTINCT p.*
-	FROM posts AS p
-	LEFT JOIN (
-	  SELECT DISTINCT id, targetid
-	  FROM followers
-	  WHERE userId = ? AND status = 'following'
-	) AS f ON p.userid = f.targetId
-	WHERE p.privacy = 'public' OR (p.privacy = 'private' AND f.id IS NOT NULL) OR (p.privacy = 'private' AND p.userId = ?);`
+FROM posts AS p
+LEFT JOIN (
+  SELECT DISTINCT id, targetid
+  FROM followers
+  WHERE userId = ? AND status = 'following'
+) AS f ON p.userid = f.targetId
+WHERE 
+  p.privacy = 'public'
+  OR (p.privacy = 'private' AND f.id IS NOT NULL)
+  OR (p.privacy = 'private' AND p.userId = ?)
+  OR (
+    p.privacy = 'almost_private' AND
+    (
+      p.userId = ? -- Posts created by the current user
+      OR p.id IN (
+        SELECT postId
+        FROM privatePosts
+        WHERE userId = ? -- Current user's ID in privatePosts
+      )
+    )
+  );`
 
-	rows, err := sqlDB.DataBase.Query(stmt, currentUserId, currentUserId)
+	rows, err := sqlDB.DataBase.Query(stmt, currentUserId, currentUserId, currentUserId, currentUserId)
 	if err != nil {
 		log.Fatalf("Err: %s", err)
 	}
@@ -163,6 +169,39 @@ func FetchPosts(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
+}
+
+func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
+	currentUserId := r.URL.Query().Get("userID")
+
+	stmt := `
+	SELECT followers.userid, users.nickname
+	FROM followers
+	LEFT JOIN users ON followers.userid = users.id
+	WHERE followers.targetid = ?;
+	`
+
+	rows, err := sqlDB.DataBase.Query(stmt, currentUserId)
+	if err != nil {
+		log.Fatalf("Err: %s", err)
+	}
+	defer rows.Close()
+
+	followers := make(map[string]string) // Create a map to store userid:nickname pairs
+
+	for rows.Next() {
+		var userid, nickname string
+
+		err := rows.Scan(&userid, &nickname)
+		if err != nil {
+			log.Fatalf("Err: %s", err)
+		}
+
+		// Add userid:nickname pair to the map
+		followers[userid] = nickname
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(followers) // Encode the map as JSON and send it in the response
 }
 
 func FetchComments(w http.ResponseWriter, r *http.Request) {

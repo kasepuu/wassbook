@@ -13,6 +13,7 @@ const Feed = () => {
   const [comments, setComments] = useState([]);
   const [commentImageName, setCommentImageName] = useState("");
   const [commentInputValue, setCommentInputValue] = useState("");
+  const [followersList, setFollowersList] = useState([]);
 
   const loadFeed = useCallback(() => {
     fetch(`${backendHost}/getposts?userID=${userInfo.UserID}`)
@@ -44,9 +45,29 @@ const Feed = () => {
       });
   }, [userInfo.UserID, setPosts]);
 
+  const getFollowersList = () => {
+    fetch(`${backendHost}/getfollowerslist?userID=${userInfo.UserID}`, {
+      method: "GET",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json(); // Parse the response as JSON
+      })
+      .then((data) => {
+        setFollowersList(data);
+        console.log(followersList)
+      })
+      .catch((error) => {
+        console.error("Error fetching followers list:", error);
+      });
+  }
+
   useEffect(() => {
     // Load feed data from the backend on component mount
     loadFeed();
+    getFollowersList();
 
     // close post if clicked outside any post
     const handleClickOutsidePost = (event) => {
@@ -62,7 +83,6 @@ const Feed = () => {
       document.removeEventListener("click", handleClickOutsidePost);
     };
   }, [loadFeed]);
-
 
   function loadComments(postID) {
     const url = `${backendHost}/getcomments?postID=${postID}`;
@@ -89,7 +109,6 @@ const Feed = () => {
           file: comment.Filename,
           userID: comment.UserID,
         }));
-
         setComments(commentsArray.reverse());
       })
       .catch((error) => {
@@ -114,6 +133,7 @@ const Feed = () => {
         <FeedPostForm
           userInfo={userInfo}
           loadFeed={loadFeed}
+          followersList={followersList}
         />
         <FeedPost
           handlePostClick={handlePostClick}

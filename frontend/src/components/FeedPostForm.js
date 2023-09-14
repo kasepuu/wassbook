@@ -2,7 +2,7 @@ import "../css/Feed.css";
 import React, { useState, useRef } from "react";
 import { backendHost } from "../index.js";
 
-const FeedPostForm = ({ userInfo, loadFeed }) => {
+const FeedPostForm = ({ userInfo, loadFeed, followersList }) => {
     const [postPrivacy, setPostPrivacy] = useState('public');
     const [selectedFollowers, setSelectedFollowers] = useState([]);
     const [postInputValue, setPostInputValue] = useState("");
@@ -11,14 +11,6 @@ const FeedPostForm = ({ userInfo, loadFeed }) => {
     const [postImageName, setPostImageName] = useState("");
     let firstName = userInfo.FirstName;
     let lastName = userInfo.LastName;
-
-    // Sample list of followers
-    const followersList = [
-        '1',
-        '2',
-        '3',
-        // Add more followers as needed
-    ];
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -101,8 +93,6 @@ const FeedPostForm = ({ userInfo, loadFeed }) => {
                     value={postInputValue}
                     onChange={(e) => handleInputChange(e)}
                 ></input>
-
-                {/* Add a dropdown for post privacy */}
                 <div className="privacy-selection">
                     <label>
                         <input
@@ -141,16 +131,16 @@ const FeedPostForm = ({ userInfo, loadFeed }) => {
                     <div className="follower-selection">
                         <label>
                             Select followers who can see this post:
-                            {followersList.map((follower) => (
-                                <div key={follower}>
+                            {Object.keys(followersList).map((followerKey) => (
+                                <div key={followerKey}>
                                     <label>
                                         <input
                                             type="checkbox"
-                                            value={follower}
-                                            checked={selectedFollowers.includes(follower)}
+                                            value={followerKey}
+                                            checked={selectedFollowers.includes(followerKey)}
                                             onChange={handleFollowersChange}
                                         />
-                                        {follower}
+                                        {followersList[followerKey]}
                                     </label>
                                 </div>
                             ))}
