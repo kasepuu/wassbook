@@ -71,6 +71,7 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/groups", handler.GetGroups)
 	corsMux.HandleFunc("/group/", handler.GetGroup)
 	corsMux.HandleFunc("/getMutualFollowers", handler.DisplayMutualFollowers)
+	corsMux.HandleFunc("/getfollowerslist", handler.FetchFollowersList)
 
 	//TODO teha eventile handler, millega saaks kätte eventi koos memberitega
 
