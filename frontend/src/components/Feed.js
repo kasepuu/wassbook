@@ -11,6 +11,7 @@ const Feed = () => {
   const [comments, setComments] = useState([]);
   const [commentImageName, setCommentImageName] = useState("");
   const [commentInputValue, setCommentInputValue] = useState("");
+  const [followersList, setFollowersList] = useState([]);
 
   const loadFeed = useCallback(() => {
     fetch(`${backendHost}/getposts?userID=${userInfo.UserID}`)
@@ -42,9 +43,29 @@ const Feed = () => {
       });
   }, [userInfo.UserID, setPosts]);
 
+  const getFollowersList = () => {
+    fetch(`${backendHost}/getfollowerslist?userID=${userInfo.UserID}`, {
+      method: "GET",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json(); // Parse the response as JSON
+      })
+      .then((data) => {
+        setFollowersList(data);
+        console.log(followersList)
+      })
+      .catch((error) => {
+        console.error("Error fetching followers list:", error);
+      });
+  }
+
   useEffect(() => {
     // Load feed data from the backend on component mount
     loadFeed();
+    getFollowersList();
 
     // close post if clicked outside any post
     const handleClickOutsidePost = (event) => {
@@ -86,7 +107,6 @@ const Feed = () => {
           file: comment.Filename,
           userID: comment.UserID,
         }));
-
         setComments(commentsArray.reverse());
       })
       .catch((error) => {
@@ -104,6 +124,7 @@ const Feed = () => {
     loadComments(post.id);
   };
 
+<<<<<<< HEAD
   return (
     <div className="Feed">
       <FeedPostForm userInfo={userInfo} loadFeed={loadFeed} />
@@ -121,6 +142,32 @@ const Feed = () => {
       />
     </div>
   );
+=======
+  const isAuthorized = useAuthorization();
+  if (isAuthorized) {
+    return (
+      <div className="Feed">
+        <FeedPostForm
+          userInfo={userInfo}
+          loadFeed={loadFeed}
+          followersList={followersList}
+        />
+        <FeedPost
+          handlePostClick={handlePostClick}
+          openedPostId={openedPostId}
+          userInfo={userInfo}
+          loadComments={loadComments}
+          posts={posts}
+          comments={comments}
+          commentImageName={commentImageName}
+          setCommentImageName={setCommentImageName}
+          commentInputValue={commentInputValue}
+          setCommentInputValue={setCommentInputValue}
+        />
+      </div>
+    );
+  }
+>>>>>>> 95289e68fadc50b2e2b1445e7f2b18c6a03169bf
 };
 
 export default Feed;
