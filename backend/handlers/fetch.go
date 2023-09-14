@@ -172,8 +172,8 @@ WHERE
 }
 
 func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
-	currentUserId := r.URL.Query().Get("userID")
-
+	currentUserId := r.URL.Query().Get("UserID")
+	fmt.Println("followerlist fetch requested!")
 	stmt := `
 	SELECT followers.userid, users.nickname
 	FROM followers

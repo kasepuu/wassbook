@@ -44,7 +44,8 @@ const Feed = () => {
   }, [userInfo.UserID, setPosts]);
 
   const getFollowersList = () => {
-    fetch(`${backendHost}/getfollowerslist?userID=${userInfo.UserID}`, {
+    console.log("getting followers list");
+    fetch(`${backendHost}/getfollowerslist?UserID=${userInfo.UserID}`, {
       method: "GET",
     })
       .then((response) => {
@@ -126,7 +127,11 @@ const Feed = () => {
 
   return (
     <div className="Feed">
-      <FeedPostForm userInfo={userInfo} loadFeed={loadFeed} />
+      <FeedPostForm
+        userInfo={userInfo}
+        loadFeed={loadFeed}
+        followersList={followersList}
+      />
       <FeedPost
         handlePostClick={handlePostClick}
         openedPostId={openedPostId}
