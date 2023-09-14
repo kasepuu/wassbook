@@ -5,14 +5,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // forms -> https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 import { backendHost } from "../../index.js";
-import { useAuthorization } from "../Authorization.js";
 const Register = () => {
   console.log("REGISTER PAGEEEE");
   const navigate = useNavigate(); // Get the navigate function
-
-  const isAuthorized = useAuthorization(true);
-
-  if (isAuthorized) navigate("/");
 
   const {
     register,

@@ -1,12 +1,10 @@
 import "../css/Feed.css";
 import React, { useState, useEffect, useCallback } from "react";
 import { backendHost } from "../index.js";
-import { useAuthorization } from "./Authorization";
 import FeedPostForm from "./FeedPostForm";
 import FeedPost from "./FeedPost";
 
 const Feed = () => {
-  useAuthorization();
   const [openedPostId, setOpenedPostId] = useState(null);
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
   const [posts, setPosts] = useState([]);
@@ -63,7 +61,6 @@ const Feed = () => {
     };
   }, [loadFeed]);
 
-
   function loadComments(postID) {
     const url = `${backendHost}/getcomments?postID=${postID}`;
 
@@ -101,35 +98,29 @@ const Feed = () => {
     if (openedPostId !== post.id) {
       setOpenedPostId(post.id);
       localStorage.setItem("OpenedPost", post.id);
-      setCommentInputValue("")
+      setCommentInputValue("");
       setCommentImageName(undefined);
     }
-    loadComments(post.id)
+    loadComments(post.id);
   };
 
-  const isAuthorized = useAuthorization();
-  if (isAuthorized) {
-    return (
-      <div className="Feed">
-        <FeedPostForm
-          userInfo={userInfo}
-          loadFeed={loadFeed}
-        />
-        <FeedPost
-          handlePostClick={handlePostClick}
-          openedPostId={openedPostId}
-          userInfo={userInfo}
-          loadComments={loadComments}
-          posts={posts}
-          comments={comments}
-          commentImageName={commentImageName}
-          setCommentImageName={setCommentImageName}
-          commentInputValue={commentInputValue}
-          setCommentInputValue={setCommentInputValue}
-        />
-      </div>
-    );
-  }
+  return (
+    <div className="Feed">
+      <FeedPostForm userInfo={userInfo} loadFeed={loadFeed} />
+      <FeedPost
+        handlePostClick={handlePostClick}
+        openedPostId={openedPostId}
+        userInfo={userInfo}
+        loadComments={loadComments}
+        posts={posts}
+        comments={comments}
+        commentImageName={commentImageName}
+        setCommentImageName={setCommentImageName}
+        commentInputValue={commentInputValue}
+        setCommentInputValue={setCommentInputValue}
+      />
+    </div>
+  );
 };
 
 export default Feed;

@@ -2,10 +2,8 @@ import "../css/Feed.css";
 import React, { useState, useEffect } from "react";
 import profilePicture from "../page-images/blank.png";
 import { backendHost } from "../index.js";
-import { useAuthorization } from "./Authorization";
 
 const PostsByProfile = ({ profilepic }) => {
-  useAuthorization();
   const [posts, setPosts] = useState([]);
   //const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
@@ -61,7 +59,11 @@ const PostsByProfile = ({ profilepic }) => {
           <div key={index} id={`post-${post.id}`} className="feed-post">
             <div className="post-header">
               <img
-                src={profilepic} onError={(e) => { e.target.onError = null; e.target.src = profilePicture }}
+                src={profilepic}
+                onError={(e) => {
+                  e.target.onError = null;
+                  e.target.src = profilePicture;
+                }}
                 alt="Profile"
                 className="profile-picture"
               />

@@ -6,15 +6,11 @@ import { useState } from "react";
 import { backendHost } from "../../index.js";
 import { useNavigate } from "react-router-dom";
 import { connectAndSendEvents } from "../../index.js";
-import { useAuthorization } from "../Authorization";
 // formid ümber teha!
 // https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 
 const Login = () => {
   const navigate = useNavigate(); // Get the navigate function
-  const isAuthorized = useAuthorization();
-
-  if (isAuthorized) navigate("/");
 
   const {
     register,
