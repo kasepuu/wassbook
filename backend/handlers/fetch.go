@@ -173,7 +173,9 @@ WHERE
 
 func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
 	currentUserId := r.URL.Query().Get("UserID")
-	fmt.Println("followerlist fetch requested!")
+	tempid, _ := strconv.Atoi(currentUserId)
+	fmt.Println("followerlist fetch requested by:", currentUserId, function.GetUserName(tempid))
+
 	stmt := `
 	SELECT followers.userid, users.nickname
 	FROM followers
@@ -200,6 +202,9 @@ func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
 		// Add userid:nickname pair to the map
 		followers[userid] = nickname
 	}
+
+	fmt.Println(followers, "are following:", currentUserId, function.GetUserName(tempid))
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(followers) // Encode the map as JSON and send it in the response
 }
@@ -432,6 +437,8 @@ func DisplayMutualFollowers(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&request)
 
+	fmt.Println("mutualfolowers requested by:", request.UserID, function.GetUserName(request.UserID))
+
 	if err != nil {
 		w.WriteHeader(http.StatusConflict)
 		return
@@ -449,6 +456,8 @@ func DisplayMutualFollowers(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println(mutualFollowers, "are following:", request.UserID, function.GetUserName(request.UserID))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

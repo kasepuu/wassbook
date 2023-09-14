@@ -1,0 +1,125 @@
+.FollowersList {
+  flex: 1;
+  background-color: #ddd;
+  color: black;
+  position: relative; /* Ensure relative positioning for child elements */
+}
+
+.Messenger {
+  position: absolute;
+  left: -320px;
+  border-radius: 10px;
+  background-color: darkgray;
+
+  bottom: 5px;
+  width: 300px; /* Set an appropriate width for your messenger */
+  height: 400px; /* Make it the same height as the parent container */
+}
+
+.chat-title {
+  height: 30px;
+  text-align: center;
+  background-color: lightgray;
+  font-size: large;
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+}
+
+.chat-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 39px;
+  height: 29px;
+  background-color: white;
+  border: 1px solid black;
+  color: black;
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  cursor: pointer;
+}
+
+.chat-close:hover {
+  background-color: gray;
+  color: red;
+}
+
+/*chat logid*/
+.chat-log {
+  position: relative;
+  padding-top: 5px;
+  height: 80%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* messages sent by the user */
+.chat-log-from {
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  margin-right: 5px;
+  max-width: 80%;
+  background-color: #007bff;
+  color: white;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* messages received by the user */
+.chat-log-to {
+  display: flex;
+  flex-direction: column;
+  margin-right: auto;
+  margin-left: 5px;
+  align-items: flex-start;
+  max-width: 80%;
+  background-color: #e7e7e7;
+  color: black;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* user images (adjust as needed) */
+.chat-log-from-image,
+.chat-log-to-image {
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 50%;
+}
+
+/* message timestamps */
+.chat-log-from-date,
+.chat-log-to-date {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.chat-log-from-message,
+.chat-log-to-message {
+  font-size: 14px;
+}
+.chat-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.chat-send {
+  flex: 1;
+  margin-right: 0px;
+  padding: 5px;
+}
+
+.send-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border: 1px solid black;
+  cursor: pointer;
+}

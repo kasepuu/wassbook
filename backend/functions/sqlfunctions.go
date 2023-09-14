@@ -439,12 +439,20 @@ func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
 func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	var followers []MutualFollower
 
-	query := `
-    SELECT f1.*
-    FROM followers f1
-    INNER JOIN followers f2 ON f1.userid = f2.targetid AND f1.targetid = f2.userid
-    WHERE f1.status = 'following' AND f2.status = 'following'
-`
+	/*	query2 := `
+	    SELECT f1.*
+	    FROM followers f1
+	    INNER JOIN followers f2 ON f1.userid = f2.targetid AND f1.targetid = f2.userid
+	    WHERE f1.status = 'following' AND f2.status = 'following'
+	`*/
+
+	query := `SELECT DISTINCT f1.*
+	FROM followers f1, followers f2
+	WHERE f1.userid = f2.targetid
+	  AND f1.targetid = f2.userid
+	  AND f1.status = 'following'
+	  AND f2.status = 'following'
+	`
 
 	rows, err := sqlDB.DataBase.Query(query, userID)
 	if err != nil {
@@ -463,7 +471,7 @@ func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 			return nil, err
 		}
 		if userid != userID {
-			followers = append(followers, MutualFollower{UserId: id, UserName: GetUserName(userid)})
+			followers = append(followers, MutualFollower{UserId: userid, UserName: GetUserName(userid)})
 		}
 	}
 	return followers, nil
