@@ -446,7 +446,7 @@ func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	    WHERE f1.status = 'following' AND f2.status = 'following'
 	`*/
 
-	query := `SELECT DISTINCT f1.*
+	query := `SELECT DISTINCT f1.userid
 	FROM followers f1, followers f2
 	WHERE f1.userid = f2.targetid
 	  AND f1.targetid = f2.userid
@@ -461,12 +461,8 @@ func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var id int
 		var userid int
-		var targetid int
-		var status string
-
-		err := rows.Scan(&id, &userid, &targetid, &status)
+		err := rows.Scan(&userid)
 		if err != nil {
 			return nil, err
 		}
@@ -476,22 +472,3 @@ func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	}
 	return followers, nil
 }
-
-// func GetCategories() []Category {
-// 	var categories []Category
-// 	rows, err := DataBase.Query("select * from category")
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	for rows.Next() {
-// 		var category Category
-// 		rows.Scan(
-// 			&category.Id,
-// 			&category.Name,
-// 		)
-// 		categories = append(categories, category)
-// 	}
-
-// 	return categories
-// }
