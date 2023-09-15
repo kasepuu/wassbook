@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"path"
 	"strconv"
 
@@ -12,7 +13,7 @@ import (
 )
 
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {	
+	switch r.Method {
 	case "POST":
 		b, err := io.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -60,7 +61,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	
+
 	case "POST":
 		b, err := io.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -135,6 +136,37 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func groupPosts(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":	
+	case "POST": //
+		err := r.ParseMultipartForm(32 << 20) // 32 MB is the maximum file size
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		file, handler, err := r.FormFile("file")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+
+		f, err := os.OpenFile("./uploads/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0o666)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer f.Close()
+
+		_, err = io.Copy(f, file)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 func addGroupMember(w http.ResponseWriter, r *http.Request) {
-	
 }

@@ -436,6 +436,22 @@ func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
 	return events, members
 }
 
+func saveGroupPost(post PostResponse) error {
+	var err error
+	statement, err := sqlDB.DataBase.Prepare("INSERT INTO posts (userId, date, content, groupId, filename) VALUES (?,?,?,?)")
+	currentTime := time.Now().Format("29.08.2023 14:35")
+	if err != nil {
+		return err
+	}
+	_, err = statement.Exec(post.OriginalPosterID, currentTime, post.Content, post.GroupId, post.Filename)
+	// groupId, _ := result.LastInsertId()
+	// if err != nil {
+	// 	return err
+	// }
+
+	return err
+}
+
 func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	var followers []MutualFollower
 

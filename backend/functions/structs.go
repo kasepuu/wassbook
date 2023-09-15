@@ -63,6 +63,7 @@ type PostResponse struct {
 	Date             string
 	Content          string
 	GroupId          int
+	Filename         string
 }
 
 type CommentResponse struct {
@@ -120,6 +121,6 @@ type Event struct {
 }
 
 type MutualFollower struct {
-	UserId int
+	UserId   int
 	UserName string
 }
