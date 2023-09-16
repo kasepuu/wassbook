@@ -36,7 +36,7 @@ const Follower = ({ users, isLoading }) => {
   return (
     <div className="dropdown-contents">
       {isLoading ? (
-        <p>Loading...</p>
+        <p>No one is trying to follow you!</p>
       ) : users.length > 0 ? (
         <>
           {users.map((user) => (

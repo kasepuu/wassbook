@@ -89,7 +89,7 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
         )}
       </div>
       {/*other chat elements*/}
-      <div className="chat-status"></div> {/*status -> is typing etc...*/}
+      <div className="chat-status">{/*status -> is typing etc...*/}</div>
       <div className="chat-close" onClick={closeMessenger}>
         X
       </div>
@@ -98,16 +98,17 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
           type="text"
           className="chat-send"
           placeholder="Type your message..."
-          value={message} // Bind the input value to the message state
-          onChange={(e) => setMessage(e.target.value)} // Update the message state when input changes
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault(); // Prevent the default newline behavior
+              // Calling the sendMessage function when Enter is pressed
+              e.preventDefault();
 
               sendMessage(
                 JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
                 selectedFollower.UserId
-              ); // Call the sendMessage function when Enter is pressed
+              );
             }
           }}
           ref={inputRef} // Assign the ref to the input element
@@ -124,7 +125,6 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
           Send
         </button>
       </div>
-      {/* Add your messenger content here */}
     </div>
   );
 };
