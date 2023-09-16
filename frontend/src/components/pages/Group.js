@@ -26,17 +26,12 @@ const Group = () => {
 
   return (
     <>
-      <Navbar />
-      <Sidebar />
-
       <div className="Feed feed-container">
         <h1>{data.Name}</h1>
         <h2>{data.Owner}</h2>
         <h3>{data.Description}</h3>
         <h4>{data.Date}</h4>
       </div>
-
-      <FollowersList />
     </>
   );
 };

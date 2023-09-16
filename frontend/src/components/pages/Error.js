@@ -5,11 +5,7 @@ const Error = () => {
   const navigate = useNavigate();
 
   const handleErrorClick = () => {
-    clearAllCookies();
-    localStorage.clear();
-    sessionStorage.clear();
-    window.socket = null;
-    navigate("/login");
+    navigate("/");
   };
 
   return (

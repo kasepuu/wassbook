@@ -7,7 +7,6 @@ import (
 	"log"
 	"strconv"
 	"strings"
-	"time"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
@@ -26,10 +25,11 @@ type SendActiveUsers struct {
 // event handlers
 func (m *wsManager) setupEventHandlers() {
 	m.handlers[EventGetOnlineMembers] = GetOnlineMembersHandler
-	m.handlers[EventSendMessage] = SendMessageHandler
-	m.handlers[EventLoadMessages] = LoadMessagesHandler
+	m.handlers["send_message"] = SendMessageHandler
+	m.handlers["request_messages"] = LoadMessages
+	// m.handlers[EventLoadMessages] = LoadMessagesHandler
 	//m.handlers[EventLoadPosts] = GetAllPosts
-	m.handlers[EventSortUsers] = SortUserList
+	// m.handlers[EventSortUsers] = SortUserList
 	m.handlers[EventIsTyping] = IsTypingHandler
 	m.handlers[followEvent] = FollowHandler
 }
@@ -146,84 +146,58 @@ const EventLoadPosts = "load_posts"
 
 /*MESSAGE HANDLERS*/
 
-type loadMessages struct {
-	Sender   string `json:"userName"`
-	Receiver string `json:"receivingUser"`
-	Method   string `json:"type"`
-	Limit    int    `json:"limit"`
-}
+// type loadMessages struct {
+// 	Sender   string `json:"userName"`
+// 	Receiver string `json:"receivingUser"`
+// 	Method   string `json:"type"`
+// 	Limit    int    `json:"limit"`
+// }
 
-type SendMessageEvent struct {
-	Message      string `json:"Message"`
-	SenderName   string `json:"SenderName"`
-	ReceiverName string `json:"ReceiverName"`
-}
+// type SendMessageEvent struct {
+// 	Message      string `json:"Message"`
+// 	SenderName   string `json:"SenderName"`
+// 	ReceiverName string `json:"ReceiverName"`
+// }
 
-const EventSortUsers = "update_users"
+// const EventSortUsers = "update_users"
 
-func SortUserList(event Event, c *Client) error {
-	var loadMessage loadMessages
-	forOthers := strings.Contains(string(event.Payload), "other")
-	if err := json.Unmarshal(event.Payload, &loadMessage); err != nil {
-		if !forOthers {
-			return fmt.Errorf("bad payload in request: %v", err)
-		}
-	}
+// func SortUserList(event Event, c *Client) error {
+// 	var loadMessage loadMessages
+// 	forOthers := strings.Contains(string(event.Payload), "other")
+// 	if err := json.Unmarshal(event.Payload, &loadMessage); err != nil {
+// 		if !forOthers {
+// 			return fmt.Errorf("bad payload in request: %v", err)
+// 		}
+// 	}
 
-	for client := range c.client.clients {
-		if forOthers && client.userId == c.userId {
-			continue
-		}
-		responseData := function.GetAllUsers(client.userId)
-		sendResponse(responseData, EventSortUsers, client)
-	}
-	return nil
-}
+// 	for client := range c.client.clients {
+// 		if forOthers && client.userId == c.userId {
+// 			continue
+// 		}
+// 		responseData := function.GetAllUsers(client.userId)
+// 		sendResponse(responseData, EventSortUsers, client)
+// 	}
+// 	return nil
+// }
 
-const EventSendMessage = "send_message"
+// const EventSendMessage = "send_message"
 
-func SendMessageHandler(event Event, c *Client) error {
-	var sendMessage SendMessageEvent
+// const EventLoadMessages = "load_all_messages"
 
-	if err := json.Unmarshal(event.Payload, &sendMessage); err != nil {
-		return fmt.Errorf("bad payload in request: %v", err)
-	}
+// const sql = `SELECT userid, receiverid, datesent, message FROM chat WHERE (userid = ? AND receiverid = ?) OR
+// (receiverid = ? AND userid = ?) ORDER BY messageid DESC LIMIT ?`
 
-	receivingUserID := function.GetUserID(sendMessage.ReceiverName)
-	senderUserID := function.GetUserID(sendMessage.SenderName)
+// func LoadMessagesHandler(event Event, c *Client) error {
+// 	var loadMessage loadMessages
 
-	function.SaveChat(senderUserID, receivingUserID, sendMessage.Message)
-
-	var outgoing function.ReturnMessage
-	outgoing.MessageDate = time.Now().Format(time.RFC3339Nano)
-	outgoing.Message = sendMessage.Message
-	outgoing.ReceivingUser = sendMessage.ReceiverName
-	outgoing.UserName = sendMessage.SenderName
-
-	for client := range c.client.clients {
-		if client.userId == function.GetUserID(sendMessage.ReceiverName) {
-			sendResponse(outgoing, "new_message", client)
-		}
-	}
-	return nil
-}
-
-const EventLoadMessages = "load_all_messages"
-
-const sql = `SELECT userid, receiverid, datesent, message FROM chat WHERE (userid = ? AND receiverid = ?) OR
-(receiverid = ? AND userid = ?) ORDER BY messageid DESC LIMIT ?`
-
-func LoadMessagesHandler(event Event, c *Client) error {
-	var loadMessage loadMessages
-
-	if err := json.Unmarshal(event.Payload, &loadMessage); err != nil {
-		return fmt.Errorf("bad payload in request: %v", err)
-	}
-	for client := range c.client.clients {
-		if client.userId == function.GetUserID(loadMessage.Sender) {
-			responseData := function.LoadMessages(sql, function.GetUserName(client.userId), loadMessage.Receiver, loadMessage.Limit)
-			sendResponse(responseData, EventLoadMessages, client)
-		}
-	}
-	return nil
-}
+// 	if err := json.Unmarshal(event.Payload, &loadMessage); err != nil {
+// 		return fmt.Errorf("bad payload in request: %v", err)
+// 	}
+// 	for client := range c.client.clients {
+// 		if client.userId == function.GetUserID(loadMessage.Sender) {
+// 			responseData := function.LoadMessages(sql, function.GetUserName(client.userId), loadMessage.Receiver, loadMessage.Limit)
+// 			sendResponse(responseData, EventLoadMessages, client)
+// 		}
+// 	}
+// 	return nil
+// }

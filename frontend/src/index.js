@@ -13,6 +13,8 @@ import Groups from "./components/pages/Groups.js";
 import Error from "./components/pages/Error.js";
 import Logout from "./components/pages/Logout.js";
 import Feed from "./components/Feed.js";
+
+import { sendEvent } from "./websocket.js";
 export const backendHost = "http://localhost:8081";
 
 export function connectAndSendEvents() {
@@ -22,6 +24,10 @@ export function connectAndSendEvents() {
       .then((websocket) => {
         console.log("[WS]", websocket);
         // websocket events that will be sent on connection
+        sendEvent(
+          "update_notifications",
+          JSON.parse(sessionStorage.getItem("CurrentUser")).UserID
+        );
         // sendEvent("get_online_members", `log-in-${currentUser.UserID}`);
         // sendEvent("load_posts", currentUser.UserID);
         // sendEvent("update_users", "other Login");

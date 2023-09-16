@@ -1,6 +1,5 @@
 // WEBSOCKET
-// import { createUserList, displayMessages, displayIsWriting, newMessage } from "./views/messenger.js"
-// import { createPostHtml } from "./views/postComment.js"
+
 export class Event {
   constructor(type, payload) {
     this.type = type;
@@ -44,67 +43,38 @@ export function wsAddConnection() {
   });
 }
 
+export async function routeEvent(event) {
+  if (event.type === undefined) alert("Bad event!");
+  functionMap[event.type](event.payload);
+}
+
 const functionMap = {
   //USAGE: functionMap["send_message"]();
-  send_message: sendData,
-  load_all_messages: loadChat,
-  load_posts: loadPosts,
-  update_users: updateUserList,
-  get_online_members: loadOnlineMembers,
-  is_typing: updateIsTyping,
-  follow_user: followNotify,
-  notification: receiveNotification,
-  // "new_message": newMessage
+  send_message: sendData, // for sending messages
+  request_messages: loadChat, // for loading messages
+  update_notifications: updateNotifications,
+  update_messages: updateNotifications,
 };
 
-function receiveNotification(data) {
-  //Saab lihtsalt ++notificationCount vms siia teha või nagu real time forumis notification tehtud, päris notification teeks fetchiga eraldi kuhugi.
-  const jsonString = JSON.stringify(data);
-  console.log("NEW NOTIFICATION: " + jsonString);
-}
-
-function followNotify() {
-  console.log("follow sent!!!!");
-}
-
-function updateIsTyping(data) {
-  // displayIsWriting(data.receivingUser, data.currentUser)
-}
-
-export function loadPosts(data) {
-  //    createPostHtml(data)
-}
-
 export function sendEvent(type, payload) {
+  console.log("TYPEEE->>>", payload);
   const event = new Event(type, payload);
 
   window.socket.send(JSON.stringify(event));
   routeEvent(event);
 }
 
-export async function routeEvent(event) {
-  if (event.type === undefined) alert("Bad event!");
-  functionMap[event.type](event.payload);
+function loadChat(data) {
+  const jsonString = JSON.stringify(data);
+  console.log("Received:", jsonString);
 }
 
-export function loadOnlineMembers(data) {
-  document.getElementById("onlineMembers").innerHTML = data.length + "👥";
-  document.getElementById("openButton").innerHTML = `Messenger ${
-    data.length - 1
-  }🌐`;
-}
-export function updateUserList(data) {
-  // if (document.getElementById("messageBox").innerHTML != "") createUserList(data, document.getElementById("messageBox"))
-}
-
-export function loadChat(data) {
-  // displayMessages(data.ReceiverName, data.userName, data.Messages)
-}
-
-export function sendData(data) {
+function sendData(data) {
   const jsonString = JSON.stringify(data);
   console.log("Sent:", jsonString);
 }
+
+function updateNotifications(type, payload) {}
 
 export function waitForWSConnection(cb, counter = 30) {
   setTimeout(function () {

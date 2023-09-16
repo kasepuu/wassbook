@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	handler "01.kood.tech/git/kasepuu/social-network/backend/handlers"
+	ws "01.kood.tech/git/kasepuu/social-network/backend/websocket"
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
@@ -30,7 +31,7 @@ func (c CorsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func StartServer(port string) {
 	sqlDB.SessionCleanup()                                           // sessions table cleanup
-	wsManager := NewManager()                                        // websocket manager
+	wsManager := ws.NewManager()                                     // websocket manager
 	fsViews := noDirListing(http.FileServer(http.Dir("./views/")))   // nodirlisting to avoid guest seeing all files stored in /views/
 	fsPublic := noDirListing(http.FileServer(http.Dir("./public/"))) // nodirlisting to avoid guest seeing all files stored in /public/
 
@@ -49,7 +50,7 @@ func StartServer(port string) {
 	})
 
 	corsMux.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		http.HandlerFunc(wsManager.serveWs).ServeHTTP(w, r)
+		http.HandlerFunc(wsManager.ServeWs).ServeHTTP(w, r)
 	})
 
 	// api stuff

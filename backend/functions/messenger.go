@@ -33,46 +33,44 @@ type LoadRequest struct {
 type ReturnChatData struct {
 	UserName     string
 	ReceiverName string
-	Messages     []ReturnMessage
+	Message      string
+	Date         string
 }
 
-func LoadMessages(sqlSentence string, userName string, receiverName string, limit int) ReturnChatData {
-	var chat ReturnChatData
+func LoadMessages(senderID int, receiverID int, limit int) (chatLog []ReturnChatData) {
+	const query = `SELECT userid, receiverid, datesent, message 
+	FROM chat 
+	WHERE (userid = ? AND receiverid = ?) OR (receiverid = ? AND userid = ?) 
+	ORDER BY messageid DESC 
+	LIMIT ?`
 
-	chat.UserName = userName
-	chat.ReceiverName = receiverName
-
-	userID := GetUserIdFomMessage(userName)
-	receiverID := GetUserIdFomMessage(receiverName)
-
-	rows, err := sqlDB.DataBase.Query(sqlSentence, userID, receiverID, userID, receiverID, limit)
+	rows, err := sqlDB.DataBase.Query(query, senderID, receiverID, senderID, receiverID, limit)
 	if err != nil {
 		log.Println(err)
 	}
 	defer rows.Close()
-	var sender, receiver int
-	for rows.Next() {
-		var messageData ReturnMessage
 
-		rows.Scan(&sender, &receiver, &messageData.MessageDate, &messageData.Message)
-		messageDateTime, err := time.Parse(time.RFC3339Nano, messageData.MessageDate)
+	for rows.Next() {
+		var sender, receiver int
+
+		var date, message string
+
+		rows.Scan(&sender, &receiver, &date, &message)
+		messageDateTime, err := time.Parse(time.RFC3339Nano, date)
 		if err == nil {
-			messageData.MessageDate = messageDateTime.Format("15:04")
+			date = messageDateTime.Format("15:04 (02.01 2006)")
 		}
 
-		messageData.UserName = GetUserName(sender)
-		messageData.ReceivingUser = GetUserName(receiver)
-		chat.Messages = append(chat.Messages, messageData)
+		chatLog = append(chatLog, ReturnChatData{UserName: GetUserName(sender), ReceiverName: GetUserName(receiver), Message: message, Date: date})
 	}
-	chat.Messages = reverse(chat.Messages)
-	return chat
+
+	return reverse(chatLog)
 }
 
-func reverse(s []ReturnMessage) []ReturnMessage {
+func reverse(s []ReturnChatData) []ReturnChatData {
 	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
 		s[i], s[j] = s[j], s[i]
 	}
-
 	return s
 }
 

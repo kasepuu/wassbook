@@ -1,6 +1,3 @@
-import Sidebar from "../Sidebar";
-import FriendsList from "../FollowersList";
-import Navbar from "../Navbar";
 const Game1 = () => {
   return (
     <>
