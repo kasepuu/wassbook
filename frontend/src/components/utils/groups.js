@@ -1,8 +1,8 @@
 const host = `http://${window.location.hostname}:8081`
 // console.warn(`${host}/groups`);
 
-export const getGroups = async () => {
-    const response = await fetch(`${host}/groups`);
+export const getGroups = async (id) => {
+    const response = await fetch(`${host}/groups/${id}`);
 
     switch (response.status) {
         case 200:

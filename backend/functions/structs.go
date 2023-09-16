@@ -120,6 +120,17 @@ type Event struct {
 	Members     []UserStruct `json:"Members"`
 }
 
+type GroupPost struct {
+	Id        int
+	UserId    int
+	Date      string
+	Content   string
+	GroupId   int
+	Filename  string
+	Owner     string
+	GroupName string
+}
+
 type MutualFollower struct {
 	UserId   int
 	UserName string

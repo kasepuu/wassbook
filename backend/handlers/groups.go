@@ -100,15 +100,25 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 func GetGroups(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
+		id, _ := strconv.Atoi(path.Base(r.URL.Path))
+
 		groups, err := function.GetGroups()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
+		posts, postsErr := function.GetGroupPosts(id)
+		
+		if err != nil || postsErr != nil {
+			http.Error(w, err.Error()+postsErr.Error(), http.StatusConflict)
 			return
 		}
-
-		users, _ := json.Marshal(groups)
+		data := struct {
+			Groups []function.Group
+			Posts  []function.GroupPost
+		}{
+			Groups: groups,
+			Posts:  posts,
+		}
+		users, _ := json.Marshal(data)
 		w.WriteHeader(200)
-		w.Header().Set("content-type", "nviapplication/json")
+		w.Header().Set("content-type", "application/json")
 		w.Write(users)
 	}
 }
@@ -136,9 +146,22 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func groupPosts(w http.ResponseWriter, r *http.Request) {
+func GroupPosts(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	case "GET":	
+	case "GET":
+		id, err := strconv.Atoi(path.Base(r.URL.Path))
+
+		groups, err := function.GetGroupPosts(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusConflict)
+			return
+		}
+
+		toSend, _ := json.Marshal(groups)
+		w.WriteHeader(200)
+		w.Header().Set("content-type", "application/json")
+		w.Write(toSend)
+
 	case "POST": //
 		err := r.ParseMultipartForm(32 << 20) // 32 MB is the maximum file size
 		if err != nil {
@@ -152,8 +175,8 @@ func groupPosts(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer file.Close()
-
-		f, err := os.OpenFile("./uploads/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0o666)
+		FAKEID := strconv.Itoa(2)
+		f, err := os.OpenFile("./users/"+FAKEID+"/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0o666)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

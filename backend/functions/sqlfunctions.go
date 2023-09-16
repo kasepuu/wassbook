@@ -436,7 +436,7 @@ func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
 	return events, members
 }
 
-func saveGroupPost(post PostResponse) error {
+func SaveGroupPost(post PostResponse) error {
 	var err error
 	statement, err := sqlDB.DataBase.Prepare("INSERT INTO posts (userId, date, content, groupId, filename) VALUES (?,?,?,?)")
 	currentTime := time.Now().Format("29.08.2023 14:35")
@@ -450,6 +450,39 @@ func saveGroupPost(post PostResponse) error {
 	// }
 
 	return err
+}
+
+func GetGroupPosts(id int) ([]GroupPost, error) {
+	var err error
+	var posts []GroupPost
+
+	rows, err := sqlDB.DataBase.Query(
+		`select posts.id, posts.userid, posts.date, posts.content, posts.groupId, posts.filename, users.nickname, groups.name
+		from posts 		
+			left join users on posts.userid=users.id
+			left join groups on posts.groupId = groups.id
+			left join groupMember on groupMember.userId = posts.userId
+		where not posts.groupId = -1 and groupMember.userId =? `, id)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var post GroupPost
+		rows.Scan(
+			&post.Id,
+			&post.UserId,
+			&post.Date,
+			&post.Content,
+			&post.GroupId,
+			&post.Filename,
+			&post.Owner,
+			&post.GroupName,
+		)
+		posts = append(posts, post)
+	}
+
+	return posts, err
 }
 
 func GetMutualFollowers(userID int) ([]MutualFollower, error) {

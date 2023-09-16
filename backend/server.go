@@ -68,12 +68,14 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/update-user-name", handler.UpdateUserNameHandler)
 	corsMux.HandleFunc("/update-profile-picture/", handler.UpdateProfilePictureHandler)
 	corsMux.HandleFunc("/fetch-users-trying-to-follow", handler.FetchUsersTryingToFollow)
-	corsMux.HandleFunc("/groups", handler.GetGroups)
+	corsMux.HandleFunc("/groups/", handler.GetGroups)
 	corsMux.HandleFunc("/group/", handler.GetGroup)
+	corsMux.HandleFunc("/groups/posts", handler.GroupPosts)
+
 	corsMux.HandleFunc("/getMutualFollowers", handler.DisplayMutualFollowers)
 	corsMux.HandleFunc("/getfollowerslist", handler.FetchFollowersList)
 
-	//TODO teha eventile handler, millega saaks kätte eventi koos memberitega
+	// TODO teha eventile handler, millega saaks kätte eventi koos memberitega
 
 	// post requests
 	corsMux.HandleFunc("/savepost", handler.Savepost)
