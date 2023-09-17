@@ -42,3 +42,18 @@ export const createGroup = async (data) => {
     return response
 
 }
+
+export const createComment = async (comment) => {
+    const response = await fetch(`${host}/groups/comments`, {
+        method: 'POST',
+        body: comment
+    });
+
+    switch (response.status) {
+        case 201:
+            let groups = await response.json();
+            return groups;
+        case 401:
+            console.log("ERR");
+    }
+}

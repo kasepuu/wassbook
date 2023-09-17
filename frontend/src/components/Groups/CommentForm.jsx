@@ -59,19 +59,10 @@ const CommentForm = ({ userInfo, handleCommentSubmit }) => {
                         placeholder={`Write a comment...`}
                         className="NewComment"      
                         name="content"                                
-                    />
-                    <button
-                        type="button"
-                        className="file-upload-button"                       
-                       
-                    >
-                        <FaImage />
-                    </button>
+                    />                   
                     <input
                         type="file"
-                        accept="image/*"                 
-                        // ref={commentFileInputRef}
-                        className="hidden-file-input"
+                        accept="image/*"               
                         name="file"
                     />
                     {/* {commentImageName

@@ -48,7 +48,11 @@ const Groups = () => {
      e.preventDefault();
     
     let data = new FormData(e.target);
-    console.warn(e.target, data);
+
+   
+    
+
+    
   }
 
   return (

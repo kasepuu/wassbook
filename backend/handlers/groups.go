@@ -191,7 +191,20 @@ func GroupPosts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 
+		fmt.Println(r.MultipartForm)
+
+		fmt.Println(r.MultipartForm.Value["content"])
+	}
+}
 
 func addGroupMember(w http.ResponseWriter, r *http.Request) {
 }
