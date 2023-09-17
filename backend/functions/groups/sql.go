@@ -192,8 +192,15 @@ func GetPosts(id int) ([]Post, error) {
 			&post.GroupId,
 			&post.Filename,
 			&post.Username,
-			&post.GroupName,
+			&post.GroupName,	
 		)
+
+		comments, err := GetComments(post.Id)
+		if err != nil {
+			return nil, err
+		}
+		post.Comments = comments
+
 		posts = append(posts, post)
 	}
 

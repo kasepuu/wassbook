@@ -39,6 +39,7 @@ type Post struct {
 	Filename  string
 	Username  string
 	GroupName string
+	Comments  []Comment
 }
 
 type Comment struct {

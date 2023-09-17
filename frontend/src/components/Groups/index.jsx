@@ -43,6 +43,14 @@ const Groups = () => {
   };
   const { register, handleSubmit } = useForm();
 
+
+  const handleCommentSubmit= (e) => {
+     e.preventDefault();
+    
+    let data = new FormData(e.target);
+    console.warn(e.target, data);
+  }
+
   return (
     <>
       <div className="Feed feed-container">    
@@ -51,7 +59,7 @@ const Groups = () => {
 
  <div className="feed-posts" id="feed-posts">
          {posts.map((post) => (
-         <Post post={post}></Post>
+         <Post post={post} handleCommentSubmit={handleCommentSubmit}></Post>
       ))}
   </div>
      

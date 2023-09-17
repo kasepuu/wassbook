@@ -1,14 +1,15 @@
-import "../../css/Feed.css";
-import { backendHost } from "../../index.js";
-import profilePicture from "../../page-images/blank.png";
-
-
-
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-const Post = ({post}) => {
+import "../../css/Feed.css";
+import { backendHost } from "../../index.js";
+import profilePicture from "../../page-images/blank.png";
+import CommentForm from "./CommentForm";
+import PostComments from "./PostComments";
+
+const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+
+const Post = ({post, handleCommentSubmit}) => {
   
   let { id } = useParams();
 
@@ -33,22 +34,24 @@ const Post = ({post}) => {
             className="image-content"
         />       
 
-    {/* <div className="post-overlay">
+     <div className="post-overlay">
         <div className="post-commentbox">
-            <FeedPostCommentForm
+            <CommentForm
+                hidden
                 userInfo={userInfo}
-                commentImageName={commentImageName}
-                setCommentImageName={setCommentImageName}
-                commentInputValue={commentInputValue}
-                setCommentInputValue={setCommentInputValue}
-                openedPostId={openedPostId}
-                loadComments={loadComments}
+                handleCommentSubmit={handleCommentSubmit}
+                // commentImageName={commentImageName}
+                // setCommentImageName={setCommentImageName}
+                // commentInputValue={commentInputValue}
+                // setCommentInputValue={setCommentInputValue}
+                // openedPostId={openedPostId}
+                // loadComments={post.Comments}
             />
-            <FeedPostComment
-                comments={comments}
+            <PostComments
+                comments={post.Comments}
             />
         </div>
-    </div> */}
+    </div> 
 
    </div>
 
