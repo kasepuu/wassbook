@@ -2,25 +2,29 @@
 // TODO  Võimalus teha postitusi grupi lehel
 // TODO Kuvada postitusi üldiselt grupi lehel
 
-import Sidebar from "../Sidebar";
-import FollowersList from "../FollowersList";
-import Navbar from "../Navbar";
+import Post from "./Post";
 import "../../css/Feed.css";
 
 import { getGroups, createGroup } from "../utils/groups";
+
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
+const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+
 const Groups = () => {
-  const [data, setData] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [groups, setGroups] = useState([]);
+
 
   useEffect(() => {
     async function fetchData() {
-      const response = await getGroups();
-      setData(response);
-      console.warn(response);
+
+      const response = await getGroups(userInfo.UserID);
+      setGroups(response.Groups)
+      setPosts(!response.Posts ? []:response.Posts )      
     }
 
     fetchData();
@@ -34,26 +38,43 @@ const Groups = () => {
 
       return;
     }
-    setData(await response.json());
+    setGroups(await response.json());
     console.log("Group created");
   };
   const { register, handleSubmit } = useForm();
 
+
+  const handleCommentSubmit= (e) => {
+     e.preventDefault();
+    
+    let data = new FormData(e.target);
+
+   
+    
+
+    
+  }
+
   return (
     <>
-      <div className="Feed feed-container">
-        <h1>Groups</h1>
+      <div className="Feed feed-container">    
+        
+        <h1>Posts</h1>
 
-        {data && data.length > 0 ? (
-          data.map((group) => (
-            <Link to={"/groups/" + group.Id} key={group.Id}>
-              <p>{group.Name}</p>
+ <div className="feed-posts" id="feed-posts">
+         {posts.map((post) => (
+         <Post post={post} handleCommentSubmit={handleCommentSubmit}></Post>
+      ))}
+  </div>
+     
+
+      <h1>Posts</h1>
+
+         {/* {posts.map((group) => (
+         <Link to={"/groups/" + group.Id} key={group.Id}>
+              <p>{group.Content}</p>
             </Link>
-          ))
-        ) : (
-          <p>No data available</p>
-        )}
-
+      ))} */}
         <h1>Create group</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-control">

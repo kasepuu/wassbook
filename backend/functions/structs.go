@@ -63,6 +63,7 @@ type PostResponse struct {
 	Date             string
 	Content          string
 	GroupId          int
+	Filename         string
 }
 
 type CommentResponse struct {
@@ -96,30 +97,7 @@ type SaveMessage struct {
 	ReceiverName string `json:"ReceiverName"`
 }
 
-type Group struct {
-	Id          int          `json:"Id"`
-	Name        string       `json:"Name"`
-	Owner       string       `json:"Owner"`
-	OwnerId     int          `json:"OwnerId"`
-	Members     []UserStruct `json:"Members"`
-	Description string       `json:"Description"`
-	Events      []Event      `json:"Events"`
-	Membercount int          `json:"Membercount"`
-	// TODO mõelda kuidas päringus saada arvu
-}
-
-type Event struct {
-	Id          string       `json:"Id"`
-	Description string       `json:"Description"`
-	Date        string       `json:"Date"`
-	Name        string       `json:"Name"`
-	Owner       string       `json:"Owner"`
-	OwnerId     string       `json:"OwnerId"`
-	GroupId     string       `json:"GroupId"`
-	Members     []UserStruct `json:"Members"`
-}
-
 type MutualFollower struct {
-	UserId int
+	UserId   int
 	UserName string
 }

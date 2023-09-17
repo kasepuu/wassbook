@@ -5,14 +5,15 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"path"
 	"strconv"
 
-	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
+	groups "01.kood.tech/git/kasepuu/social-network/backend/functions/groups"
 )
 
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {	
+	switch r.Method {
 	case "POST":
 		b, err := io.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -20,7 +21,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		var group function.Group
+		var group groups.Group
 
 		err = json.Unmarshal(b, &group)
 		if err != nil {
@@ -28,7 +29,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = function.CreateGroup(group)
+		err = groups.CreateGroup(group)
 
 		if err != nil {
 			http.Error(w, err.Error(), 500)
@@ -43,7 +44,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(201)
 
-		groups, err := function.GetGroups()
+		groups, err := groups.GetGroups()
 		toSend, _ := json.Marshal(groups)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusConflict)
@@ -60,7 +61,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
-	
+
 	case "POST":
 		b, err := io.ReadAll(r.Body)
 		defer r.Body.Close()
@@ -68,7 +69,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		var event function.Event
+		var event groups.Event
 
 		err = json.Unmarshal(b, &event)
 		if err != nil {
@@ -76,7 +77,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = function.CreateEvent(event)
+		err = groups.CreateEvent(event)
 
 		if err != nil {
 			http.Error(w, err.Error(), 500)
@@ -99,15 +100,25 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 func GetGroups(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		groups, err := function.GetGroups()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
+		id, _ := strconv.Atoi(path.Base(r.URL.Path))
+
+		allGroups, err := groups.GetGroups()
+		posts, postsErr := groups.GetPosts(id)
+
+		if err != nil || postsErr != nil {
+			http.Error(w, err.Error()+postsErr.Error(), http.StatusConflict)
 			return
 		}
-
-		users, _ := json.Marshal(groups)
+		data := struct {
+			Groups []groups.Group
+			Posts  []groups.Post
+		}{
+			Groups: allGroups,
+			Posts:  posts,
+		}
+		users, _ := json.Marshal(data)
 		w.WriteHeader(200)
-		w.Header().Set("content-type", "nviapplication/json")
+		w.Header().Set("content-type", "application/json")
 		w.Write(users)
 	}
 }
@@ -121,7 +132,7 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusConflict)
 			return
 		}
-		groups, err := function.GetGroup(id)
+		groups, err := groups.GetGroup(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusConflict)
 			return
@@ -135,6 +146,65 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GroupPosts(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		id, err := strconv.Atoi(path.Base(r.URL.Path))
+
+		groups, err := groups.GetPosts(id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusConflict)
+			return
+		}
+
+		toSend, _ := json.Marshal(groups)
+		w.WriteHeader(200)
+		w.Header().Set("content-type", "application/json")
+		w.Write(toSend)
+
+	case "POST": //
+		err := r.ParseMultipartForm(32 << 20) // 32 MB is the maximum file size
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		file, handler, err := r.FormFile("file")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		defer file.Close()
+		FAKEID := strconv.Itoa(2)
+		f, err := os.OpenFile("./users/"+FAKEID+"/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0o666)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer f.Close()
+
+		_, err = io.Copy(f, file)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		fmt.Println(r.MultipartForm)
+
+		fmt.Println(r.MultipartForm.Value["content"])
+	}
+}
+
 func addGroupMember(w http.ResponseWriter, r *http.Request) {
-	
 }
