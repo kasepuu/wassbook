@@ -177,7 +177,7 @@ func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("followerlist fetch requested by:", currentUserId, function.GetUserName(tempid))
 
 	stmt := `
-	SELECT followers.userid, users.nickname
+	SELECT DISTINCT followers.userid, users.nickname
 	FROM followers
 	LEFT JOIN users ON followers.userid = users.id
 	WHERE followers.targetid = ?;
@@ -203,7 +203,7 @@ func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
 		followers[userid] = nickname
 	}
 
-	fmt.Println(followers, "are following:", currentUserId, function.GetUserName(tempid))
+	fmt.Println(followers, "aree following:", currentUserId, function.GetUserName(tempid))
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(followers) // Encode the map as JSON and send it in the response
@@ -418,6 +418,7 @@ func FetchPostsCreatedBy(w http.ResponseWriter, r *http.Request) {
 			&post.Content,
 			&post.GroupID,
 			&post.Filename,
+			&post.Privacy,
 		)
 		if err != nil {
 			log.Println("Error scanning row:", err)
@@ -457,7 +458,7 @@ func DisplayMutualFollowers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(mutualFollowers, "are following:", request.UserID, function.GetUserName(request.UserID))
+	fmt.Println(mutualFollowers, "aren following:", request.UserID, function.GetUserName(request.UserID))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

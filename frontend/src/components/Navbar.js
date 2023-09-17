@@ -12,13 +12,14 @@ import {
   FaUserCircle,
   FaUserFriends,
 } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FollowersDropDown from "./dropdown/followers";
 import NotificationsDropdown from "./dropdown/notifications";
 
 const Navbar = () => {
   const [isNotificationsOpen, setNotificationsOpened] = useState(false);
   const [isFollowersOpen, setFollowersOpened] = useState(false);
+  const [followerRequests, setFollowerRequests] = useState("");
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -36,6 +37,24 @@ const Navbar = () => {
     setFollowersOpened(!isFollowersOpen);
     if (isNotificationsOpen) setNotificationsOpened(false);
   }
+
+  // event listener for updates (new notification or new follower request)
+  useEffect(() => {
+    // event listener to existing ws connection
+    window.socket.onmessage = (e) => {
+      const eventData = JSON.parse(e.data);
+      if (eventData.type === "update_notifications") {
+        console.log("update_notifications");
+        // update the chat log with the received message, only if chat is opened with the right person.
+      } else if (eventData.type === "update_follower_requests") {
+        console.log("update_follower_requests");
+        if (eventData.payload) {
+          setFollowerRequests(eventData.payload);
+        }
+        // update notifications
+      }
+    };
+  }, [followerRequests]);
 
   return (
     <nav className="Navbar">
@@ -71,6 +90,7 @@ const Navbar = () => {
           }}
           className="followersBTN"
         >
+          <span className="notification-design">{followerRequests}</span>
           <FaUserFriends /> Followers
           {isFollowersOpen && <FollowersDropDown isOpen={isFollowersOpen} />}
         </Link>
