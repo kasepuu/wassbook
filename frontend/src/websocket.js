@@ -54,6 +54,7 @@ const functionMap = {
   request_messages: loadChat, // for loading messages
   update_notifications: updateNotifications,
   update_messages: updateNotifications,
+  send_follow_request: sendFollow,
 };
 
 export function sendEvent(type, payload) {
@@ -62,6 +63,11 @@ export function sendEvent(type, payload) {
 
   window.socket.send(JSON.stringify(event));
   routeEvent(event);
+}
+
+function sendFollow(data) {
+  const jsonString = JSON.stringify(data);
+  console.log("Received:", jsonString);
 }
 
 function loadChat(data) {

@@ -8,6 +8,7 @@ import { backendHost } from "../..";
 import { useState, useEffect, useRef } from "react";
 import PostsByProfile from "../PostsByProfile";
 import { updateToken } from "../../jwt";
+import { sendEvent } from "../../websocket";
 
 function toTitleCase(str) {
   if (str) {
@@ -36,6 +37,27 @@ const Profile = () => {
   const [profilePicUrl, setProfilePicUrl] = useState(
     `${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`
   );
+  const [refreshProfile, setRefreshProfile] = useState(false);
+
+  // event listener for updates (new notification or new follower request)
+  useEffect(() => {
+    // event listener to existing ws connection
+    window.socket.onmessage = (e) => {
+      const eventData = JSON.parse(e.data);
+      if (eventData.type === "reload_profile_page") {
+        console.log("reload_profile_page");
+        setRefreshProfile(true);
+        // update the chat log with the received message, only if chat is opened with the right person.
+      }
+      // update notifications
+    };
+  }, []);
+
+  useEffect(() => {
+    if (refreshProfile) {
+      setRefreshProfile(false);
+    }
+  }, [refreshProfile]);
 
   function handleUnFollow(requesterID, targetID) {
     fetch(`${backendHost}/request-unfollow`, {
@@ -62,6 +84,15 @@ const Profile = () => {
   }
 
   function handleFollowClick(requesterID, targetID, status) {
+    const payload = {
+      RequesterID: requesterID,
+      TargetID: targetID,
+      Status: status,
+    };
+
+    sendEvent("send_follow_request", payload);
+
+    /*
     fetch(`${backendHost}/request-follow`, {
       method: "POST",
       body: JSON.stringify({
@@ -85,6 +116,7 @@ const Profile = () => {
         console.error("Error unfollowing:", error);
       });
 
+      */
     // sendEvent("follow_user", followResponse); // notification
   }
 
@@ -267,7 +299,8 @@ const Profile = () => {
         });
     }
     fetchProfileData();
-  }, [id, LoggedUser.UserName]);
+  }, [id, LoggedUser.UserName, refreshProfile]);
+
   useEffect(() => {
     // Check if userInfo is available and not undefined
     if (userInfo !== undefined) {
@@ -276,7 +309,7 @@ const Profile = () => {
         `${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`
       );
     }
-  }, [userInfo]); // Watch for changes in userInfo
+  }, [userInfo, refreshProfile]); // Watch for changes in userInfo
 
   return (
     <>

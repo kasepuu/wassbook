@@ -3,7 +3,6 @@ package ws
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
@@ -29,12 +28,6 @@ func SendMessageHandler(event Event, c *Client) error {
 
 	function.SaveChat(sendingUserID, receivingUserID, sendMessage.Message)
 
-	var outgoing function.ReturnMessage
-	outgoing.MessageDate = time.Now().Format(time.RFC3339Nano)
-	outgoing.Message = sendMessage.Message
-	outgoing.ReceivingUser = function.GetUserName(receivingUserID)
-	outgoing.UserName = function.GetUserName(sendingUserID)
-
 	type ResponseStruct struct {
 		CurrentChat int
 		ChatLog     []function.ReturnChatData
@@ -56,11 +49,12 @@ func SendMessageHandler(event Event, c *Client) error {
 			ChatLog:     chatLog,
 		}
 		sendResponse(payload, "update_messages", client)
+		sendResponse(payload, "update_notifications", client)
 	}
 	return nil
 }
 
-func LoadMessages(event Event, c *Client) error {
+func LoadMessagesHandler(event Event, c *Client) error {
 	type LoadMessageEvent struct {
 		ReceiverID int `json:"ReceiverID"`
 		SenderID   int `json:"SenderID"`
