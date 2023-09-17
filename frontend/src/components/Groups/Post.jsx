@@ -31,9 +31,28 @@ const Post = ({post}) => {
             src={`${backendHost}/users/${post.UserId}/${post.Filename}`}
             alt=""            
             className="image-content"
-        />
-       
+        />       
+
+    {/* <div className="post-overlay">
+        <div className="post-commentbox">
+            <FeedPostCommentForm
+                userInfo={userInfo}
+                commentImageName={commentImageName}
+                setCommentImageName={setCommentImageName}
+                commentInputValue={commentInputValue}
+                setCommentInputValue={setCommentInputValue}
+                openedPostId={openedPostId}
+                loadComments={loadComments}
+            />
+            <FeedPostComment
+                comments={comments}
+            />
+        </div>
+    </div> */}
+
    </div>
+
+ 
   );
 };
 

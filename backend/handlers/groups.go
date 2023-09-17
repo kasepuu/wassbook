@@ -9,7 +9,7 @@ import (
 	"path"
 	"strconv"
 
-	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
+	groups "01.kood.tech/git/kasepuu/social-network/backend/functions/groups"
 )
 
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +21,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		var group function.Group
+		var group groups.Group
 
 		err = json.Unmarshal(b, &group)
 		if err != nil {
@@ -29,7 +29,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = function.CreateGroup(group)
+		err = groups.CreateGroup(group)
 
 		if err != nil {
 			http.Error(w, err.Error(), 500)
@@ -44,7 +44,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(201)
 
-		groups, err := function.GetGroups()
+		groups, err := groups.GetGroups()
 		toSend, _ := json.Marshal(groups)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusConflict)
@@ -69,7 +69,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), 500)
 			return
 		}
-		var event function.Event
+		var event groups.Event
 
 		err = json.Unmarshal(b, &event)
 		if err != nil {
@@ -77,7 +77,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = function.CreateEvent(event)
+		err = groups.CreateEvent(event)
 
 		if err != nil {
 			http.Error(w, err.Error(), 500)
@@ -102,18 +102,18 @@ func GetGroups(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		id, _ := strconv.Atoi(path.Base(r.URL.Path))
 
-		groups, err := function.GetGroups()
-		posts, postsErr := function.GetGroupPosts(id)
-		
+		allGroups, err := groups.GetGroups()
+		posts, postsErr := groups.GetPosts(id)
+
 		if err != nil || postsErr != nil {
 			http.Error(w, err.Error()+postsErr.Error(), http.StatusConflict)
 			return
 		}
 		data := struct {
-			Groups []function.Group
-			Posts  []function.GroupPost
+			Groups []groups.Group
+			Posts  []groups.Post
 		}{
-			Groups: groups,
+			Groups: allGroups,
 			Posts:  posts,
 		}
 		users, _ := json.Marshal(data)
@@ -132,7 +132,7 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusConflict)
 			return
 		}
-		groups, err := function.GetGroup(id)
+		groups, err := groups.GetGroup(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusConflict)
 			return
@@ -151,7 +151,7 @@ func GroupPosts(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		id, err := strconv.Atoi(path.Base(r.URL.Path))
 
-		groups, err := function.GetGroupPosts(id)
+		groups, err := groups.GetPosts(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusConflict)
 			return
