@@ -19,6 +19,8 @@ func (m *wsManager) setupEventHandlers() {
 	m.handlers["request_messages"] = LoadMessagesHandler
 	m.handlers["send_notification"] = SendNotificationHandler
 	m.handlers["send_follow_request"] = SendFollowHandler
+	m.handlers["send_unfollow_request"] = SendUnFollowHandler
+	m.handlers["get_followerslist"] = GetFollowersHandler
 }
 
 func sendResponse(responseData any, event string, c *Client) {

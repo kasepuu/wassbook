@@ -1,12 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { sendEvent } from "../websocket";
+// import EmojiPicker from "emoji-picker-react";
+const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
 
 const Chat = ({ selectedFollower, closeMessenger }) => {
   const [message, setMessage] = useState("");
   const inputRef = useRef(null);
   const chatLogRef = useRef(null);
   const [chatLog, setChatLog] = useState([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
+  console.log("FOLOWER SELECTED:", selectedFollower);
   // get current chat
   useEffect(() => {
     const sender = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
@@ -32,7 +36,9 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
             JSON.parse(localStorage.getItem("CurrentChat")).UserId ===
             eventData.payload.CurrentChat
           ) {
-            setChatLog(eventData.payload.ChatLog);
+            if (eventData.payload.ChatLog) {
+              setChatLog(eventData.payload.ChatLog);
+            }
           }
         }
       } else {
@@ -58,12 +64,18 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
     sendEvent("send_message", payload);
   };
 
+  const handleEmojiSelect = (emoji) => {
+    setMessage((prevMsg) => prevMsg + emoji.emoji);
+  };
+  // Function to handle emoji selection
+
   return (
     <div className="Messenger">
       <div className="chat-title">📪{selectedFollower.UserName}</div>
       {/* chat-log */}
       <div className="chat-log" ref={chatLogRef}>
-        {chatLog.length === 0 ? (
+        {console.log("LOG_>", chatLog)}
+        {chatLog.length < 1 ? (
           <div className="empty-chat-message">
             You are now connected on Wassbook.
           </div>
@@ -99,6 +111,7 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
           className="chat-send"
           placeholder="Type your message..."
           value={message}
+          onClick={(e) => setShowEmojiPicker(false)}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -113,9 +126,20 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
           }}
           ref={inputRef} // Assign the ref to the input element
         />
+
+        <div
+          className="emoji-button"
+          onClick={() => {
+            setShowEmojiPicker(!showEmojiPicker);
+          }}
+        >
+          😄
+        </div>
+
         <button
           className="send-button"
           onClick={() => {
+            if (showEmojiPicker) setShowEmojiPicker(!showEmojiPicker);
             sendMessage(
               JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
               selectedFollower.UserId
@@ -124,6 +148,21 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
         >
           Send
         </button>
+
+        {showEmojiPicker && (
+          //   style={{ display: showEmojiPicker ? "block" : "none" }}
+          <div className="emoticon-picker">
+            <Suspense fallback={<div>Loading...</div>}>
+              {/* Lazy load the EmojiPicker component */}
+              <LazyEmojiPicker
+                skinTonesDisabled={true}
+                width="100%"
+                height={300}
+                onEmojiClick={handleEmojiSelect}
+              />
+            </Suspense>
+          </div>
+        )}
       </div>
     </div>
   );

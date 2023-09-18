@@ -8,6 +8,22 @@ const FollowersList = () => {
   const [selectedFollower, setSelectedFollower] = useState(null);
 
   const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+  /*
+  useEffect(() => {
+    // event listener to existing ws connection
+    window.socket.onmessage = (e) => {
+      const eventData = JSON.parse(e.data);
+      if (eventData.type === "update_followerslist") {
+        console.log("update_followerslist update!");
+
+        // update the list,
+        if (eventData.payload) {
+          setMutualFollowers(eventData.payload);
+        }
+      }
+    };
+  }, [mutualFollowers]);
+*/
 
   const openMessenger = (follower) => {
     closeMessenger(); // just in case
@@ -59,8 +75,7 @@ const FollowersList = () => {
     <div className="FollowersList">
       <h1>Followers:</h1>
       <ul>
-        {mutualFollowers !== null &&
-          mutualFollowers.length > 0 &&
+        {mutualFollowers !== null && mutualFollowers.length > 0 ? (
           mutualFollowers.map((follower, index) => (
             <li
               key={`${follower.UserId}-${index}`}
@@ -70,7 +85,10 @@ const FollowersList = () => {
             >
               {follower.UserName}
             </li>
-          ))}
+          ))
+        ) : (
+          <p>No mutual followers found.</p>
+        )}
       </ul>
 
       {isMessengerOpen && selectedFollower && (

@@ -44,7 +44,8 @@ export function wsAddConnection() {
 }
 
 export async function routeEvent(event) {
-  if (event.type === undefined) alert("Bad event!");
+  console.log("wsevent:", event);
+  if (event.type === undefined) alert("Bad event!", event);
   functionMap[event.type](event.payload);
 }
 
@@ -55,6 +56,9 @@ const functionMap = {
   update_notifications: updateNotifications,
   update_messages: updateNotifications,
   send_follow_request: sendFollow,
+  send_unfollow_request: sendUnFollow,
+
+  get_followerslist: getFollowers,
 };
 
 export function sendEvent(type, payload) {
@@ -67,7 +71,11 @@ export function sendEvent(type, payload) {
 
 function sendFollow(data) {
   const jsonString = JSON.stringify(data);
-  console.log("Received:", jsonString);
+  console.log("Follow:", jsonString);
+}
+function sendUnFollow(data) {
+  const jsonString = JSON.stringify(data);
+  console.log("Unfollow:", jsonString);
 }
 
 function loadChat(data) {
@@ -76,6 +84,11 @@ function loadChat(data) {
 }
 
 function sendData(data) {
+  const jsonString = JSON.stringify(data);
+  console.log("Sent:", jsonString);
+}
+
+function getFollowers(data) {
   const jsonString = JSON.stringify(data);
   console.log("Sent:", jsonString);
 }

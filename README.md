@@ -4,38 +4,37 @@
 
 - toodo
 
-*
-* - posts (public/private)
-* - chats
-* - notifications ja follwers WS
-* - groups
-* - Viimane asi DOCKER - Andrei teeb
-*
-* followers;
-* - - chati võimalus tekiks kui mõlemad üksteist followivad
-*
-* profile;
+* bugid:
+* - regades uus kasutaja & logides sisse -> followerslisti ilmuvad mingid kasutajad?
+* - ws event errorid kui sisse logida (ws in connection state)
+* -
 
-* - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
-
-* - Kui vajutada public profiililt follow siis tekib automaatselt vastu ka follow -> Joel
-
-* - Try creating a post.
-Can you specify the type of privacy of the post (private, public, almost private)?
-If you choose the almost private privacy option, can you specify the users that are allowed to see the post?
-
-* - almost private -> only followers chosen by the creator will be able to see it? -> suht idiootne?
-*
-* groups;
-* andrei teeb ✍(◔◡◔)
-*
-*
-* järjekord?
-* - muu pudipadi...
-* - followerid
-* - chat
+* funktsionaalsus:
 * - notifications
+* - followers WS
+* -
+
 * - groups
+
+* chati puudused;
+* - scrollevent? praegu laeb 10 viimast sõnumit
+* - "is typing..." oleks lahe
+* - group chat
+* - saab tühja chatti saata
+
+* profile puudused;
+* - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
+* - Kui vajutada public profiililt follow siis tekib automaatselt vastu ka follow -> Joel, kas see on vajalik
+
+* good practise:
+* - handlereid vähendada, websocketisse ümber teha?
+* - error handlingut juurde, register/login jms formid, ümber disainida
+* -
+* -
+
+* - lõpu asjad:
+* - docker
+* - db migration
 
 ## ABOUT
 

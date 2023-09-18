@@ -39,9 +39,11 @@ func SendMessageHandler(event Event, c *Client) error {
 		if client.userId == sendMessage.ReceiverID {
 			chatLog = function.LoadMessages(sendMessage.ReceiverID, c.userId, 10)
 			currentChat = c.userId
+			fmt.Println("LOG THE RECEUIVER IS RECEVING:", chatLog)
 		} else if client.userId == sendMessage.SenderID {
 			chatLog = function.LoadMessages(c.userId, sendMessage.ReceiverID, 10)
 			currentChat = sendMessage.ReceiverID
+			fmt.Println("LOG THE SENDER IS RECEVING:", chatLog)
 		}
 
 		payload := ResponseStruct{
@@ -76,6 +78,8 @@ func LoadMessagesHandler(event Event, c *Client) error {
 	}
 	// Prepare the response payload
 
+	fmt.Println("connection between:", receivingUserID, sendingUserID)
+
 	for client := range c.client.clients {
 		if client.userId == requestMessage.SenderID {
 			chatLog := function.LoadMessages(sendingUserID, receivingUserID, 10)
@@ -84,6 +88,7 @@ func LoadMessagesHandler(event Event, c *Client) error {
 				CurrentChat: receivingUserID, // Set the current chat to the receiver's ID
 				ChatLog:     chatLog,
 			}
+			fmt.Println("THIS INFO IS BEING PROCESSED:", chatLog)
 
 			sendResponse(payload, "update_messages", client)
 		}

@@ -1,6 +1,7 @@
 package function
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -21,6 +22,8 @@ func LoadMessages(senderID int, receiverID int, limit int) (chatLog []ReturnChat
 	ORDER BY messageid DESC 
 	LIMIT ?`
 
+	fmt.Println("getting messages between:", senderID, receiverID, limit)
+
 	rows, err := sqlDB.DataBase.Query(query, senderID, receiverID, senderID, receiverID, limit)
 	if err != nil {
 		log.Println(err)
@@ -40,6 +43,8 @@ func LoadMessages(senderID int, receiverID int, limit int) (chatLog []ReturnChat
 
 		chatLog = append(chatLog, ReturnChatData{UserName: GetUserName(sender), ReceiverName: GetUserName(receiver), Message: message, Date: date})
 	}
+
+	fmt.Println("loaded messages:", chatLog)
 
 	return reverse(chatLog)
 }

@@ -48,6 +48,7 @@ const Navbar = () => {
         // update the chat log with the received message, only if chat is opened with the right person.
       } else if (eventData.type === "update_follower_requests") {
         console.log("update_follower_requests");
+        console.log("payload:", `"${eventData.payload}"`);
         if (eventData.payload) {
           setFollowerRequests(eventData.payload);
         }

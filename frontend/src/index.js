@@ -23,11 +23,16 @@ export function connectAndSendEvents() {
     wsAddConnection()
       .then((websocket) => {
         console.log("[WS]", websocket);
+        const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+        const payload = {
+          RequesterID: LoggedUser.UserID,
+        };
+
+        console.log("requesting basic ws events");
         // websocket events that will be sent on connection
-        sendEvent(
-          "update_notifications",
-          JSON.parse(sessionStorage.getItem("CurrentUser")).UserID
-        );
+        // sendEvent("update_notifications", payload);
+        sendEvent("get_followerslist", payload);
+
         // sendEvent("get_online_members", `log-in-${currentUser.UserID}`);
         // sendEvent("load_posts", currentUser.UserID);
         // sendEvent("update_users", "other Login");

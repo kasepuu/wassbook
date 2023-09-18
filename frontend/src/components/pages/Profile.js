@@ -44,14 +44,14 @@ const Profile = () => {
     // event listener to existing ws connection
     window.socket.onmessage = (e) => {
       const eventData = JSON.parse(e.data);
+      console.log("received ws event!!:", eventData);
       if (eventData.type === "reload_profile_page") {
         console.log("reload_profile_page");
         setRefreshProfile(true);
-        // update the chat log with the received message, only if chat is opened with the right person.
       }
       // update notifications
     };
-  }, []);
+  }, [refreshProfile]);
 
   useEffect(() => {
     if (refreshProfile) {
@@ -60,27 +60,12 @@ const Profile = () => {
   }, [refreshProfile]);
 
   function handleUnFollow(requesterID, targetID) {
-    fetch(`${backendHost}/request-unfollow`, {
-      method: "POST",
-      body: JSON.stringify({
-        UserID: requesterID,
-        TargetID: targetID,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          setUserInfo((prevUserInfo) => ({
-            ...prevUserInfo,
-            FollowStatus: "",
-          }));
-        }
-      })
-      .catch((error) => {
-        console.error("Error unfollowing:", error);
-      });
+    const payload = {
+      RequesterID: requesterID,
+      TargetID: targetID,
+    };
+
+    sendEvent("send_unfollow_request", payload);
   }
 
   function handleFollowClick(requesterID, targetID, status) {
@@ -91,33 +76,6 @@ const Profile = () => {
     };
 
     sendEvent("send_follow_request", payload);
-
-    /*
-    fetch(`${backendHost}/request-follow`, {
-      method: "POST",
-      body: JSON.stringify({
-        UserID: requesterID,
-        TargetID: targetID,
-        Status: status,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          setUserInfo((prevUserInfo) => ({
-            ...prevUserInfo,
-            FollowStatus: status,
-          }));
-        }
-      })
-      .catch((error) => {
-        console.error("Error unfollowing:", error);
-      });
-
-      */
-    // sendEvent("follow_user", followResponse); // notification
   }
 
   const handleToggleClick = (userID, PrivateStatus) => {
