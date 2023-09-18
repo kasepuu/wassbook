@@ -156,8 +156,8 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
               {/* Lazy load the EmojiPicker component */}
               <LazyEmojiPicker
                 skinTonesDisabled={true}
-                width="100%"
-                height={300}
+                width="300px"
+                height={400}
                 onEmojiClick={handleEmojiSelect}
               />
             </Suspense>
