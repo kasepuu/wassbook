@@ -1,5 +1,5 @@
 import jwtDecode from "jwt-decode";
-import { backendHost, connectAndSendEvents } from ".";
+import { backendHost } from ".";
 function getUserInfoFromToken(tokenStr) {
   var decoded = jwtDecode(tokenStr);
   return decoded;
@@ -40,7 +40,6 @@ export function loadUser() {
     const userInfo = getUserInfoFromToken(jwtToken);
     if (userInfo) {
       sessionStorage.setItem("CurrentUser", JSON.stringify(userInfo.UserInfo));
-      connectAndSendEvents();
     } else {
       console.log("Token is not valid or is expired.");
     }

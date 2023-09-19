@@ -1,36 +1,25 @@
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { backendHost } from "../..";
+import { sendEvent } from "../../websocket";
+
 const Follower = ({ users, isLoading }) => {
+  const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+
   function handleOnAccept(Requester) {
-    fetch(
-      `${backendHost}/send-follower-accept-request?Requester=${
-        Requester.UserID
-      }&Accepter=${JSON.parse(sessionStorage.getItem("CurrentUser")).UserID}`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to send accept request");
-        }
-        console.log("Accepted!", Requester.UserID);
-      })
-      .catch((error) => {
-        console.error("Error sending accept request:", error);
-      });
+    const payload = {
+      RequesterID: Requester.UserID,
+      TargetID: LoggedUser.UserID,
+    };
+
+    sendEvent("accept_follow_request", payload);
   }
 
   function handleOnDecline(Requester) {
-    `${backendHost}/send-follower-decline-request?Requester=${
-      Requester.UserID
-    }&Accepter=${JSON.parse(sessionStorage.getItem("CurrentUser").UserID)}`
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to send decline request");
-        }
-        console.log("Declined!", Requester.UserID);
-      })
-      .catch((error) => {
-        console.error("Error sending decline request:", error);
-      });
+    const payload = {
+      RequesterID: Requester.UserID,
+      TargetID: LoggedUser.UserID,
+    };
+
+    sendEvent("decline_follow_request", payload);
   }
 
   return (
@@ -40,7 +29,7 @@ const Follower = ({ users, isLoading }) => {
       ) : users.length > 0 ? (
         <>
           {users.map((user) => (
-            <div className="dropdown-result">
+            <div key={user.UserID} className="dropdown-result">
               {user.FirstName} {user.LastName}
               <button
                 type="button"

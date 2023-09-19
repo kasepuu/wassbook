@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./Application.js";
+import Router from "./components/Router.js";
 import "./css/index.css";
 import { wsAddConnection } from "./websocket.js"; // websocket
 import { RouterProvider, createBrowserRouter } from "react-router-dom"; // router
@@ -12,8 +12,8 @@ import Group from "./components/Groups/Group.jsx";
 import Groups from "./components/Groups";
 import Error from "./components/pages/Error.js";
 import Logout from "./components/pages/Logout.js";
-import Feed from "./components/Feed.js";
-
+import Feed from "./components/pages/Feed.js";
+import "./css/Sidepanels.css";
 import { sendEvent } from "./websocket.js";
 export const backendHost = "http://localhost:8081";
 
@@ -23,19 +23,6 @@ export function connectAndSendEvents() {
     wsAddConnection()
       .then((websocket) => {
         console.log("[WS]", websocket);
-        const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
-        const payload = {
-          RequesterID: LoggedUser.UserID,
-        };
-
-        console.log("requesting basic ws events");
-        // websocket events that will be sent on connection
-        // sendEvent("update_notifications", payload);
-        sendEvent("get_followerslist", payload);
-
-        // sendEvent("get_online_members", `log-in-${currentUser.UserID}`);
-        // sendEvent("load_posts", currentUser.UserID);
-        // sendEvent("update_users", "other Login");
       })
       .catch((error) => {
         console.error("Error connecting to WebSocket:", error);
@@ -46,7 +33,7 @@ export function connectAndSendEvents() {
 const routes = createBrowserRouter([
   {
     path: "/",
-    element: <App />, // the element that is being rendered constantly
+    element: <Router />, // the element that is being rendered constantly
     errorElement: <Error />,
     children: [
       { index: true, element: <Feed /> },

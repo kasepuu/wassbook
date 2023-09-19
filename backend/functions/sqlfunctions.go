@@ -294,7 +294,7 @@ func GetOnlineStatus(userId int) (isOnline bool) {
 
 func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	var followers []MutualFollower
-
+	fmt.Println("GETTING MUTUAL FOLLOWERS FOR:", GetUserName(userID))
 	/*	query2 := `
 	    SELECT f1.*
 	    FROM followers f1
@@ -326,5 +326,28 @@ func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 			followers = append(followers, MutualFollower{UserId: userid, UserName: GetUserName(userid)})
 		}
 	}
+
+	fmt.Println("mutual followers for:", followers)
+
 	return followers, nil
+}
+
+func SetFollowStatus(RequesterID int, TargetID int, changeStatusTo string, changeStatusFrom string) error {
+	// SetFollowStatus(RequesterID, TargetID, "following", "pending")
+	// SetFollowStatus(RequesterID, TargetID, "remove", "pending")
+	query := "UPDATE followers SET status = ? WHERE userid = ? AND targetid = ? AND status = ?"
+
+	if changeStatusTo == "remove" {
+		query = "DELETE FROM followers WHERE userid = ? AND targetid = ? AND status = ?"
+		_, err := sqlDB.DataBase.Exec(query, RequesterID, TargetID, changeStatusFrom)
+		fmt.Println("vuga:>", err)
+		return err
+	}
+
+	_, err := sqlDB.DataBase.Exec(query, changeStatusTo, RequesterID, TargetID, changeStatusFrom)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

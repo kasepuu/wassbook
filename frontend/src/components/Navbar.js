@@ -38,24 +38,25 @@ const Navbar = () => {
     if (isNotificationsOpen) setNotificationsOpened(false);
   }
 
-  // event listener for updates (new notification or new follower request)
+  // updating notifications
   useEffect(() => {
-    // event listener to existing ws connection
-    window.socket.onmessage = (e) => {
+    const handleWebSocketMessage = (e) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_notifications") {
-        console.log("update_notifications");
-        // update the chat log with the received message, only if chat is opened with the right person.
+        console.log("EVENT RECEIVED: update_notifications");
       } else if (eventData.type === "update_follower_requests") {
-        console.log("update_follower_requests");
-        console.log("payload:", `"${eventData.payload}"`);
-        if (eventData.payload) {
-          setFollowerRequests(eventData.payload);
-        }
-        // update notifications
+        console.log("EVENT RECEIVED: update_follower_requests");
+        setFollowerRequests(eventData.payload ? eventData.payload : "");
       }
     };
-  }, [followerRequests]);
+
+    window.socket.addEventListener("message", handleWebSocketMessage);
+
+    return () => {
+      // Cleanup: Remove the event listener when the component unmounts
+      window.socket.removeEventListener("message", handleWebSocketMessage);
+    };
+  }, [setFollowerRequests]);
 
   return (
     <nav className="Navbar">

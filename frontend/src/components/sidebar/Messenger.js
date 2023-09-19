@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
-import { sendEvent } from "../websocket";
-import "../css/Chat.css";
+import { sendEvent } from "../../websocket";
+import "../../css/Chat.css";
 // import EmojiPicker from "emoji-picker-react";
 const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
 
-const Chat = ({ selectedFollower, closeMessenger }) => {
+const Messenger = ({ selectedFollower, closeMessenger }) => {
   const [message, setMessage] = useState("");
   const inputRef = useRef(null);
   const chatLogRef = useRef(null);
@@ -198,4 +198,4 @@ const Chat = ({ selectedFollower, closeMessenger }) => {
   );
 };
 
-export default Chat;
+export default Messenger;

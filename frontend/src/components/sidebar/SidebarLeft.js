@@ -1,9 +1,8 @@
-import "../css/Sidepanels.css";
 import { FaAd } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaAngry } from "react-icons/fa";
-import Advertisement1 from "../page-images/advertisement.png";
-const Sidebar = () => {
+import Advertisement1 from "../../page-images/advertisement.png";
+const SidebarRight = () => {
   return (
     <div className="Sidebar">
       <div className="ad-container">
@@ -22,4 +21,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarRight;

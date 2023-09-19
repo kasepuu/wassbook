@@ -1,5 +1,5 @@
-import Sidebar from "../Sidebar";
-import FriendsList from "../FollowersList";
+import Sidebar from "../sidebar/SidebarLeft";
+import FriendsList from "../Sidebar2";
 import Navbar from "../Navbar";
 import "../../css/Profile.css";
 import profilePicture from "../../page-images/blank.png";
@@ -44,9 +44,8 @@ const Profile = () => {
     // event listener to existing ws connection
     window.socket.onmessage = (e) => {
       const eventData = JSON.parse(e.data);
-      console.log("received ws event!!:", eventData);
       if (eventData.type === "reload_profile_page") {
-        console.log("reload_profile_page");
+        console.log("REFRESHING PROFILE");
         setRefreshProfile(true);
       }
       // update notifications

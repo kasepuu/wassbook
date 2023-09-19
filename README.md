@@ -7,30 +7,24 @@
 * bugid:
 * - regades uus kasutaja & logides sisse -> followerslisti ilmuvad mingid kasutajad?
 * - ws event errorid kui sisse logida (ws in connection state)
-* -
+* - profile feed on private
 
 * funktsionaalsus:
 * - notifications
-* - followers WS
-* -
-
 * - groups
 
 * chati puudused;
 * - scrollevent? praegu laeb 10 viimast sõnumit
 * - "is typing..." oleks lahe
 * - group chat
-* - saab tühja chatti saata
 
 * profile puudused;
 * - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
-* - Kui vajutada public profiililt follow siis tekib automaatselt vastu ka follow -> Joel, kas see on vajalik
 
-* good practise:
+* good practice:
 * - handlereid vähendada, websocketisse ümber teha?
 * - error handlingut juurde, register/login jms formid, ümber disainida
-* -
-* -
+* - kood ilusamaks
 
 * - lõpu asjad:
 * - docker

@@ -41,7 +41,6 @@ const Login = () => {
       .then((loginResp) => {
         if (loginResp) {
           console.log("navigating to: /");
-          connectAndSendEvents();
           navigate("/");
         } else {
           console.log("something went wrong at loginResponse!");

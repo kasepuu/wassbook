@@ -1,13 +1,19 @@
 import { useEffect, useState } from "react";
-import Navbar from "./components/Navbar";
-import { tokenValidation } from "./jwt";
+import Navbar from "./Navbar";
+import { tokenValidation } from "../jwt";
 import { Outlet } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
-import FollowersList from "./components/FollowersList";
-
-function App() {
+import SidebarLeft from "./sidebar/SidebarLeft";
+import SidebarRight from "./sidebar/SidebarRight";
+import { connectAndSendEvents } from "..";
+import { sendEvent, wsAddConnection } from "../websocket";
+function Router() {
   const [isAuthorized, setIsAuthorized] = useState(null);
+  const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
+  const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+  const payload = {
+    RequesterID: LoggedUser.UserID,
+  };
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -16,6 +22,18 @@ function App() {
       try {
         const AuthorizedStatus = await tokenValidation();
         setIsAuthorized(AuthorizedStatus);
+
+        if (AuthorizedStatus && !window.socket) {
+          wsAddConnection()
+            .then(() => {
+              setIsWebSocketConnected(true);
+            })
+            .catch((e) => {
+              console.error(e);
+              setIsWebSocketConnected(false);
+            });
+        }
+
         if (
           !AuthorizedStatus &&
           location.pathname !== "/login" &&
@@ -34,9 +52,11 @@ function App() {
     checkAuthorization();
   }, [navigate, location]);
 
-  if (isAuthorized === null) {
+  if (isAuthorized === null || !isWebSocketConnected) {
     return <div>Loading...</div>;
   }
+
+  sendEvent("on_connection", payload); // onconnection :O
 
   return (
     <>
@@ -44,9 +64,9 @@ function App() {
         <>
           <div className="MainContainer">
             <Navbar />
-            <Sidebar />
+            <SidebarLeft />
             <Outlet />
-            <FollowersList />
+            <SidebarRight />
           </div>
         </>
       ) : (
@@ -56,4 +76,4 @@ function App() {
   );
 }
 
-export default App;
+export default Router;

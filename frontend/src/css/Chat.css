@@ -1,8 +1,29 @@
-.FollowersList {
+.FollowerContainer {
   flex: 1;
   background-color: #ddd;
   color: black;
-  position: relative; /* Ensure relative positioning for child elements */
+  position: relative;
+}
+
+.FollowersList,
+.GroupsList {
+  /* background-color: red; */
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+
+  margin: 0; /* Reset margin */
+  padding: 0; /* Reset padding */
+}
+.GroupsList {
+  height: calc(40vh - 30px);
+
+  border-bottom: 1px solid black;
+}
+.FollowersList {
+  height: calc(60vh - 30px);
+
+  border-top: 1px solid black;
 }
 
 .Messenger {
@@ -10,7 +31,6 @@
   left: -320px;
   border-radius: 10px;
   background-color: darkgray;
-
   bottom: 5px;
   width: 300px; /* Set an appropriate width for your messenger */
   height: 400px; /* Make it the same height as the parent container */

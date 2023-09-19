@@ -1,8 +1,10 @@
-import "../css/Feed.css";
+import "../../css/Feed.css";
 import React, { useState, useEffect, useCallback } from "react";
-import { backendHost } from "../index.js";
+import { backendHost } from "../../index.js";
 import FeedPostForm from "./FeedPostForm";
 import FeedPost from "./FeedPost";
+import SidebarRight from "../sidebar/SidebarLeft";
+import FollowersList from "../sidebar/SidebarRight";
 
 const Feed = () => {
   const [openedPostId, setOpenedPostId] = useState(null);
@@ -126,25 +128,27 @@ const Feed = () => {
   };
 
   return (
-    <div className="Feed">
-      <FeedPostForm
-        userInfo={userInfo}
-        loadFeed={loadFeed}
-        followersList={followersList}
-      />
-      <FeedPost
-        handlePostClick={handlePostClick}
-        openedPostId={openedPostId}
-        userInfo={userInfo}
-        loadComments={loadComments}
-        posts={posts}
-        comments={comments}
-        commentImageName={commentImageName}
-        setCommentImageName={setCommentImageName}
-        commentInputValue={commentInputValue}
-        setCommentInputValue={setCommentInputValue}
-      />
-    </div>
+    <>
+      <div className="Feed">
+        <FeedPostForm
+          userInfo={userInfo}
+          loadFeed={loadFeed}
+          followersList={followersList}
+        />
+        <FeedPost
+          handlePostClick={handlePostClick}
+          openedPostId={openedPostId}
+          userInfo={userInfo}
+          loadComments={loadComments}
+          posts={posts}
+          comments={comments}
+          commentImageName={commentImageName}
+          setCommentImageName={setCommentImageName}
+          commentInputValue={commentInputValue}
+          setCommentInputValue={setCommentInputValue}
+        />
+      </div>
+    </>
   );
 };
 
