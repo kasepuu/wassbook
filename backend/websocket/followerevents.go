@@ -81,41 +81,6 @@ func SendUnFollowHandler(event Event, c *Client) error {
 	return nil
 }
 
-func GetFollowRequestsHandler(event Event, c *Client) error {
-	fmt.Println("get follow requests requested")
-
-	return nil
-}
-
-func GetFollowersHandler(event Event, c *Client) error {
-	fmt.Println("send follow request")
-	// get_followerslist
-	type GetFollowersEvent struct {
-		RequesterID int `json:"RequesterID"`
-	}
-
-	var payload GetFollowersEvent
-	if err := json.Unmarshal(event.Payload, &payload); err != nil {
-		return fmt.Errorf("bad payload in request: %v", err)
-	}
-
-	RequesterID := payload.RequesterID
-
-	mutualFollowers, err := function.GetMutualFollowers(RequesterID)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	for client := range c.client.clients {
-		if client.userId == RequesterID {
-			sendResponse(mutualFollowers, "update_followerslist", client)
-		}
-	}
-
-	return nil
-}
-
 func AcceptFollowHandler(event Event, c *Client) error {
 	type Request struct {
 		RequesterID int `JSON:"RequesterID"`

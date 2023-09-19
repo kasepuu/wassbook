@@ -39,6 +39,39 @@ func FetchSearchBarUsers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func FetchNotifications(w http.ResponseWriter, r *http.Request) {
+	userid := r.URL.Query().Get("UserID")
+	uid, err := strconv.Atoi(userid)
+	if err != nil {
+		log.Println("Invalid userid in FetchUsersTryingToFollow():", err)
+
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Bad request, please try again!"))
+		return
+	}
+
+	Notifications, notErr := function.LoadNotifications(uid)
+	if notErr != nil {
+		log.Println("Errors encountered when trying to fetch:", notErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Internal issue, please try again later!"))
+		return
+	}
+
+	fmt.Println("FOLLOWERS > Fetched notifications:", Notifications)
+
+	if len(Notifications) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	encodeErr := json.NewEncoder(w).Encode(Notifications)
+	if encodeErr != nil {
+		log.Println(encodeErr)
+		return
+	}
+}
 func FetchUsersTryingToFollow(w http.ResponseWriter, r *http.Request) {
 	userid := r.URL.Query().Get("UserID")
 	uid, err := strconv.Atoi(userid)

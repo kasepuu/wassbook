@@ -19,17 +19,22 @@ type EventHandler func(event Event, c *Client) error
 // event handlers
 func (m *wsManager) setupEventHandlers() {
 	m.handlers["on_connection"] = OnConnectionHandler
+	m.handlers["request_mutualfollowers"] = LoadMutualFollowersHandler
+
+	// chat events
 	m.handlers["send_message"] = SendMessageHandler
 	m.handlers["request_messages"] = LoadMessagesHandler
-	m.handlers["send_notification"] = SendNotificationHandler
 
+	// follower events
 	m.handlers["send_follow_request"] = SendFollowHandler
 	m.handlers["send_unfollow_request"] = SendUnFollowHandler
 	m.handlers["accept_follow_request"] = AcceptFollowHandler
 	m.handlers["decline_follow_request"] = DeclineFollowHandler
 
-	m.handlers["request_mutualfollowers"] = LoadMutualFollowersHandler
-	m.handlers["get_followerslist"] = GetFollowersHandler
+	// notification events
+	m.handlers["send_notification"] = SendNotificationHandler
+	m.handlers["remove_notification"] = RemoveNotificationHandler
+
 }
 
 func sendResponse(responseData any, event string, c *Client) {
@@ -69,7 +74,11 @@ func OnConnectionHandler(event Event, c *Client) error {
 				sendResponse(usersMutual, "update_followerslist", client)
 			}
 
-			sendResponse(payload, "update_notifications", client)
+			notifications, errNot := function.LoadNotifications(RequesterID)
+
+			if errNot == nil {
+				sendResponse(len(notifications), "update_notifications", client)
+			}
 		}
 	}
 

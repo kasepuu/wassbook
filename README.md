@@ -8,18 +8,28 @@
 * - regades uus kasutaja & logides sisse -> followerslisti ilmuvad mingid kasutajad?
 * - ws event errorid kui sisse logida (ws in connection state)
 * - profile feed on private
+* - mutualfollowers -> väga vigane?
 
 * funktsionaalsus:
-* - notifications
 * - groups
 
 * chati puudused;
 * - scrollevent? praegu laeb 10 viimast sõnumit
-* - "is typing..." oleks lahe
 * - group chat
+* - "is typing..." oleks lahe
+
+* notification puudused;
+* - disain
+* - sendEvent("send_notification", payload) -> lisada tegevustele mis võiks teavituse saata
+* - following request (meil nendele eraldi lahter?)
+* - grupid -> teeks nendele ka oma lahtri nagu followeridele?
+* - - invitation request
+* - - entering request
+* - - group eventid
 
 * profile puudused;
 * - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
+* - private profile -> ja oled tema follower -> ei näe feedi!?!?
 
 * good practice:
 * - handlereid vähendada, websocketisse ümber teha?

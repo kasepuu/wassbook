@@ -20,6 +20,7 @@ const Navbar = () => {
   const [isNotificationsOpen, setNotificationsOpened] = useState(false);
   const [isFollowersOpen, setFollowersOpened] = useState(false);
   const [followerRequests, setFollowerRequests] = useState("");
+  const [notificationsCount, setNotficationsCount] = useState("");
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -44,6 +45,7 @@ const Navbar = () => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_notifications") {
         console.log("EVENT RECEIVED: update_notifications");
+        setNotficationsCount(eventData.payload ? eventData.payload : "");
       } else if (eventData.type === "update_follower_requests") {
         console.log("EVENT RECEIVED: update_follower_requests");
         setFollowerRequests(eventData.payload ? eventData.payload : "");
@@ -81,6 +83,7 @@ const Navbar = () => {
           }}
           className="notificationsBTN"
         >
+          <span className="notification-design">{notificationsCount}</span>
           <FaBell /> Notifications
           {isNotificationsOpen && (
             <NotificationsDropdown isOpen={isNotificationsOpen} />

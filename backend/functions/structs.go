@@ -101,3 +101,10 @@ type MutualFollower struct {
 	UserId   int
 	UserName string
 }
+
+type Notification struct {
+	ID          int
+	TargetID    int
+	SenderID    int
+	Description string
+}

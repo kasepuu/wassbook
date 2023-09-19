@@ -56,19 +56,6 @@ func SaveFollow(UserID int, ReceiverID int, Status string) {
 	}
 }
 
-func SaveNotification(UserID int, ReceiverID int, Type string) {
-	row, err := sqlDB.DataBase.Prepare(`INSERT INTO notifications (userid, receiverid, type) 
-	VALUES (?, ?, ?)`)
-	if err != nil {
-		log.Println("notification sql query error:", err)
-		return
-	}
-	_, execError := row.Exec(UserID, ReceiverID, Type)
-	if execError != nil {
-		log.Println("notification sql exec error:", execError)
-	}
-}
-
 func GetFirstAndLastName(UserID int) (User UserInfo, err error) {
 	User.UserID = UserID
 	User.UserName = GetUserName(UserID)
@@ -294,7 +281,6 @@ func GetOnlineStatus(userId int) (isOnline bool) {
 
 func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	var followers []MutualFollower
-	fmt.Println("GETTING MUTUAL FOLLOWERS FOR:", GetUserName(userID))
 	/*	query2 := `
 	    SELECT f1.*
 	    FROM followers f1
@@ -340,7 +326,6 @@ func SetFollowStatus(RequesterID int, TargetID int, changeStatusTo string, chang
 	if changeStatusTo == "remove" {
 		query = "DELETE FROM followers WHERE userid = ? AND targetid = ? AND status = ?"
 		_, err := sqlDB.DataBase.Exec(query, RequesterID, TargetID, changeStatusFrom)
-		fmt.Println("vuga:>", err)
 		return err
 	}
 
@@ -350,4 +335,67 @@ func SetFollowStatus(RequesterID int, TargetID int, changeStatusTo string, chang
 	}
 
 	return nil
+}
+
+func SaveNotification(TargetID int, SenderID int, description string) error {
+	row, err := sqlDB.DataBase.Prepare(`INSERT INTO notifications (targetid, senderid, description) 
+	VALUES (?, ?, ?)`)
+	if err != nil {
+		log.Println("notification sql query error:", err)
+		return err
+	}
+
+	_, execError := row.Exec(TargetID, SenderID, description)
+	if execError != nil {
+		log.Println("notification sql exec error:", execError)
+	}
+
+	return nil
+}
+
+func ClearNotification(notificationID int, TargetID int, clearAll bool) error {
+	var query string
+	var args []interface{}
+	if clearAll {
+		query = "DELETE FROM notifications WHERE TargetID = ?"
+		args = []interface{}{TargetID}
+	} else {
+		query = "DELETE FROM notifications WHERE ID = ? AND TargetID = ?"
+		args = []interface{}{notificationID, TargetID}
+	}
+
+	_, err := sqlDB.DataBase.Exec(query, args...)
+	if err != nil {
+		log.Println("notification sql exec error:", err)
+		return err
+	}
+
+	return nil
+}
+
+func LoadNotifications(TargetID int) ([]Notification, error) {
+	rows, err := sqlDB.DataBase.Query("SELECT * FROM notifications WHERE TargetID = ?", TargetID)
+	if err != nil {
+		log.Println("notification sql query error:", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var notifications []Notification
+
+	for rows.Next() {
+		var notification Notification
+		if err := rows.Scan(&notification.ID, &notification.TargetID, &notification.SenderID, &notification.Description); err != nil {
+			log.Println("notification scan error:", err)
+			return nil, err
+		}
+		notifications = append(notifications, notification)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Println("notification rows error:", err)
+		return nil, err
+	}
+
+	return notifications, nil
 }
