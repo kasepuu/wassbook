@@ -10,10 +10,7 @@ import { sendEvent, wsAddConnection } from "../websocket";
 function Router() {
   const [isAuthorized, setIsAuthorized] = useState(null);
   const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
-  const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
-  const payload = {
-    RequesterID: LoggedUser.UserID,
-  };
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -52,11 +49,18 @@ function Router() {
     checkAuthorization();
   }, [navigate, location]);
 
-  if (isAuthorized === null || !isWebSocketConnected) {
+  if (isAuthorized === null) {
     return <div>Loading...</div>;
   }
 
-  sendEvent("on_connection", payload); // onconnection :O
+  if (isWebSocketConnected) {
+    const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+    const payload = {
+      RequesterID: LoggedUser.UserID,
+    };
+
+    sendEvent("on_connection", payload); // onconnection :O
+  }
 
   return (
     <>
