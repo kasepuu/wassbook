@@ -5,10 +5,7 @@
 - toodo
 
 * bugid:
-* - regades uus kasutaja & logides sisse -> followerslisti ilmuvad mingid kasutajad?
 * - ws event errorid kui sisse logida (ws in connection state)
-* - profile feed on private
-* - mutualfollowers -> väga vigane?
 
 * funktsionaalsus:
 * - groups

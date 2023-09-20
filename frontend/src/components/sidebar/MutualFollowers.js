@@ -55,7 +55,7 @@ const MutualFollowers = () => {
       </div>
 
       <div className="FollowersList">
-        <p>Followers:</p>
+        <p>You can chat with people you follow and who follow you:</p>
 
         {mutualFollowers !== null && mutualFollowers.length > 0 ? (
           mutualFollowers.map((follower, index) => (
