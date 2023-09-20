@@ -4,8 +4,6 @@
 
 - toodo
 
-* bugid:
-* - ws event errorid kui sisse logida (ws in connection state)
 
 * funktsionaalsus:
 * - groups
@@ -23,9 +21,6 @@
 * - - invitation request
 * - - entering request
 * - - group eventid
-
-* profile puudused;
-* - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
 
 * good practice:
 * - handlereid vähendada, websocketisse ümber teha?
