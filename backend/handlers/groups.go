@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"path"
@@ -200,9 +201,48 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		fmt.Println(r.MultipartForm)
+		content := r.MultipartForm.Value["content"][0]
+		userId := r.MultipartForm.Value["userId"][0]
+		postId := r.MultipartForm.Value["postId"][0]
+		groupId := r.MultipartForm.Value["groupId"][0]
 
-		fmt.Println(r.MultipartForm.Value["content"])
+		userInt, _ := strconv.Atoi(userId)
+		groupInt, _ := strconv.Atoi(groupId)
+		postInt, _ := strconv.Atoi(postId)
+
+		file, _, err := r.FormFile("file")
+		if err != nil {
+			groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Content: content})
+			return
+		}
+
+		comments, err := groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Filename: dst.Name()})
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		toSend, _ := json.Marshal(comments)
+		w.WriteHeader(http.StatusCreated)
+		w.Header().Set("content-type", "application/json")
+		w.Write(toSend)
+	}
+}
+
+func saveFile(file multipart.File, userId string) error {
+	dst, err := os.CreateTemp("backend/users/"+userId, "comment-images-*.png")
+	if err != nil {
+		// w.WriteHeader(http.StatusBadRequest)
+		// w.Write([]byte("Error creating file"))
+
+		return err
+	}
+
+	if _, err := io.Copy(dst, filename); err != nil {
+		// w.WriteHeader(http.StatusBadRequest)
+		// w.Write([]byte("Error saving file"))
+		return err
 	}
 }
 

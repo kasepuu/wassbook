@@ -6,6 +6,7 @@ import Post from "./Post";
 import "../../css/Feed.css";
 
 import { getGroups, createGroup } from "../utils/groups";
+import { createComment } from "../utils/groups";
 
 
 import { useState, useEffect } from "react";
@@ -44,15 +45,12 @@ const Groups = () => {
   const { register, handleSubmit } = useForm();
 
 
-  const handleCommentSubmit= (e) => {
-     e.preventDefault();
-    
-    let data = new FormData(e.target);
-
-   
-    
-
-    
+  const handleCommentSubmit=  async (data, post) => {    
+    data.append("userId", userInfo.UserID)
+    data.append("postId", post.Id)
+    data.append("groupId",post.GroupId )
+    let response = await createComment(data);    
+    setPosts(response)
   }
 
   return (
@@ -63,7 +61,7 @@ const Groups = () => {
 
  <div className="feed-posts" id="feed-posts">
          {posts.map((post) => (
-         <Post post={post} handleCommentSubmit={handleCommentSubmit}></Post>
+         <Post key={post.Id} post={post} handleCommentSubmit={handleCommentSubmit}></Post>
       ))}
   </div>
      

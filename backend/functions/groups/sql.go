@@ -167,7 +167,7 @@ func SavePost(post Post) error {
 	return err
 }
 
-func GetPosts(id int) ([]Post, error) {
+func GetPosts(userId int) ([]Post, error) {
 	var err error
 	var posts []Post
 
@@ -177,7 +177,7 @@ func GetPosts(id int) ([]Post, error) {
 			left join users on posts.userid=users.id
 			left join groups on posts.groupId = groups.id
 			left join groupMember on groupMember.userId = posts.userId
-		where not posts.groupId = -1 and groupMember.userId =? `, id)
+		where not posts.groupId = -1 and groupMember.userId =? `, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +192,7 @@ func GetPosts(id int) ([]Post, error) {
 			&post.GroupId,
 			&post.Filename,
 			&post.Username,
-			&post.GroupName,	
+			&post.GroupName,
 		)
 
 		comments, err := GetComments(post.Id)
@@ -207,20 +207,21 @@ func GetPosts(id int) ([]Post, error) {
 	return posts, err
 }
 
-func SaveComment(comment Comment) error {
+func SaveComment(comment Comment) ([]Post, error) {
 	var err error
 	statement, err := sqlDB.DataBase.Prepare("Insert into comments (postId, userId, content, date, filename, groupId) values (?, ?, ?, ?, ?, ?)")
-	currentTime := time.Now().Format("29.08.2023 14:35")
+	currentTime := time.Now().Format("02.01.2006 15:04")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	_, err = statement.Exec(comment.PostId, comment.UserId, comment.Content, currentTime, comment.Filename, comment.GroupId)
-	// groupId, _ := result.LastInsertId()
-	// if err != nil {
-	// 	return err
-	// }
 
-	return err
+	if err != nil {
+		return nil, err
+	}
+	posts, err := GetPosts(comment.UserId)
+
+	return posts, err
 }
 
 func GetComments(postId int) ([]Comment, error) {

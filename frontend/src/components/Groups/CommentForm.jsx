@@ -3,10 +3,16 @@ import React, { useState, useRef } from "react";
 import { backendHost } from "../../index.js";
 import { FaImage } from "react-icons/fa";
 
-const CommentForm = ({ userInfo, handleCommentSubmit }) => {
+const CommentForm = ({ userInfo, handleCommentSubmit, post }) => {
     const [selectedCommentFile, setSelectedCommentFile] = useState(null);    
     let firstName = userInfo.FirstName;
     let lastName = userInfo.LastName;
+
+    const handleSubmit = (e) => {
+     e.preventDefault();    
+     let data = new FormData(e.target); 
+     handleCommentSubmit(data, post)
+    }
 
     // const handleSubmit = (event) => {
     //     event.preventDefault();
@@ -51,7 +57,7 @@ const CommentForm = ({ userInfo, handleCommentSubmit }) => {
 
 
     return (
-        <form onSubmit={handleCommentSubmit} >
+        <form onSubmit={handleSubmit} >
             <div className="comment-input-wrapper">
                 <div className="comment-input-container">
                     <input

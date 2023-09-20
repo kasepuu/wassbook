@@ -12,6 +12,7 @@ const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
 const Post = ({post, handleCommentSubmit}) => {
   
   let { id } = useParams();
+  console.warn(post)
 
   return (
    <div className="feed-post" key={post.Id}>
@@ -39,7 +40,8 @@ const Post = ({post, handleCommentSubmit}) => {
             <CommentForm
                 hidden
                 userInfo={userInfo}
-                handleCommentSubmit={handleCommentSubmit}
+                handleCommentSubmit={handleCommentSubmit}       
+                post={post}         
                 // commentImageName={commentImageName}
                 // setCommentImageName={setCommentImageName}
                 // commentInputValue={commentInputValue}
@@ -49,6 +51,7 @@ const Post = ({post, handleCommentSubmit}) => {
             />
             <PostComments
                 comments={post.Comments}
+                post={post}
             />
         </div>
     </div> 

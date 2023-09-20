@@ -51,8 +51,8 @@ export const createComment = async (comment) => {
 
     switch (response.status) {
         case 201:
-            let groups = await response.json();
-            return groups;
+            let data = await response.json();
+            return data;
         case 401:
             console.log("ERR");
     }
