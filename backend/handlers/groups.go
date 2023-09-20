@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"path"
@@ -210,40 +209,43 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 		groupInt, _ := strconv.Atoi(groupId)
 		postInt, _ := strconv.Atoi(postId)
 
-		file, _, err := r.FormFile("file")
-		if err != nil {
-			groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Content: content})
-			return
+		var posts []groups.Post
+
+		savedFile, noFileErr := saveFile(r, userId)
+
+		if noFileErr != nil {
+			posts, _ = groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Content: content}) // SIIS KUI POLE FAILI
+		} else {
+			posts, _ = groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Filename: savedFile, Content: content}) // FAIL SALVESTATUD
 		}
 
-		comments, err := groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Filename: dst.Name()})
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		toSend, _ := json.Marshal(comments)
+		toSend, _ := json.Marshal(posts)
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("content-type", "application/json")
 		w.Write(toSend)
 	}
 }
 
-func saveFile(file multipart.File, userId string) error {
+func saveFile(r *http.Request, userId string) (string, error) {
+	file, _, err := r.FormFile("file")
+	if err != nil {
+		return "", err
+	}
+
 	dst, err := os.CreateTemp("backend/users/"+userId, "comment-images-*.png")
 	if err != nil {
-		// w.WriteHeader(http.StatusBadRequest)
-		// w.Write([]byte("Error creating file"))
-
-		return err
+		return "", err
 	}
 
-	if _, err := io.Copy(dst, filename); err != nil {
-		// w.WriteHeader(http.StatusBadRequest)
-		// w.Write([]byte("Error saving file"))
-		return err
-	}
+	_, err = io.Copy(dst, file)
+
+	return dst.Name(), err
 }
 
 func addGroupMember(w http.ResponseWriter, r *http.Request) {

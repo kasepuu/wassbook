@@ -177,7 +177,8 @@ func GetPosts(userId int) ([]Post, error) {
 			left join users on posts.userid=users.id
 			left join groups on posts.groupId = groups.id
 			left join groupMember on groupMember.userId = posts.userId
-		where not posts.groupId = -1 and groupMember.userId =? `, userId)
+		where not posts.groupId = -1 and groupMember.userId =?
+		ORDER BY posts.id DESC `, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -229,9 +230,11 @@ func GetComments(postId int) ([]Comment, error) {
 	var comments []Comment
 
 	rows, err := sqlDB.DataBase.Query(
-		`select comments.id, comments.userid, comments.postId, comments.content, comments.date, comments.filename, groupId, users.nickname from comments 
+		`select comments.id, comments.userid, comments.postId, comments.content, comments.date, comments.filename, groupId, users.nickname 
+		from comments 
 			left join users on comments.userId = users.id
-		where postId = ? `, postId)
+		where postId = ?
+		ORDER BY comments.id  DESC `, postId)
 	if err != nil {
 		return nil, err
 	}
