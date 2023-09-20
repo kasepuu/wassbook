@@ -113,7 +113,7 @@ const FeedPostForm = ({ userInfo, loadFeed, followersList }) => {
               checked={postPrivacy === "private"}
               onChange={handlePrivacyChange}
             />
-            Private
+            Followers only
           </label>
           <label>
             <input
@@ -123,7 +123,7 @@ const FeedPostForm = ({ userInfo, loadFeed, followersList }) => {
               checked={postPrivacy === "almost_private"}
               onChange={handlePrivacyChange}
             />
-            Almost Private
+            Specific followers
           </label>
         </div>
 

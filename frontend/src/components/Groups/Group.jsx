@@ -1,5 +1,5 @@
-import Sidebar from "../sidebar/SidebarLeft";
-import FollowersList from "../Sidebar2";
+/* import Sidebar from "../sidebar/SidebarLeft";
+import FollowersList from "../Sidebar2"; */
 import Navbar from "../Navbar";
 import "../../css/Feed.css";
 

@@ -1,6 +1,6 @@
-import Sidebar from "../sidebar/SidebarLeft";
+/* import Sidebar from "../sidebar/SidebarLeft";
 import FriendsList from "../Sidebar2";
-import Navbar from "../Navbar";
+import Navbar from "../Navbar"; */
 import "../../css/Profile.css";
 import profilePicture from "../../page-images/blank.png";
 import { useParams } from "react-router-dom";
@@ -214,8 +214,7 @@ const Profile = () => {
           if (response.ok) {
             setIsEditingProfilepic(false);
             setProfilePicUrl(
-              `${backendHost}/users/${
-                userInfo.UserID
+              `${backendHost}/users/${userInfo.UserID
               }/profilepic/profilepic?timestamp=${Date.now()}`
             );
           }
@@ -356,7 +355,7 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-            userInfo.UserID === LoggedUser.UserID ? (
+              userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -470,7 +469,7 @@ const Profile = () => {
           </div>
         </div>
         {userInfo.PrivateStatus === 0 ||
-        userInfo.UserID === LoggedUser.UserID ? (
+          userInfo.UserID === LoggedUser.UserID ? (
           <>
             <p>Posts by {userInfo.FirstName}:</p>
             <div className="profile-posts">
