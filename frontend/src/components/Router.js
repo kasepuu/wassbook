@@ -24,6 +24,15 @@ function Router() {
           wsAddConnection()
             .then(() => {
               setIsWebSocketConnected(true);
+
+              const LoggedUser = JSON.parse(
+                sessionStorage.getItem("CurrentUser")
+              );
+              const payload = {
+                RequesterID: LoggedUser.UserID,
+              };
+
+              sendEvent("on_connection", payload); // onconnection :O
             })
             .catch((e) => {
               console.error(e);
@@ -51,15 +60,6 @@ function Router() {
 
   if (isAuthorized === null) {
     return <div>Loading...</div>;
-  }
-
-  if (isWebSocketConnected) {
-    const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
-    const payload = {
-      RequesterID: LoggedUser.UserID,
-    };
-
-    sendEvent("on_connection", payload); // onconnection :O
   }
 
   return (

@@ -11,6 +11,7 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
   const [chatLog, setChatLog] = useState([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
+  console.log(selectedFollower);
   // get current chat
   useEffect(() => {
     const sender = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;

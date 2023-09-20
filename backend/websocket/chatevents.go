@@ -51,7 +51,7 @@ func SendMessageHandler(event Event, c *Client) error {
 			ChatLog:     chatLog,
 		}
 		sendResponse(payload, "update_messages", client)
-		sendResponse(payload, "update_notifications", client)
+		// sendResponse(payload, "update_notifications", client)
 	}
 	return nil
 }
