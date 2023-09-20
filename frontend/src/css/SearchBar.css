@@ -47,7 +47,7 @@
   display: flex; /* Use flexbox */
   align-items: center; /* Center vertically */
   justify-content: center; /* Center horizontally */
-
+  cursor: pointer;
   padding: 10px 20px;
 }
 

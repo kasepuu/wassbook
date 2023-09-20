@@ -27,6 +27,9 @@
 
 .FollowersList {
   padding: 20px;
+}
+
+.FollowersList li {
   cursor: pointer;
 }
 
