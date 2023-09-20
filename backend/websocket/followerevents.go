@@ -187,3 +187,26 @@ func LoadMutualFollowersHandler(event Event, c *Client) error {
 	}
 	return nil
 }
+
+func LoadProfileFollowersHandler(event Event, c *Client) error {
+	fmt.Println("loading profile followers:")
+
+	type Request struct {
+		SenderID int `JSON:"SenderID"`
+	}
+	var payload Request
+
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("[follow_decline] bad payload in request: %v", err)
+	}
+
+	profileFollowers, errMut := function.GetProfileFollowers(payload.SenderID)
+	if errMut == nil {
+		sendResponse(profileFollowers, "profile_followerslist", c)
+	}
+	profileFollowing, errMut := function.GetProfileFollowing(payload.SenderID)
+	if errMut == nil {
+		sendResponse(profileFollowing, "profile_followinglist", c)
+	}
+	return nil
+}
