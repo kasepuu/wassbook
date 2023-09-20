@@ -10,15 +10,17 @@ import PostComments from "./PostComments";
 const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
 
 const handleOverlay = (e) => {
+  console.warn("click");
   e.preventDefault();
 
-  const all = e.currentTarget.parentNode.querySelectorAll(".post-overlay");
+  const all =
+    e.currentTarget.parentNode.parentNode.querySelectorAll(".post-overlay");
 
   for (const node of all) {
     node.hidden = true;
   }
 
-  const current = e.currentTarget.querySelector(".post-overlay");
+  const current = e.currentTarget.parentNode.querySelector(".post-overlay");
   current.hidden = false;
 };
 
@@ -26,8 +28,8 @@ const Post = ({ post, handleCommentSubmit }) => {
   let { id } = useParams();
 
   return (
-    <div onClick={handleOverlay} className="feed-post" key={post.Id}>
-      <div className="post-header">
+    <div className="feed-post" key={post.Id}>
+      <div onClick={handleOverlay} className="post-header">
         <img
           src={`${backendHost}/users/${post.userId}/profilepic/profilepic`}
           onError={(e) => {
@@ -42,7 +44,9 @@ const Post = ({ post, handleCommentSubmit }) => {
         </div>
       </div>
 
-      <div className="post-body">{post.Content}</div>
+      <div onClick={handleOverlay} className="post-body">
+        {post.Content}
+      </div>
       <img
         src={`${backendHost}/users/${post.UserId}/${post.Filename}`}
         alt=""

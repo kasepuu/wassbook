@@ -1,0 +1,15 @@
+.group-names {
+    display: flex;
+    overflow-x: auto;
+    z-index: 100;
+
+}
+
+.group-names h3 {
+    margin: 0 100px;
+}
+
+
+.hide-comments {
+    display: none;
+}

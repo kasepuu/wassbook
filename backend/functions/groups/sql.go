@@ -85,6 +85,43 @@ func GetGroups() ([]Group, error) {
 	return groups, err
 }
 
+func GetGroupPosts(groupId int) ([]Post, error) {
+	posts := []Post{}
+
+	memberRows, err := sqlDB.DataBase.Query(`
+	select posts.id, posts.userId, posts.date, posts.content, posts.groupId, posts.filename, users.nickname
+	from posts 
+		left join users on posts.userid=users.id
+		left join groups on posts.groupId = groups.id
+	where groupId =  ? order by posts.id DESC`, groupId)
+	if err != nil {
+		return []Post{}, err
+	}
+
+	for memberRows.Next() {
+		var post Post
+		memberRows.Scan(
+			&post.Id,
+			&post.UserId,
+			&post.Date,
+			&post.Content,
+			&post.GroupId,
+			&post.Filename,
+			&post.Username,			
+		)
+		comments, err := GetComments(post.Id)
+
+		if err != nil {
+			return []Post{}, err
+		}
+
+		post.Comments = comments
+
+		posts = append(posts, post)
+	}
+	return posts, err
+}
+
 func GetGroup(id int) (Group, error) {
 	var group Group
 
@@ -109,13 +146,14 @@ func GetGroup(id int) (Group, error) {
 	}
 
 	group.Events, group.Members = GetGroupEventsAndMembers(id)
+	group.Posts, err = GetGroupPosts(id)
 
 	return group, err
 }
 
 func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
-	var members []UserStruct
-	var events []Event
+	members := []UserStruct{}
+	events := []Event{}
 
 	memberRows, err := sqlDB.DataBase.Query("select users.id, users.nickname from groupmember left join users on groupmember.userId = users.id where groupid = ?", id)
 	if err != nil {

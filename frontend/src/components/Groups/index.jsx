@@ -2,13 +2,12 @@
 // TODO  Võimalus teha postitusi grupi lehel
 // TODO Kuvada postitusi üldiselt grupi lehel
 
-import Post from "./Post";
+import { Posts } from "./Posts";
 import "../../css/Feed.css";
-import "../../css/Groups.css"
+import "../../css/Groups.css";
 
 import { getGroups, createGroup } from "../utils/groups";
 import { createComment } from "../utils/groups";
-
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -20,13 +19,11 @@ const Groups = () => {
   const [posts, setPosts] = useState([]);
   const [groups, setGroups] = useState([]);
 
-
   useEffect(() => {
     async function fetchData() {
-
       const response = await getGroups(userInfo.UserID);
-      setGroups(response.Groups)
-      setPosts(!response.Posts ? []:response.Posts )      
+      setGroups(response.Groups);
+      setPosts(!response.Posts ? [] : response.Posts);
     }
 
     fetchData();
@@ -45,34 +42,29 @@ const Groups = () => {
   };
   const { register, handleSubmit } = useForm();
 
+  const handleCommentSubmit = async (data, post) => {
+    console.warn(data, post);
 
-  const handleCommentSubmit=  async (data, post) => {    
-    data.append("userId", userInfo.UserID)
-    data.append("postId", post.Id)
-    data.append("groupId",post.GroupId )
-    let response = await createComment(data);    
-    setPosts(response)
-  } 
+    data.append("userId", userInfo.UserID);
+    data.append("postId", post.Id);
+    data.append("groupId", post.GroupId);
+    let response = await createComment(data);
+    setPosts(response);
+  };
 
   //TODO vaadata kuidas horisontaalselt scroll korda teha
   return (
     <>
-      <div className="Feed feed-container">   
-      <h1>Groups</h1>
-      <div className="group-names">
-        {groups.map(group => (
-          <Link to={`/groups/${group.Id}`}>
-          <h3>{group.Name}</h3>
-          </Link>
-        
-       ))}
-        </div>       
-       <h1>Feed</h1>
-        <div className="feed-posts" id="feed-posts">
-                {posts.map((post) => (
-                <Post  key={post.Id} post={post} handleCommentSubmit={handleCommentSubmit}></Post>
-              ))}
-        </div>   
+      <div className="Feed feed-container">
+        <h1>Groups</h1>
+        <div className="group-names">
+          {groups.map((group) => (
+            <Link to={`/groups/${group.Id}`}>
+              <h3>{group.Name}</h3>
+            </Link>
+          ))}
+        </div>
+        <Posts posts={posts} handleCommentSubmit={handleCommentSubmit} />
         <h1>Create group</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-control">
@@ -94,7 +86,7 @@ const Groups = () => {
           </div>
         </form>
       </div>
-        </>
+    </>
   );
 };
 

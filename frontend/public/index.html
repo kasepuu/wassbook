@@ -23,7 +23,6 @@
     const scrollContainer = document.querySelector(".group-names");
 
     scrollContainer.addEventListener("wheel", (evt) => {
-      console.warn("HEY HOPPP");
       evt.preventDefault();
       scrollContainer.scrollLeft += evt.deltaY; 
     });

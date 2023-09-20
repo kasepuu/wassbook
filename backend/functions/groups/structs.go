@@ -14,6 +14,7 @@ type Group struct {
 	Description string       `json:"Description"`
 	Events      []Event      `json:"Events"`
 	Membercount int          `json:"Membercount"`
+	Posts       []Post       `json:"Posts"`
 	// TODO mõelda kuidas päringus saada arvu
 }
 
