@@ -82,10 +82,14 @@ a {
 
 .notificationsBTN {
   position: relative;
+  cursor: pointer;
+  margin-right: 5px;
 }
 
 .followersBTN {
+  margin-right: 5px;
   position: relative;
+  cursor: pointer;
 }
 
 .dropdown {

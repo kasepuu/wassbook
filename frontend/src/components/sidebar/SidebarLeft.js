@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FaAngry } from "react-icons/fa";
 import Advertisement1 from "../../page-images/advertisement.png";
 import ProfileFollowers from "./ProfileFollowers";
-const SidebarRight = () => {
+const SidebarLeft = () => {
   const pathname = window.location.pathname;
   const parts = pathname.split('/');
   const user = JSON.parse(sessionStorage.getItem("CurrentUser"));
@@ -33,4 +33,4 @@ const SidebarRight = () => {
   );
 };
 
-export default SidebarRight;
+export default SidebarLeft;

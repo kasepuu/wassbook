@@ -25,6 +25,7 @@ func (m *wsManager) setupEventHandlers() {
 	// chat events
 	m.handlers["send_message"] = SendMessageHandler
 	m.handlers["request_messages"] = LoadMessagesHandler
+	m.handlers["is_typing"] = IsTypingHandler
 
 	// follower events
 	m.handlers["send_follow_request"] = SendFollowHandler

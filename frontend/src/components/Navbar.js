@@ -81,7 +81,7 @@ const Navbar = () => {
           <FaUsers /> Groups
         </Link>
 
-        <Link
+        <div
           onClick={(e) => {
             onNotifactionsClick(e);
           }}
@@ -92,8 +92,8 @@ const Navbar = () => {
           {isNotificationsOpen && (
             <NotificationsDropdown isOpen={isNotificationsOpen} />
           )}
-        </Link>
-        <Link
+        </div>
+        <div
           onClick={(e) => {
             onFollowersClick(e);
           }}
@@ -102,7 +102,7 @@ const Navbar = () => {
           <span className="notification-design">{followerRequests}</span>
           <FaUserFriends /> Followers
           {isFollowersOpen && <FollowersDropDown isOpen={isFollowersOpen} />}
-        </Link>
+        </div>
 
         <Link to="/logout" onClick={handleLogout}>
           <FaDoorOpen /> Logout

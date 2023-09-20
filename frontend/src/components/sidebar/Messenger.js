@@ -3,27 +3,48 @@ import { sendEvent } from "../../websocket";
 import "../../css/Chat.css";
 // import EmojiPicker from "emoji-picker-react";
 const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
+let timeOut;
 
 const Messenger = ({ selectedFollower, closeMessenger }) => {
   const [message, setMessage] = useState("");
   const inputRef = useRef(null);
   const chatLogRef = useRef(null);
   const [chatLog, setChatLog] = useState([]);
+  const [messagesToLoad, setMessagesToLoad] = useState(10);
+  const [totalMessages, setTotalMessages] = useState(0); // Total number of messages
+  const [prevScrollHeight, setScrollHeight] = useState(0)
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [shouldResetMessagesToLoad, setShouldResetMessagesToLoad] = useState(true);
+  const [scrollingEnabled, setScrollingEnabled] = useState(true);
 
-  console.log(selectedFollower);
+
+
   // get current chat
   useEffect(() => {
+    if (shouldResetMessagesToLoad) {
+      setMessagesToLoad(10);
+      setTotalMessages(0);
+      setScrollHeight(0);
+      setChatLog([]);
+      setShouldResetMessagesToLoad(false);
+    }
+    if (prevScrollHeight === 0 && totalMessages === 0 && messagesToLoad === 10) {
+      console.log("INFO HERE", selectedFollower, prevScrollHeight, totalMessages, chatLog, messagesToLoad);
+      setShouldResetMessagesToLoad(true);
+      loadMessagesFromBackend();
+    } 
+  }, [selectedFollower, shouldResetMessagesToLoad]);
+
+  function loadMessagesFromBackend() {
     const sender = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
     const receiver = selectedFollower.UserId;
-
     const payload = {
       SenderID: sender,
       ReceiverID: receiver,
+      Limit: messagesToLoad,
     };
-
     sendEvent("request_messages", payload);
-  }, [selectedFollower]);
+  }
 
   // event listener for chat updates
   useEffect(() => {
@@ -32,29 +53,63 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_messages") {
         // update the chat log with the received message, only if chat is opened with the right person.
-        if (eventData.payload) {
-          if (
-            JSON.parse(localStorage.getItem("CurrentChat")).UserId ===
-            eventData.payload.CurrentChat
-          ) {
-            if (eventData.payload.ChatLog) {
-              setChatLog(eventData.payload.ChatLog);
-            }
-          }
+        if (eventData.payload &&
+          JSON.parse(localStorage.getItem("CurrentChat")).UserId === eventData.payload.CurrentChat &&
+          eventData.payload.ChatLog) {
+          setTotalMessages(eventData.payload.TotalCount)
+          setChatLog(eventData.payload.ChatLog);
+          document.getElementById('chatstatus').innerHTML = ""
         }
+      } else if (eventData.type === "is_typing") {
+          const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"))      
+          const chatStatus = document.getElementById('chatstatus')
+
+          if (selectedFollower.UserName === currentUser.UserName) { return }
+
+          clearTimeout(timeOut)
+          let messageformat = `📱${selectedFollower.UserName} is typing...`
+          chatStatus.innerHTML = messageformat
+          timeOut = setTimeout(function () {
+              chatStatus.innerHTML = ""
+          }, 1000);
+
       } else {
-        // update notifications
+        //notification
       }
     };
   }, [selectedFollower]);
 
-  // scroll to the bottom on chatLog change
+  const handleScroll = () => {
+    const chatLogContainer = chatLogRef.current;
+    
+    if (chatLogContainer.scrollTop <= 0 &&
+      messagesToLoad <= totalMessages &&
+      chatLog.length > 0 && scrollingEnabled) {
+        setScrollingEnabled(false);
+
+        setScrollHeight(chatLogContainer.scrollHeight)
+        setMessagesToLoad(messagesToLoad + 10); // Load 10 more messages
+        loadMessagesFromBackend()
+        setTimeout(() => {
+          setScrollingEnabled(true);
+        }, 500);
+    }
+  };
+
+  useEffect(() => {
+    chatLogRef.current.addEventListener("scroll", handleScroll);
+
+  }, [messagesToLoad, totalMessages, scrollingEnabled]);
+
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight - prevScrollHeight; // Adjust scroll position
+    }
+    if (chatLogRef.current.scrollTop <= 0 && messagesToLoad < totalMessages) {
+      loadMessagesFromBackend()
     }
   }, [chatLog]);
-
+  
   const sendMessage = (sender, receiver) => {
     if (message.trim() === "") return;
 
@@ -114,9 +169,8 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           chatLog.map((message, index) => (
             <div
               key={index}
-              className={`chat-log-${
-                message.UserName === selectedFollower.UserName ? "to" : "from"
-              }`}
+              className={`chat-log-${message.UserName === selectedFollower.UserName ? "to" : "from"
+                }`}
             >
               <div className="chat-log-content">
                 <div className="chat-log-to-image">{message.UserName}</div>
@@ -132,7 +186,7 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
         )}
       </div>
       {/*other chat elements*/}
-      <div className="chat-status">{/*status -> is typing etc...*/}</div>
+      <div id="chatstatus" className="chat-status">{/*status -> is typing etc...*/}</div>
       <div className="chat-close" onClick={closeMessenger}>
         X
       </div>
@@ -145,10 +199,16 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           onClick={(e) => setShowEmojiPicker(false)}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
+              const response = {
+                SenderID: JSON.parse(sessionStorage.getItem("CurrentUser")).UserID.toString(),
+                ReceiverID: selectedFollower.UserId.toString(),
+              };
+            sendEvent("is_typing", response);
+
             if (e.key === "Enter" && !e.shiftKey) {
               // Calling the sendMessage function when Enter is pressed
               e.preventDefault();
-
+              
               sendMessage(
                 JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
                 selectedFollower.UserId

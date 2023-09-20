@@ -3,6 +3,8 @@ package ws
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"strconv"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
@@ -31,17 +33,20 @@ func SendMessageHandler(event Event, c *Client) error {
 	type ResponseStruct struct {
 		CurrentChat int
 		ChatLog     []function.ReturnChatData
+		TotalCount  int
 	}
 
 	for client := range c.client.clients {
 		var chatLog []function.ReturnChatData
 		var currentChat int
+		var totalCount int
+
 		if client.userId == sendMessage.ReceiverID {
-			chatLog = function.LoadMessages(sendMessage.ReceiverID, c.userId, 10)
+			chatLog, totalCount = function.LoadMessages(sendMessage.ReceiverID, c.userId, 10)
 			currentChat = c.userId
 			fmt.Println("LOG THE RECEUIVER IS RECEVING:", chatLog)
 		} else if client.userId == sendMessage.SenderID {
-			chatLog = function.LoadMessages(c.userId, sendMessage.ReceiverID, 10)
+			chatLog, totalCount = function.LoadMessages(c.userId, sendMessage.ReceiverID, 10)
 			currentChat = sendMessage.ReceiverID
 			fmt.Println("LOG THE SENDER IS RECEVING:", chatLog)
 		}
@@ -49,6 +54,7 @@ func SendMessageHandler(event Event, c *Client) error {
 		payload := ResponseStruct{
 			CurrentChat: currentChat,
 			ChatLog:     chatLog,
+			TotalCount: totalCount,
 		}
 		sendResponse(payload, "update_messages", client)
 		// sendResponse(payload, "update_notifications", client)
@@ -60,6 +66,7 @@ func LoadMessagesHandler(event Event, c *Client) error {
 	type LoadMessageEvent struct {
 		ReceiverID int `json:"ReceiverID"`
 		SenderID   int `json:"SenderID"`
+		Limit      int `json:"Limit"`
 	}
 
 	// request_message
@@ -75,6 +82,7 @@ func LoadMessagesHandler(event Event, c *Client) error {
 	type ResponseStruct struct {
 		CurrentChat int
 		ChatLog     []function.ReturnChatData
+		TotalCount  int
 	}
 	// Prepare the response payload
 
@@ -82,11 +90,12 @@ func LoadMessagesHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == requestMessage.SenderID {
-			chatLog := function.LoadMessages(sendingUserID, receivingUserID, 10)
+			chatLog, totalCount := function.LoadMessages(sendingUserID, receivingUserID, requestMessage.Limit)
 
 			payload := ResponseStruct{
 				CurrentChat: receivingUserID, // Set the current chat to the receiver's ID
 				ChatLog:     chatLog,
+				TotalCount:  totalCount,
 			}
 			fmt.Println("THIS INFO IS BEING PROCESSED:", chatLog)
 
@@ -94,5 +103,25 @@ func LoadMessagesHandler(event Event, c *Client) error {
 		}
 	}
 
+	return nil
+}
+
+type isTypingFormat struct {
+	SenderID   string `json:"SenderID"`
+	ReceiverID string `json:"ReceiverID"`
+}
+
+func IsTypingHandler(event Event, c *Client) error {
+	var payload isTypingFormat
+	log.Println(event)
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("bad payload in request: %v", err)
+	}
+	ReceiverID, _ := strconv.Atoi(payload.ReceiverID)
+	for client := range c.client.clients {
+		if client.userId == ReceiverID {
+			sendResponse(payload, "is_typing", client)
+		}
+	}
 	return nil
 }
