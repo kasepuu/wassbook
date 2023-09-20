@@ -3,23 +3,13 @@ import React, { useState, useEffect } from "react";
 import profilePicture from "../page-images/blank.png";
 import { backendHost } from "../index.js";
 
-const PostsByProfile = ({ profilepic }) => {
+const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
   const [posts, setPosts] = useState([]);
   //const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
-  const search = window.location.pathname;
-  const parts = search.split("/");
-  const lastPart = parts.pop();
-
   function loadFeed() {
-    fetch(`${backendHost}/getPostByUserId`, {
-      method: "POST",
-      body: JSON.stringify({
-        userName: lastPart,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    console.log(userID, loggedUserID)
+    fetch(`${backendHost}/getPostByUserId?userID=${userID}&loggedUserID=${loggedUserID}`, {
     })
       .then((response) => response.json())
       .catch((error) => {
@@ -49,8 +39,8 @@ const PostsByProfile = ({ profilepic }) => {
   }
 
   useEffect(() => {
-    loadFeed(lastPart);
-  }, [lastPart]);
+    loadFeed(userID, loggedUserID);
+  }, [userID, loggedUserID]);
 
   return (
     <>

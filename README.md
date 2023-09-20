@@ -29,7 +29,6 @@
 
 * profile puudused;
 * - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
-* - private profile -> ja oled tema follower -> ei näe feedi!?!?
 
 * good practice:
 * - handlereid vähendada, websocketisse ümber teha?

@@ -420,17 +420,33 @@ func UpdateProfilePictureHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func FetchPostsCreatedBy(w http.ResponseWriter, r *http.Request) {
-
-	var request struct {
-		UserName string `json:"userName"`
-	}
-	err := json.NewDecoder(r.Body).Decode(&request)
-	if err != nil {
-		http.Error(w, "Failed to decode request body", http.StatusBadRequest)
-		return
-	}
-
-	rows, err := sqlDB.DataBase.Query("SELECT * FROM posts WHERE userId = (SELECT id FROM users WHERE nickname = ?)", request.UserName)
+	profileUserId := r.URL.Query().Get("userID")
+	loggedUserId := r.URL.Query().Get("loggedUserID")
+	log.Println(profileUserId, loggedUserId)
+	rows, err := sqlDB.DataBase.Query(`SELECT DISTINCT p.*
+	FROM posts AS p
+	LEFT JOIN (
+	  SELECT DISTINCT id, targetid
+	  FROM followers
+	  WHERE userId = ? AND status = 'following'
+	) AS f ON p.userid = f.targetId
+	WHERE 
+	  (p.privacy = 'public'
+	  OR (p.privacy = 'private' AND f.id IS NOT NULL)
+	  OR (p.privacy = 'private' AND p.userId = ?)
+	  OR (
+		p.privacy = 'almost_private' AND
+		(
+		  p.userId = ? 
+		  OR p.id IN (
+			SELECT postId
+			FROM privatePosts
+			WHERE userId = ? 
+		  )
+		)
+	  ))
+	  AND p.userid = ?; 
+	`, loggedUserId, loggedUserId, loggedUserId, loggedUserId, profileUserId)
 	if err != nil {
 		log.Println("Error querying posts:", err)
 		w.WriteHeader(http.StatusInternalServerError)

@@ -354,7 +354,7 @@ const Profile = () => {
             <p className="lastname">
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
-            {userInfo.PrivateStatus === 0 ||
+            {userInfo.PrivateStatus === 0 || userInfo.FollowStatus === "following" ||
               userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
@@ -468,27 +468,34 @@ const Profile = () => {
             )}
           </div>
         </div>
-        {userInfo.PrivateStatus === 0 ||
+        {userInfo.PrivateStatus === 0 || userInfo.FollowStatus === "following" ||
           userInfo.UserID === LoggedUser.UserID ? (
           <>
-            <p>Posts by {userInfo.FirstName}:</p>
+            {userInfo.PrivateStatus === 0 && userInfo.FollowStatus !== "following" ? (<>
+              <p>Public posts by {userInfo.FirstName}:</p>
+            </>) : (<>
+              <p>Posts by {userInfo.FirstName}:</p></>)}
+
             <div className="profile-posts">
-              {userInfo.FollowStatus === "following" || isLocalUser ? (
-                <>
-                  <PostsByProfile
-                    profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
-                  />
-                </>
-              ) : (
-                <>
-                  He must follow you back before you can see their private posts
-                </>
-              )}
+              <>
+                <PostsByProfile
+                  profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
+                  userID={userInfo.UserID}
+                  loggedUserID={LoggedUser.UserID}
+                />
+              </>
             </div>
           </>
         ) : (
           <>
-            <h1>This profile is private!</h1>
+            <p>Public posts by {userInfo.FirstName}:</p>
+            <div className="profile-posts">
+              <PostsByProfile
+                profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
+                userID={userInfo.UserID}
+                loggedUserID={LoggedUser.UserID}
+              />
+            </div>
           </>
         )}
       </div>
