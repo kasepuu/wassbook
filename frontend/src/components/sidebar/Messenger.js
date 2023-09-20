@@ -32,7 +32,7 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
       console.log("INFO HERE", selectedFollower, prevScrollHeight, totalMessages, chatLog, messagesToLoad);
       setShouldResetMessagesToLoad(true);
       loadMessagesFromBackend();
-    } 
+    }
   }, [selectedFollower, shouldResetMessagesToLoad]);
 
   function loadMessagesFromBackend() {
@@ -61,17 +61,17 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           document.getElementById('chatstatus').innerHTML = ""
         }
       } else if (eventData.type === "is_typing") {
-          const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"))      
-          const chatStatus = document.getElementById('chatstatus')
+        const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"))
+        const chatStatus = document.getElementById('chatstatus')
+        if (!chatStatus) { return }
+        if (selectedFollower.UserName === currentUser.UserName) { return }
 
-          if (selectedFollower.UserName === currentUser.UserName) { return }
-
-          clearTimeout(timeOut)
-          let messageformat = `📱${selectedFollower.UserName} is typing...`
-          chatStatus.innerHTML = messageformat
-          timeOut = setTimeout(function () {
-              chatStatus.innerHTML = ""
-          }, 1000);
+        clearTimeout(timeOut)
+        let messageformat = `📱${selectedFollower.UserName} is typing...`
+        chatStatus.innerHTML = messageformat
+        timeOut = setTimeout(function () {
+          chatStatus.innerHTML = ""
+        }, 1000);
 
       } else {
         //notification
@@ -81,18 +81,18 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
 
   const handleScroll = () => {
     const chatLogContainer = chatLogRef.current;
-    
+
     if (chatLogContainer.scrollTop <= 0 &&
       messagesToLoad <= totalMessages &&
       chatLog.length > 0 && scrollingEnabled) {
-        setScrollingEnabled(false);
+      setScrollingEnabled(false);
 
-        setScrollHeight(chatLogContainer.scrollHeight)
-        setMessagesToLoad(messagesToLoad + 10); // Load 10 more messages
-        loadMessagesFromBackend()
-        setTimeout(() => {
-          setScrollingEnabled(true);
-        }, 500);
+      setScrollHeight(chatLogContainer.scrollHeight)
+      setMessagesToLoad(messagesToLoad + 10); // Load 10 more messages
+      loadMessagesFromBackend()
+      setTimeout(() => {
+        setScrollingEnabled(true);
+      }, 500);
     }
   };
 
@@ -109,7 +109,7 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
       loadMessagesFromBackend()
     }
   }, [chatLog]);
-  
+
   const sendMessage = (sender, receiver) => {
     if (message.trim() === "") return;
 
@@ -199,16 +199,16 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           onClick={(e) => setShowEmojiPicker(false)}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
-              const response = {
-                SenderID: JSON.parse(sessionStorage.getItem("CurrentUser")).UserID.toString(),
-                ReceiverID: selectedFollower.UserId.toString(),
-              };
+            const response = {
+              SenderID: JSON.parse(sessionStorage.getItem("CurrentUser")).UserID.toString(),
+              ReceiverID: selectedFollower.UserId.toString(),
+            };
             sendEvent("is_typing", response);
 
             if (e.key === "Enter" && !e.shiftKey) {
               // Calling the sendMessage function when Enter is pressed
               e.preventDefault();
-              
+
               sendMessage(
                 JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
                 selectedFollower.UserId
