@@ -4,11 +4,6 @@
 
 - toodo
 
-* bugid:
-* - regades uus kasutaja & logides sisse -> followerslisti ilmuvad mingid kasutajad?
-* - ws event errorid kui sisse logida (ws in connection state)
-* - profile feed on private
-* - mutualfollowers -> väga vigane?
 
 * funktsionaalsus:
 * - groups
@@ -26,10 +21,6 @@
 * - - invitation request
 * - - entering request
 * - - group eventid
-
-* profile puudused;
-* - profiilil followers and following -> Does the profile displays the users that you follow and the ones who are following you?
-* - private profile -> ja oled tema follower -> ei näe feedi!?!?
 
 * good practice:
 * - handlereid vähendada, websocketisse ümber teha?

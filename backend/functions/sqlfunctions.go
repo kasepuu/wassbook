@@ -281,19 +281,11 @@ func GetOnlineStatus(userId int) (isOnline bool) {
 
 func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	var followers []MutualFollower
-	/*	query2 := `
-	    SELECT f1.*
-	    FROM followers f1
-	    INNER JOIN followers f2 ON f1.userid = f2.targetid AND f1.targetid = f2.userid
-	    WHERE f1.status = 'following' AND f2.status = 'following'
-	`*/
-
-	query := `SELECT DISTINCT f1.userid
-	FROM followers f1, followers f2
-	WHERE f1.userid = f2.targetid
-	  AND f1.targetid = f2.userid
-	  AND f1.status = 'following'
-	  AND f2.status = 'following'
+	query := `
+	SELECT f1.targetid
+	FROM followers f1
+	INNER JOIN followers f2 ON f1.userid = f2.targetid AND f1.targetid = f2.userid
+	WHERE f1.status = 'following' AND f2.status = 'following' and f1.userid = ?
 	`
 
 	rows, err := sqlDB.DataBase.Query(query, userID)
@@ -314,6 +306,64 @@ func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	}
 
 	fmt.Println("mutual followers for:", followers)
+
+	return followers, nil
+}
+
+func GetProfileFollowers(userID int) ([]MutualFollower, error) {
+	var followers []MutualFollower
+	query := `
+	SELECT DISTINCT followers.userid, users.nickname
+	FROM followers
+	LEFT JOIN users ON followers.userid = users.id
+	WHERE followers.targetid = ?;
+	`
+
+	rows, err := sqlDB.DataBase.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var userId int
+		var userName string
+		err := rows.Scan(&userId, &userName)
+		if err != nil {
+			return nil, err
+		}
+		followers = append(followers, MutualFollower{UserId: userId, UserName: userName})
+	}
+
+	fmt.Println("profile followers for:", followers)
+
+	return followers, nil
+}
+
+func GetProfileFollowing(userID int) ([]MutualFollower, error) {
+	var followers []MutualFollower
+	query := `
+	SELECT DISTINCT followers.targetid, users.nickname
+	FROM followers
+	LEFT JOIN users ON followers.targetid = users.id
+	WHERE followers.userid = ?;
+	`
+
+	rows, err := sqlDB.DataBase.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var userId int
+		var userName string
+		err := rows.Scan(&userId, &userName)
+		if err != nil {
+			return nil, err
+		}
+		followers = append(followers, MutualFollower{UserId: userId, UserName: userName})
+	}
+
+	fmt.Println("profile following for:", followers)
 
 	return followers, nil
 }

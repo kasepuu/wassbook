@@ -20,6 +20,7 @@ type EventHandler func(event Event, c *Client) error
 func (m *wsManager) setupEventHandlers() {
 	m.handlers["on_connection"] = OnConnectionHandler
 	m.handlers["request_mutualfollowers"] = LoadMutualFollowersHandler
+	m.handlers["getProfile_followerslist"] = LoadProfileFollowersHandler
 
 	// chat events
 	m.handlers["send_message"] = SendMessageHandler

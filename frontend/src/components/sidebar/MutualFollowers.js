@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "../../css/Chat.css";
 import Messenger from "./Messenger";
-import { backendHost } from "../..";
-import { sendEvent } from "../../websocket";
 const MutualFollowers = () => {
   const [mutualFollowers, setMutualFollowers] = useState([]);
   const [isMessengerOpen, setIsMessengerOpen] = useState(false);
   const [selectedFollower, setSelectedFollower] = useState(null);
-
-  const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
 
   useEffect(() => {
     const handleWebSocketMessage = (e) => {
@@ -19,13 +15,27 @@ const MutualFollowers = () => {
       }
     };
 
-    window.socket.addEventListener("message", handleWebSocketMessage);
+    if (window.socket) {
+      window.socket.addEventListener("message", handleWebSocketMessage);
+    }
 
     return () => {
       // Cleanup: Remove the event listener when the component unmounts
-      window.socket.removeEventListener("message", handleWebSocketMessage);
+      if (window.socket) {
+        window.socket.addEventListener("message", handleWebSocketMessage);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    // checking if theres currentchat information stored in localstorage
+    const chatInfo = JSON.parse(localStorage.getItem("CurrentChat"));
+
+    if (chatInfo && chatInfo.UserID && chatInfo.UserName) {
+      setSelectedFollower(chatInfo);
+      setIsMessengerOpen(true);
+    }
+  }, [setSelectedFollower, setIsMessengerOpen]);
 
   const openMessenger = (follower) => {
     closeMessenger(); // just in case
@@ -55,7 +65,7 @@ const MutualFollowers = () => {
       </div>
 
       <div className="FollowersList">
-        <p>Followers:</p>
+        <p>You can chat with people you follow and who follow you:</p>
 
         {mutualFollowers !== null && mutualFollowers.length > 0 ? (
           mutualFollowers.map((follower, index) => (
