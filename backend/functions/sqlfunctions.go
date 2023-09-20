@@ -281,21 +281,21 @@ func GetOnlineStatus(userId int) (isOnline bool) {
 
 func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	var followers []MutualFollower
-	/*	query2 := `
-	    SELECT f1.*
-	    FROM followers f1
-	    INNER JOIN followers f2 ON f1.userid = f2.targetid AND f1.targetid = f2.userid
-	    WHERE f1.status = 'following' AND f2.status = 'following'
-	`*/
-
-	query := `SELECT DISTINCT f1.userid
-	FROM followers f1, followers f2
-	WHERE f1.userid = f2.targetid
-	  AND f1.targetid = f2.userid
-	  AND f1.status = 'following'
-	  AND f2.status = 'following'
+	query := `
+	SELECT f1.targetid
+	FROM followers f1
+	INNER JOIN followers f2 ON f1.userid = f2.targetid AND f1.targetid = f2.userid
+	WHERE f1.status = 'following' AND f2.status = 'following' and f1.userid = ?
 	`
 
+	/* 	query := `SELECT DISTINCT f1.userid
+	   	FROM followers f1, followers f2
+	   	WHERE f1.userid = f2.targetid
+	   	  AND f1.targetid = f2.userid
+	   	  AND f1.status = 'following'
+	   	  AND f2.status = 'following'
+	   	` see ei tööta
+	*/
 	rows, err := sqlDB.DataBase.Query(query, userID)
 	if err != nil {
 		return nil, err
