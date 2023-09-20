@@ -2,7 +2,7 @@ import { backendHost } from "../../index.js";
 import profilePicture from "../../page-images/blank.png";
 
 const PostComments = ({ comments }) => {
-    
+    console.warn(comments)
     return (
         <>{comments.map((comment, index) => (
             <div

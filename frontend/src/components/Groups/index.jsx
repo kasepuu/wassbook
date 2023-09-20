@@ -52,12 +52,7 @@ const Groups = () => {
     data.append("groupId",post.GroupId )
     let response = await createComment(data);    
     setPosts(response)
-  }
-
-
-  
-
- 
+  } 
 
   //TODO vaadata kuidas horisontaalselt scroll korda teha
   return (
@@ -66,13 +61,16 @@ const Groups = () => {
       <h1>Groups</h1>
       <div className="group-names">
         {groups.map(group => (
-        <h3>{group.Name}</h3>
+          <Link to={`/groups/${group.Id}`}>
+          <h3>{group.Name}</h3>
+          </Link>
+        
        ))}
         </div>       
        <h1>Feed</h1>
         <div className="feed-posts" id="feed-posts">
                 {posts.map((post) => (
-                <Post key={post.Id} post={post} handleCommentSubmit={handleCommentSubmit}></Post>
+                <Post  key={post.Id} post={post} handleCommentSubmit={handleCommentSubmit}></Post>
               ))}
         </div>   
         <h1>Create group</h1>

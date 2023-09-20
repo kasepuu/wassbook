@@ -185,7 +185,7 @@ func GetPosts(userId int) ([]Post, error) {
 
 	for rows.Next() {
 		var post Post
-		rows.Scan(	
+		rows.Scan(
 			&post.Id,
 			&post.UserId,
 			&post.Date,
@@ -227,7 +227,7 @@ func SaveComment(comment Comment) ([]Post, error) {
 
 func GetComments(postId int) ([]Comment, error) {
 	var err error
-	var comments []Comment
+	comments := []Comment{}
 
 	rows, err := sqlDB.DataBase.Query(
 		`select comments.id, comments.userid, comments.postId, comments.content, comments.date, comments.filename, groupId, users.nickname 
