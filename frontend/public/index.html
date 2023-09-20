@@ -5,17 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    
+
     <!-- ikoon mis läheb apple telefoni töölaua shortcutiks -->
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    
+
     <!-- käsitleb ka ikooni erinevates seadmetes -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    
+
     <title>Wassbook</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="app"></div>
   </body>
+
+  <script>
+    const scrollContainer = document.querySelector(".group-names");
+
+    scrollContainer.addEventListener("wheel", (evt) => {
+      console.warn("HEY HOPPP");
+      evt.preventDefault();
+      scrollContainer.scrollLeft += evt.deltaY; 
+    });
+  </script>
 </html>

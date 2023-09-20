@@ -4,6 +4,7 @@
 
 import Post from "./Post";
 import "../../css/Feed.css";
+import "../../css/Groups.css"
 
 import { getGroups, createGroup } from "../utils/groups";
 import { createComment } from "../utils/groups";
@@ -53,26 +54,27 @@ const Groups = () => {
     setPosts(response)
   }
 
+
+  
+
+ 
+
+  //TODO vaadata kuidas horisontaalselt scroll korda teha
   return (
     <>
-      <div className="Feed feed-container">    
-        
-        <h1>Posts</h1>
-
- <div className="feed-posts" id="feed-posts">
-         {posts.map((post) => (
-         <Post key={post.Id} post={post} handleCommentSubmit={handleCommentSubmit}></Post>
-      ))}
-  </div>
-     
-
-      <h1>Posts</h1>
-
-         {/* {posts.map((group) => (
-         <Link to={"/groups/" + group.Id} key={group.Id}>
-              <p>{group.Content}</p>
-            </Link>
-      ))} */}
+      <div className="Feed feed-container">   
+      <h1>Groups</h1>
+      <div className="group-names">
+        {groups.map(group => (
+        <h3>{group.Name}</h3>
+       ))}
+        </div>       
+       <h1>Feed</h1>
+        <div className="feed-posts" id="feed-posts">
+                {posts.map((post) => (
+                <Post key={post.Id} post={post} handleCommentSubmit={handleCommentSubmit}></Post>
+              ))}
+        </div>   
         <h1>Create group</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-control">
@@ -94,7 +96,7 @@ const Groups = () => {
           </div>
         </form>
       </div>
-    </>
+        </>
   );
 };
 

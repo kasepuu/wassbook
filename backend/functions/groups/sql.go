@@ -185,7 +185,7 @@ func GetPosts(userId int) ([]Post, error) {
 
 	for rows.Next() {
 		var post Post
-		rows.Scan(
+		rows.Scan(	
 			&post.Id,
 			&post.UserId,
 			&post.Date,
