@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { sendEvent } from "../../websocket";
+
 const ProfileFollowers = () => {
     const [followingList, setFollowingList] = useState([])
     const [followersList, setFollowersList] = useState([])
     const user = JSON.parse(sessionStorage.getItem("CurrentUser"));
+
     useEffect(() => {
         const sender = user.UserID;
         const payload = {
@@ -30,7 +32,6 @@ const ProfileFollowers = () => {
         }
 
         return () => {
-            // Cleanup: Remove the event listener when the component unmounts
             if (window.socket) {
                 window.socket.addEventListener("message", handleWebSocketMessage);
             }
@@ -38,18 +39,22 @@ const ProfileFollowers = () => {
     }, []);
     return (
         <div className="Sidebar">
-            <h2>You are following:</h2>
-            {followingList &&
-                followingList.map(element => (
-                    <p key={element.UserId}>{element.UserName}</p>
-                ))
-            }
-            <h2>Following you:</h2>
-            {followersList &&
-                followersList.map(element => (
-                    <p key={element.UserId}>{element.UserName}</p>
-                ))
-            }
+            <div className="followersOnProfile">
+                <h2>You are following:</h2>
+                {followingList &&
+                    followingList.map(element => (
+                        <p><a href={`http://localhost:8080/profile/${element.UserName}`} key={element.UserId}>{element.UserName}
+                        </a></p>
+                    ))
+                }
+                <h2>Following you:</h2>
+                {followersList &&
+                    followersList.map(element => (
+                        <p><a href={`http://localhost:8080/profile/${element.UserName}`} key={element.UserId}>{element.UserName}
+                        </a></p>
+                    ))
+                }
+            </div>
         </div>
     );
 };
