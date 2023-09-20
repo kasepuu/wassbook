@@ -52,11 +52,15 @@ const Navbar = () => {
       }
     };
 
-    window.socket.addEventListener("message", handleWebSocketMessage);
+    if (window.socket) {
+      window.socket.addEventListener("message", handleWebSocketMessage);
+    }
 
     return () => {
       // Cleanup: Remove the event listener when the component unmounts
-      window.socket.removeEventListener("message", handleWebSocketMessage);
+      if (window.socket) {
+        window.socket.addEventListener("message", handleWebSocketMessage);
+      }
     };
   }, [setFollowerRequests]);
 
