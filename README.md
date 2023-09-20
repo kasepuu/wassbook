@@ -9,9 +9,7 @@
 * - groups
 
 * chati puudused;
-* - scrollevent? praegu laeb 10 viimast sõnumit
 * - group chat
-* - "is typing..." oleks lahe
 
 * notification puudused;
 * - disain
@@ -26,6 +24,7 @@
 * - handlereid vähendada, websocketisse ümber teha?
 * - error handlingut juurde, register/login jms formid, ümber disainida
 * - kood ilusamaks
+* - mobile view?
 
 * - lõpu asjad:
 * - docker
