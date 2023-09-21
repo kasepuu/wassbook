@@ -1,12 +1,15 @@
 import "../../css/Feed.css";
 import { Posts } from "./Posts";
+import FeedPostForm from "./PostForm";
 
-import { getGroup } from "../utils/groups";
+import { getGroup, createPost } from "../utils/groups";
 
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const Group = () => {
+  const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+
   const [data, setData] = useState({ Posts: [], Members: [], Events: [] });
   let { id } = useParams();
 
@@ -20,6 +23,22 @@ const Group = () => {
     fetchData();
   }, []);
 
+  const handlePostForm = async (e) => {
+    e.preventDefault();
+    let data = new FormData(e.target);
+
+    data.append("userId", userInfo.UserID);
+    data.append("groupId", id);
+
+    let response = await createPost(data);
+    
+    setData((prevData) => {
+      return { ...prevData, Posts: response };
+    });
+  };
+
+  const handleCommentSubmit = async (data, post) => {};
+
   return (
     <>
       <div className="Feed feed-container">
@@ -28,7 +47,7 @@ const Group = () => {
           <span>people |</span>
           <span>events |</span>
         </div>
-
+        <FeedPostForm handlePostForm={handlePostForm} />
         <h1>{data.Name}</h1>
         <h2>{data.Owner}</h2>
         <h3>{data.Description}</h3>

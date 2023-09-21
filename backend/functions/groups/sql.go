@@ -107,10 +107,9 @@ func GetGroupPosts(groupId int) ([]Post, error) {
 			&post.Content,
 			&post.GroupId,
 			&post.Filename,
-			&post.Username,			
+			&post.Username,
 		)
 		comments, err := GetComments(post.Id)
-
 		if err != nil {
 			return []Post{}, err
 		}
@@ -189,20 +188,22 @@ func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
 	return events, members
 }
 
-func SavePost(post Post) error {
+func SavePost(post Post) ([]Post, error) {
 	var err error
-	statement, err := sqlDB.DataBase.Prepare("INSERT INTO posts (userId, date, content, groupId, filename) VALUES (?,?,?,?)")
+	statement, err := sqlDB.DataBase.Prepare("INSERT INTO posts (userId, date, content, groupId, filename) VALUES (?,?,?,?,?)")
 	currentTime := time.Now().Format("29.08.2023 14:35")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	_, err = statement.Exec(post.UserId, currentTime, post.Content, post.GroupId, post.Filename)
-	// groupId, _ := result.LastInsertId()
-	// if err != nil {
-	// 	return err
-	// }
 
-	return err
+	if err != nil {
+		return nil, err
+	}
+
+	posts, err := GetGroupPosts(post.GroupId)
+
+	return posts, err
 }
 
 func GetPosts(userId int) ([]Post, error) {

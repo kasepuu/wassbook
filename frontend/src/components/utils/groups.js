@@ -56,3 +56,19 @@ export const createComment = async (comment) => {
             console.log("ERR");
     }
 }
+
+
+export const createPost = async (post) => {
+    const response = await fetch(`${host}/groups/posts`, {
+        method: 'POST',
+        body: post
+    });
+
+    switch (response.status) {
+        case 201:
+            let data = await response.json();
+            return data;
+        case 401:
+            console.log("ERR");
+    }
+}
