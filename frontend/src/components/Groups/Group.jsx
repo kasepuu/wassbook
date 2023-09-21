@@ -35,6 +35,7 @@ const Group = () => {
     setData((prevData) => {
       return { ...prevData, Posts: response };
     });
+    e.target.reset();
   };
 
   const handleCommentSubmit = async (data, post) => {

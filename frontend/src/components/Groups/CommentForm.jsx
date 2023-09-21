@@ -13,8 +13,9 @@ const CommentForm = ({ userInfo, handleCommentSubmit, post }) => {
     e.preventDefault();
     let data = new FormData(e.target);
     handleCommentSubmit(data, post);
-  };
 
+    e.target.reset();
+  };
 
   return (
     <form onSubmit={handleSubmit}>

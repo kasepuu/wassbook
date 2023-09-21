@@ -191,7 +191,7 @@ func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
 func SavePost(post Post) ([]Post, error) {
 	var err error
 	statement, err := sqlDB.DataBase.Prepare("INSERT INTO posts (userId, date, content, groupId, filename) VALUES (?,?,?,?,?)")
-	currentTime := time.Now().Format("29.08.2023 14:35")
+	currentTime := time.Now().Format("02.01.2006 15:04")
 	if err != nil {
 		return nil, err
 	}
