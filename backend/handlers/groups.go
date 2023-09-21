@@ -243,13 +243,14 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 
 func saveFile(r *http.Request, userId string) (string, error) {
 	file, handler, err := r.FormFile("file")
+	if err != nil {
+		return "", err
+	}
+
 	fileData := handler.Header.Get("Content-Disposition")
 	ext := filepath.Ext(fileData)
 	ext = strings.TrimSuffix(ext, "\"")
 	fmt.Println(ext, fileData)
-	if err != nil {
-		return "", err
-	}
 
 	dst, err := os.CreateTemp("backend/users/"+userId, "post-images-*"+ext)
 	if err != nil {

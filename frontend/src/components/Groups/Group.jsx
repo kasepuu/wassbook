@@ -2,7 +2,7 @@ import "../../css/Feed.css";
 import { Posts } from "./Posts";
 import FeedPostForm from "./PostForm";
 
-import { getGroup, createPost } from "../utils/groups";
+import { getGroup, createPost, createComment } from "../utils/groups";
 
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -37,7 +37,17 @@ const Group = () => {
     });
   };
 
-  const handleCommentSubmit = async (data, post) => {};
+  const handleCommentSubmit = async (data, post) => {
+    console.warn(data, post);
+
+    data.append("userId", userInfo.UserID);
+    data.append("postId", post.Id);
+    data.append("groupId", post.GroupId);
+    let response = await createComment(data);
+    setData((prevData) => {
+      return { ...prevData, Posts: response };
+    });
+  };
 
   return (
     <>
@@ -54,7 +64,7 @@ const Group = () => {
 
         <FeedPostForm handlePostForm={handlePostForm} />
 
-        <Posts posts={data.Posts} />
+        <Posts posts={data.Posts} handleCommentSubmit={handleCommentSubmit} />
       </div>
     </>
   );
