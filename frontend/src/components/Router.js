@@ -33,6 +33,14 @@ function Router() {
               };
 
               sendEvent("on_connection", payload); // onconnection :O
+              if (window.location.href.includes("/profile/")) {
+                const payload = {
+                  SenderID: JSON.parse(sessionStorage.getItem("CurrentUser"))
+                    .UserID,
+                };
+
+                sendEvent("getProfile_followerslist", payload);
+              }
             })
             .catch((e) => {
               console.error(e);

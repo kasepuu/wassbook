@@ -110,7 +110,6 @@ func AcceptFollowHandler(event Event, c *Client) error {
 			if errMut == nil {
 				sendResponse(usersMutual, "update_followerslist", client)
 			}
-			sendResponse(payload, "update_notifications", client)
 		} else if client.userId == RequesterID {
 			usersMutual, errMut := function.GetMutualFollowers(RequesterID)
 			if errMut == nil {
@@ -156,7 +155,6 @@ func DeclineFollowHandler(event Event, c *Client) error {
 			if errMut == nil {
 				sendResponse(usersMutual, "update_followerslist", client)
 			}
-			sendResponse(payload, "update_notifications", client)
 		} else if client.userId == RequesterID {
 			usersMutual, errMut := function.GetMutualFollowers(RequesterID)
 			if errMut == nil {

@@ -39,6 +39,7 @@ export function wsAddConnection() {
 
 export function sendEvent(type, payload) {
   console.log("SENDING EVENT", type, "& PAYLOAD:", payload);
+  console.log("Current ws:", window.socket);
   const event = new Event(type, payload);
 
   window.socket.send(JSON.stringify(event));
