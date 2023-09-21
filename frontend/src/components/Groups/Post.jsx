@@ -48,7 +48,7 @@ const Post = ({ post, handleCommentSubmit }) => {
         {post.Content}
       </div>
       <img
-        src={`${backendHost}/users/${post.UserId}/${post.Filename}`}
+        src={`${backendHost}/${post.Filename}`}
         alt=""
         className="image-content"
       />

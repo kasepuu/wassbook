@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	groups "01.kood.tech/git/kasepuu/social-network/backend/functions/groups"
 )
@@ -162,32 +164,39 @@ func GroupPosts(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		w.Write(toSend)
 
-	case "POST": //
-		err := r.ParseMultipartForm(32 << 20) // 32 MB is the maximum file size
+	case "POST":
+		err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		file, handler, err := r.FormFile("file")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
+		content := r.MultipartForm.Value["content"][0]
+		userId := r.MultipartForm.Value["userId"][0]
+		groupId := r.MultipartForm.Value["groupId"][0]
+
+		userInt, _ := strconv.Atoi(userId)
+		groupInt, _ := strconv.Atoi(groupId)
+
+		var posts []groups.Post
+
+		savedFile, noFileErr := saveFile(r, userId)
+
+		if noFileErr != nil {
+			posts, err = groups.SavePost(groups.Post{UserId: userInt, GroupId: groupInt, Filename: "", Content: content}) // SIIS KUI POLE FAILI
+		} else {
+			posts, err = groups.SavePost(groups.Post{UserId: userInt, GroupId: groupInt, Filename: savedFile, Content: content}) // FAIL SALVESTATUD
 		}
-		defer file.Close()
-		FAKEID := strconv.Itoa(2)
-		f, err := os.OpenFile("./users/"+FAKEID+"/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0o666)
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		defer f.Close()
 
-		_, err = io.Copy(f, file)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		toSend, _ := json.Marshal(posts)
+		w.WriteHeader(http.StatusCreated)
+		w.Header().Set("content-type", "application/json")
+		w.Write(toSend)
 	}
 }
 
@@ -233,19 +242,26 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func saveFile(r *http.Request, userId string) (string, error) {
-	file, _, err := r.FormFile("file")
+	file, handler, err := r.FormFile("file")
 	if err != nil {
 		return "", err
 	}
 
-	dst, err := os.CreateTemp("backend/users/"+userId, "comment-images-*.png")
+	fileData := handler.Header.Get("Content-Disposition")
+	ext := filepath.Ext(fileData)
+	ext = strings.TrimSuffix(ext, "\"")
+	fmt.Println(ext, fileData)
+
+	dst, err := os.CreateTemp("backend/users/"+userId, "post-images-*"+ext)
 	if err != nil {
 		return "", err
 	}
 
 	_, err = io.Copy(dst, file)
 
-	return dst.Name(), err
+	savedFileName := "users/" + userId + "/" + filepath.Base(dst.Name())
+
+	return savedFileName, err
 }
 
 func addGroupMember(w http.ResponseWriter, r *http.Request) {
