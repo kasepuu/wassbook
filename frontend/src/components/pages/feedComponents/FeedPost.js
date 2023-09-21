@@ -1,7 +1,7 @@
-import { backendHost } from "../../index.js";
-import profilePicture from "../../page-images/blank.png";
-import FeedPostCommentForm from "./FeedPostCommentForm";
-import FeedPostComment from "./FeedPostComment";
+import { backendHost } from "../../../index.js";
+import profilePicture from "../../../page-images/blank.png";
+import FeedPostCommentForm from "./FeedPostCommentForm.js";
+import FeedPostComment from "./FeedPostComment.js";
 
 const FeedPost = ({
   handlePostClick,
@@ -26,9 +26,8 @@ const FeedPost = ({
         >
           <div className="post-header">
             <img
-              src={`${backendHost}/users/${
-                post.userID
-              }/profilepic/profilepic?timestamp=${Date.now()}`}
+              src={`${backendHost}/users/${post.userID
+                }/profilepic/profilepic?timestamp=${Date.now()}`}
               onError={(e) => {
                 e.target.onError = null;
                 e.target.src = profilePicture;

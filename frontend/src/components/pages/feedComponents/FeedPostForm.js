@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { backendHost } from "../../index.js";
+import { backendHost } from "../../../index.js";
 
 const FeedPostForm = ({ userInfo, loadFeed, followersList }) => {
   const [postPrivacy, setPostPrivacy] = useState("public");

@@ -3,7 +3,8 @@
 # TODO
 
 - toodo
-
+* katki:
+* - username edit ja followeri vastuvõtmisel läheb socket katki????
 
 * funktsionaalsus:
 * - groups

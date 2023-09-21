@@ -1,10 +1,8 @@
 import "../../css/Feed.css";
 import React, { useState, useEffect, useCallback } from "react";
 import { backendHost } from "../../index.js";
-import FeedPostForm from "./FeedPostForm";
-import FeedPost from "./FeedPost";
-import SidebarRight from "../sidebar/SidebarLeft";
-import FollowersList from "../sidebar/SidebarRight";
+import FeedPostForm from "./feedComponents/FeedPostForm";
+import FeedPost from "./feedComponents/FeedPost";
 
 const Feed = () => {
   const [openedPostId, setOpenedPostId] = useState(null);

@@ -1,5 +1,5 @@
-import { backendHost } from "../../index.js";
-import profilePicture from "../../page-images/blank.png";
+import { backendHost } from "../../../index.js";
+import profilePicture from "../../../page-images/blank.png";
 
 const FeedPostComment = ({ comments }) => {
   return (
@@ -8,9 +8,8 @@ const FeedPostComment = ({ comments }) => {
         <div key={index} id={`comment-${comment.id}`} className="feed-post">
           <div className="post-header">
             <img
-              src={`${backendHost}/users/${
-                comment.userID
-              }/profilepic/profilepic?timestamp=${Date.now()}`}
+              src={`${backendHost}/users/${comment.userID
+                }/profilepic/profilepic?timestamp=${Date.now()}`}
               onError={(e) => {
                 e.target.onError = null;
                 e.target.src = profilePicture;

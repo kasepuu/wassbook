@@ -1,14 +1,13 @@
-/* import Sidebar from "../sidebar/SidebarLeft";
-import FriendsList from "../Sidebar2";
-import Navbar from "../Navbar"; */
 import "../../css/Profile.css";
-import profilePicture from "../../page-images/blank.png";
 import { useParams } from "react-router-dom";
 import { backendHost } from "../..";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
 import { updateToken } from "../../jwt";
-import { sendEvent } from "../../websocket";
+import ProfilePictureEdit from "./profileComponents/ProfilePictureEdit";
+import ProfileUsernameEdit from "./profileComponents/ProfileUsernameEdit";
+import ProfileDescriptionEdit from "./profileComponents/ProfileDescriptionEdit";
+import ProfileFollow from "./profileComponents/ProfileFollow";
 
 function toTitleCase(str) {
   if (str) {
@@ -25,15 +24,7 @@ const Profile = () => {
   if (id === undefined || !id) id = LoggedUser.UserName;
   if (id === LoggedUser.UserName) isLocalUser = true;
   const [userInfo, setUserInfo] = useState({});
-
-  const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [newDescription, setNewDescription] = useState(userInfo.Description);
-  const [originalDescription] = useState(userInfo.Description);
-  const [isEditingUsername, setIsEditingUsername] = useState(false);
-  const [isEditingProfilepic, setIsEditingProfilepic] = useState(false);
-  const [newUsername, setNewUsername] = useState(userInfo.UserName);
-  const [originalUsername] = useState(userInfo.UserName);
-  const profilepicFileInputRef = useRef(null);
+  const isPublicProfile = userInfo.PrivateStatus === 0 || userInfo.FollowStatus === "following" || userInfo.UserID === LoggedUser.UserID;
   const [profilePicUrl, setProfilePicUrl] = useState(
     `${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`
   );
@@ -58,25 +49,6 @@ const Profile = () => {
     }
   }, [refreshProfile]);
 
-  function handleUnFollow(requesterID, targetID) {
-    const payload = {
-      RequesterID: requesterID,
-      TargetID: targetID,
-    };
-
-    sendEvent("send_unfollow_request", payload);
-  }
-
-  function handleFollowClick(requesterID, targetID, status) {
-    const payload = {
-      RequesterID: requesterID,
-      TargetID: targetID,
-      Status: status,
-    };
-
-    sendEvent("send_follow_request", payload);
-  }
-
   const handleToggleClick = (userID, PrivateStatus) => {
     const newPrivateValue = PrivateStatus === 1 ? 0 : 1;
     fetch(`${backendHost}/update-private-status`, {
@@ -96,140 +68,6 @@ const Profile = () => {
       .catch((error) => {
         console.error("Error updating private status:", error);
       });
-  };
-
-  const handleDescriptionUpdate = (userID, newDescription) => {
-    return fetch(`${backendHost}/update-user-description`, {
-      method: "POST",
-      body: JSON.stringify({
-        userID: userID,
-        newDescription: newDescription,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        updateToken();
-        return response.json();
-      })
-      .catch((error) => {
-        console.error("Error updating user description:", error);
-        throw error;
-      });
-  };
-
-  const handleUsernameUpdate = (userID, newUsername) => {
-    return fetch(`${backendHost}/update-user-name`, {
-      method: "POST",
-      body: JSON.stringify({
-        userID: userID,
-        newUsername: newUsername,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        updateToken(true);
-        return response.json();
-      })
-      .catch((error) => {
-        console.error("Error updating username:", error);
-        throw error;
-      });
-  };
-
-  const handleEditClick = () => {
-    setIsEditingDescription(true);
-  };
-
-  const handleSaveClick = () => {
-    handleDescriptionUpdate(userInfo.UserID, newDescription)
-      .then(() => {
-        setUserInfo((prevUserInfo) => ({
-          ...prevUserInfo,
-          Description: newDescription,
-        }));
-        setIsEditingDescription(false);
-      })
-      .catch((error) => {
-        console.error("Error updating user description:", error);
-      });
-    setIsEditingDescription(false);
-  };
-
-  const handleCancelClick = () => {
-    setNewDescription(originalDescription);
-    setIsEditingDescription(false);
-  };
-
-  const handleUsernameEditClick = () => {
-    setIsEditingUsername(true);
-  };
-
-  const handleUsernameSaveClick = () => {
-    handleUsernameUpdate(userInfo.UserID, newUsername)
-      .then(() => {
-        setUserInfo((prevUserInfo) => ({
-          ...prevUserInfo,
-          UserName: newUsername,
-        }));
-        setIsEditingUsername(false);
-      })
-      .catch((error) => {
-        console.error("Error updating username:", error);
-      });
-    setIsEditingUsername(false);
-  };
-
-  const handleProfilepicCancelClick = () => {
-    setIsEditingProfilepic(false);
-  };
-
-  const handleProfilepicEditClick = () => {
-    setIsEditingProfilepic(true);
-  };
-
-  const handleProfilepicSaveClick = (event) => {
-    event.preventDefault();
-
-    if (profilepicFileInputRef.current.files.length > 0) {
-      const formData = new FormData();
-      formData.append("file", profilepicFileInputRef.current.files[0]);
-      fetch(
-        `${backendHost}/update-profile-picture/?userid=${userInfo.UserID}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      )
-        .then((response) => {
-          if (response.ok) {
-            setIsEditingProfilepic(false);
-            setProfilePicUrl(
-              `${backendHost}/users/${userInfo.UserID
-              }/profilepic/profilepic?timestamp=${Date.now()}`
-            );
-          }
-        })
-        .catch((error) => {
-          console.error("Error saving profile picture:", error);
-        });
-    } else {
-      console.error("No file selected.");
-    }
-  };
-
-  const handleUsernameCancelClick = () => {
-    setNewUsername(originalUsername);
-    setIsEditingUsername(false);
   };
 
   useEffect(() => {
@@ -258,95 +96,27 @@ const Profile = () => {
   }, [id, LoggedUser.UserName, refreshProfile]);
 
   useEffect(() => {
-    // Check if userInfo is available and not undefined
     if (userInfo !== undefined) {
-      // Set the profilePicUrl when userInfo becomes available
       setProfilePicUrl(
         `${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`
       );
     }
-  }, [userInfo, refreshProfile]); // Watch for changes in userInfo
+  }, [userInfo, refreshProfile]);
 
   return (
     <>
       <div className="profile-container">
         <div className="profile-info-container">
-          {profilePicUrl !== null ? (
-            <img
-              src={`${profilePicUrl}?timestamp=${Date.now()}`}
-              alt="profilepicture"
-              className="profilepic"
-              onError={(e) => {
-                e.target.onError = null;
-                e.target.src = profilePicture;
-              }}
-            />
-          ) : (
-            <div>Loading profile picture...</div>
-          )}
-          {isLocalUser ? (
-            <>
-              {isEditingProfilepic ? (
-                <div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    ref={profilepicFileInputRef}
-                    className="hidden-file-input"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => profilepicFileInputRef.current.click()}
-                  >
-                    pilt
-                  </button>
-                  <div>
-                    <button onClick={handleProfilepicSaveClick}>Save</button>
-                    <button onClick={handleProfilepicCancelClick}>
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <button onClick={handleProfilepicEditClick}>Edit</button>
-                </div>
-              )}
-            </>
-          ) : (
-            <></>
-          )}
-
+          <ProfilePictureEdit
+            profilePicUrl={profilePicUrl}
+            setProfilePicUrl={setProfilePicUrl}
+            userInfo={userInfo}
+          />
           <div className="profile-info">
-            {userInfo.UserID === LoggedUser.UserID ? (
-              <>
-                <div>
-                  Username:
-                  {isEditingUsername ? (
-                    <div>
-                      <input
-                        value={newUsername}
-                        onChange={(e) => setNewUsername(e.target.value)}
-                      />
-                      <div>
-                        <button onClick={handleUsernameSaveClick}>Save</button>
-                        <button onClick={handleUsernameCancelClick}>
-                          Cancel
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <p>{userInfo.UserName}</p>
-                      <button onClick={handleUsernameEditClick}>Edit</button>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              // Display username for other users
-              <div>Username: {userInfo.UserName}</div>
-            )}
+            <ProfileUsernameEdit
+              userInfo={userInfo}
+              setUserInfo={setUserInfo}
+            />
 
             <p className="firstname">
               Firstname: {toTitleCase(userInfo.FirstName)}
@@ -368,82 +138,14 @@ const Profile = () => {
               <>This profile is private!</>
             )}
 
-            {userInfo.UserID === LoggedUser.UserID ? (
-              <>
-                <div>
-                  Description:
-                  {isEditingDescription ? (
-                    <div>
-                      <textarea
-                        value={newDescription}
-                        onChange={(e) => setNewDescription(e.target.value)}
-                      />
-                      <div>
-                        <button onClick={handleSaveClick}>Save</button>
-                        <button onClick={handleCancelClick}>Cancel</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <p>{userInfo.Description}</p>
-                      <button onClick={handleEditClick}>Edit</button>
-                    </div>
-                  )}
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="description">
-                  Description: {userInfo.Description}
-                </p>
-              </>
-            )}
-
-            {userInfo.FollowStatus === "following" || isLocalUser ? (
-              !isLocalUser ? (
-                <button
-                  onClick={() => {
-                    handleUnFollow(LoggedUser.UserID, userInfo.UserID);
-                  }}
-                >
-                  Unfollow
-                </button>
-              ) : null // Render null if local user
-            ) : (
-              <div>
-                {userInfo.FollowStatus === "pending" ? (
-                  <div className="not-friends-message">
-                    You are not following this user yet.
-                    <button disabled>Request pending ⏳</button>
-                    <button
-                      onClick={() => {
-                        handleUnFollow(LoggedUser.UserID, userInfo.UserID);
-                      }}
-                    >
-                      Cancel request
-                    </button>
-                  </div>
-                ) : (
-                  <p>
-                    You are not following this user.
-                    <button
-                      onClick={() => {
-                        let status = "following";
-                        if (userInfo.PrivateStatus === 1) status = "pending";
-                        handleFollowClick(
-                          LoggedUser.UserID,
-                          userInfo.UserID,
-                          status
-                        );
-                      }}
-                      value={userInfo.UserID}
-                    >
-                      Follow &gt;.&lt;
-                    </button>
-                  </p>
-                )}
-              </div>
-            )}
+            <ProfileDescriptionEdit
+              userInfo={userInfo}
+              setUserInfo={setUserInfo}
+            />
+            <ProfileFollow
+              userInfo={userInfo}
+              isLocalUser={isLocalUser}
+            />
             {userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <button
@@ -463,41 +165,24 @@ const Profile = () => {
                   )}
                 </button>
               </>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </div>
         </div>
-        {userInfo.PrivateStatus === 0 || userInfo.FollowStatus === "following" ||
-          userInfo.UserID === LoggedUser.UserID ? (
-          <>
-            {userInfo.PrivateStatus === 0 && userInfo.FollowStatus !== "following" ? (<>
-              <p>Public posts by {userInfo.FirstName}:</p>
-            </>) : (<>
-              <p>Posts by {userInfo.FirstName}:</p></>)}
-
-            <div className="profile-posts">
-              <>
-                <PostsByProfile
-                  profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
-                  userID={userInfo.UserID}
-                  loggedUserID={LoggedUser.UserID}
-                />
-              </>
-            </div>
-          </>
-        ) : (
-          <>
+        <>
+          {isPublicProfile ? (
+            <p>{userInfo.PrivateStatus === 0 && userInfo.FollowStatus !== "following" && userInfo.UserID !== LoggedUser.UserID ? 'Public' : 'All'} posts by {userInfo.FirstName}:</p>
+          ) : (
             <p>Public posts by {userInfo.FirstName}:</p>
-            <div className="profile-posts">
-              <PostsByProfile
-                profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
-                userID={userInfo.UserID}
-                loggedUserID={LoggedUser.UserID}
-              />
-            </div>
-          </>
-        )}
+          )}
+
+          <div className="profile-posts">
+            <PostsByProfile
+              profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
+              userID={userInfo.UserID}
+              loggedUserID={LoggedUser.UserID}
+            />
+          </div>
+        </>
       </div>
     </>
   );
