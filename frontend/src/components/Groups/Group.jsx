@@ -31,7 +31,7 @@ const Group = () => {
     data.append("groupId", id);
 
     let response = await createPost(data);
-    
+
     setData((prevData) => {
       return { ...prevData, Posts: response };
     });
@@ -47,11 +47,12 @@ const Group = () => {
           <span>people |</span>
           <span>events |</span>
         </div>
-        <FeedPostForm handlePostForm={handlePostForm} />
         <h1>{data.Name}</h1>
         <h2>{data.Owner}</h2>
         <h3>{data.Description}</h3>
         <h4>{data.Date}</h4>
+
+        <FeedPostForm handlePostForm={handlePostForm} />
 
         <Posts posts={data.Posts} />
       </div>

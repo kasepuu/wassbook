@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	groups "01.kood.tech/git/kasepuu/social-network/backend/functions/groups"
 )
@@ -142,7 +144,7 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 		users, _ := json.Marshal(groups)
 		w.WriteHeader(200)
 		w.Header().Set("content-type", "application/json")
-		w.Write(users)	
+		w.Write(users)
 	}
 }
 
@@ -240,19 +242,25 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 }
 
 func saveFile(r *http.Request, userId string) (string, error) {
-	file, _, err := r.FormFile("file")
+	file, handler, err := r.FormFile("file")
+	fileData := handler.Header.Get("Content-Disposition")
+	ext := filepath.Ext(fileData)
+	ext = strings.TrimSuffix(ext, "\"")
+	fmt.Println(ext, fileData)
 	if err != nil {
 		return "", err
 	}
 
-	dst, err := os.CreateTemp("backend/users/"+userId, "post-images-*.png")
+	dst, err := os.CreateTemp("backend/users/"+userId, "post-images-*"+ext)
 	if err != nil {
 		return "", err
 	}
 
 	_, err = io.Copy(dst, file)
 
-	return dst.Name(), err
+	savedFileName := "users/" + userId + "/" + filepath.Base(dst.Name())
+
+	return savedFileName, err
 }
 
 func addGroupMember(w http.ResponseWriter, r *http.Request) {
