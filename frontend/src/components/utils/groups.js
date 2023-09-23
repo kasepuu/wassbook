@@ -24,18 +24,10 @@ export const getGroup = async (id) => {
     }
 }
 
-export const createGroup = async (data) => {
-    let user = JSON.parse(sessionStorage.getItem("CurrentUser"))
-    data.OwnerId = +user.UserID
-    console.log(user)
-
+export const createGroup = async (data) => {    
     const response = await fetch(`${host}/creategroup`, {
         method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+        body: data
     });
 
     return response

@@ -7,22 +7,26 @@ import (
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
-func CreateGroup(group Group) error {
+func CreateGroup(group Group) ([]Group, error) {
 	var err error
 	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groups (name, ownerId, description) VALUES (?,?,?)")
 	// currentTime := time.Now().Format(time.RFC3339)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	result, err := statement.Exec(group.Name, group.OwnerId, group.Description)
 	groupId, _ := result.LastInsertId()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = CreateMember(group.OwnerId, int(groupId), "accepted") // when creating group add creator as member
+	if err != nil {
+		return nil, err
+	}
 
-	return err
+	groups, err := GetGroups()
+	return groups, err
 }
 
 func CreateEvent(event Event) error {
@@ -63,7 +67,7 @@ func CreateEventMember(userId, eventId int, status string) error {
 
 func GetGroups() ([]Group, error) {
 	var err error
-	var groups []Group
+	groups := []Group{}
 
 	rows, err := sqlDB.DataBase.Query("select groups.id, groups.name, groups.description, fname || \" \" || lname as owner, ownerId from groups left join users on groups.ownerId = users.id")
 	if err != nil {
@@ -122,7 +126,7 @@ func GetGroupPosts(groupId int) ([]Post, error) {
 }
 
 func GetGroup(id int) (Group, error) {
-	var group Group
+	group := Group{}
 
 	err := sqlDB.DataBase.QueryRow(`
 	select
@@ -208,7 +212,7 @@ func SavePost(post Post) ([]Post, error) {
 
 func GetPosts(userId int) ([]Post, error) {
 	var err error
-	var posts []Post
+	posts := []Post{}
 
 	rows, err := sqlDB.DataBase.Query(
 		`select posts.id, posts.userid, posts.date, posts.content, posts.groupId, posts.filename, users.nickname, groups.name

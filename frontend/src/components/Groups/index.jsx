@@ -28,6 +28,7 @@ const Groups = () => {
   }, []);
 
   const submitGroup = async (data) => {
+    data.append("userId", userInfo.UserID);
     let response = await createGroup(data);
 
     if (response.status != 201) {
