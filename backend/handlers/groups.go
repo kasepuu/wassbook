@@ -17,47 +17,25 @@ import (
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
-		b, err := io.ReadAll(r.Body)
-		defer r.Body.Close()
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
-		var group groups.Group
+		name := r.FormValue("name")
+		description := r.FormValue("description")
+		userId := r.FormValue("userId")
 
-		err = json.Unmarshal(b, &group)
-		if err != nil {
-			http.Error(w, err.Error(), 500)
-			return
-		}
+		userInt, _ := strconv.Atoi(userId)
 
-		err = groups.CreateGroup(group)
-
+		groups, err := groups.CreateGroup(groups.Group{Name: name, Description: description, OwnerId: userInt})
 		if err != nil {
-			http.Error(w, err.Error(), 500)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		w.Header().Set("content-type", "application/json")
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
-			return
-		}
-		w.WriteHeader(201)
-
-		groups, err := groups.GetGroups()
 		toSend, _ := json.Marshal(groups)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
-			return
-		}
-		w.WriteHeader(201)
+		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("content-type", "application/json")
 		w.Write(toSend)
 
 	default:
-		w.WriteHeader(401)
+		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 
@@ -122,6 +100,8 @@ func GetGroups(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		w.Header().Set("content-type", "application/json")
 		w.Write(users)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 
@@ -145,6 +125,8 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		w.Header().Set("content-type", "application/json")
 		w.Write(users)
+	default:
+		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 

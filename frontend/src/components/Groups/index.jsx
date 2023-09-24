@@ -28,6 +28,7 @@ const Groups = () => {
   }, []);
 
   const submitGroup = async (data) => {
+    data.append("userId", userInfo.UserID);
     let response = await createGroup(data);
 
     if (response.status != 201) {
@@ -52,7 +53,7 @@ const Groups = () => {
       <div className="Feed feed-container">
         <GroupsMenu groups={groups} />
         <Posts posts={posts} handleCommentSubmit={submitComment} />
-        <GroupForm handleGroupSubmit={submitGroup} />
+        <GroupForm handleSubmit={submitGroup} />
       </div>
     </>
   );

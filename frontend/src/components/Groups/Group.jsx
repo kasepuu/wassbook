@@ -1,11 +1,14 @@
 import "../../css/Feed.css";
-import { Posts } from "./Posts";
-import FeedPostForm from "./PostForm";
+
+import { GroupPosts } from "./GroupPosts";
 
 import { getGroup, createPost, createComment } from "../utils/groups";
 
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { Info } from "./Info";
+import { Members } from "./Members";
+import { Events } from "./Events";
 
 const Group = () => {
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
@@ -17,7 +20,6 @@ const Group = () => {
     async function fetchData() {
       const response = await getGroup(id);
       setData(response);
-      console.warn(response);
     }
 
     fetchData();
@@ -50,22 +52,45 @@ const Group = () => {
     });
   };
 
+  const handleMenuClick = (e) => {
+    setItem(e.target.innerText.toLowerCase().trim());
+  };
+
+  const [item, setItem] = useState("main");
+  const renderSwitch = (cmpnt) => {
+    console.log(cmpnt);
+    switch (cmpnt) {
+      case "info":
+        return <Info data={data} />;
+      case "members":
+        return <Members members={data.Members} />;
+      case "events":
+        return <Events />;
+      default:
+        return (
+          <GroupPosts
+            posts={data.Posts}
+            handleCommentSubmit={handleCommentSubmit}
+            handlePostForm={handlePostForm}
+          />
+        );
+    }
+  };
+
   return (
     <>
       <div className="Feed feed-container">
-        <div className="group-menu">
-          <span>discussion |</span>
-          <span>people |</span>
-          <span>events |</span>
-        </div>
         <h1>{data.Name}</h1>
-        <h2>{data.Owner}</h2>
-        <h3>{data.Description}</h3>
-        <h4>{data.Date}</h4>
 
-        <FeedPostForm handlePostForm={handlePostForm} />
-
-        <Posts posts={data.Posts} handleCommentSubmit={handleCommentSubmit} />
+        <main>
+          <div className="group-menu">
+            <span onClick={handleMenuClick}>DISCUSSION </span>
+            <span onClick={handleMenuClick}>INFO </span>
+            <span onClick={handleMenuClick}>MEMBERS </span>
+            <span onClick={handleMenuClick}>EVENTS </span>
+          </div>
+          {renderSwitch(item)}
+        </main>
       </div>
     </>
   );
