@@ -53,7 +53,7 @@ const Groups = () => {
       <div className="Feed feed-container">
         <GroupsMenu groups={groups} />
         <Posts posts={posts} handleCommentSubmit={submitComment} />
-        <GroupForm handleGroupSubmit={submitGroup} />
+        <GroupForm handleSubmit={submitGroup} />
       </div>
     </>
   );

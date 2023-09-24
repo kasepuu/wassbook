@@ -1,11 +1,33 @@
 package groups
 
 import (
-	"fmt"
 	"time"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
+
+func GetUsers() ([]User, error) {
+	var err error
+	users := []User{}
+
+	rows, err := sqlDB.DataBase.Query("select id, nickname as username, fname as firstname, lname as lastname, email from users")
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		user := User{}
+		rows.Scan(
+			&user.Id,
+			&user.Username,
+			&user.Firstname,
+			&user.Lastname,
+		)
+		users = append(users, user)
+	}
+
+	return users, err
+}
 
 func CreateGroup(group Group) ([]Group, error) {
 	var err error
@@ -125,7 +147,7 @@ func GetGroupPosts(groupId int) ([]Post, error) {
 	return posts, err
 }
 
-func GetGroup(id int) (Group, error) {
+func GetGroup(groupId int) (Group, error) {
 	group := Group{}
 
 	err := sqlDB.DataBase.QueryRow(`
@@ -137,7 +159,7 @@ func GetGroup(id int) (Group, error) {
 		ownerId 
 	from groups left join users 
 	on groups.ownerId = users.id where groups.id = ?
-	`, id).Scan(
+	`, groupId).Scan(
 		&group.Id,
 		&group.Name,
 		&group.Description,
@@ -148,33 +170,52 @@ func GetGroup(id int) (Group, error) {
 		return group, err
 	}
 
-	group.Events, group.Members = GetGroupEventsAndMembers(id)
-	group.Posts, err = GetGroupPosts(id)
+	group.Events, group.Members, err = GetGroupEventsAndMembers(groupId)
+
+	if err != nil {
+		return group, err
+	}
+	group.Posts, err = GetGroupPosts(groupId)
 
 	return group, err
 }
 
-func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
-	members := []UserStruct{}
+func GetGroupEventsAndMembers(id int) ([]Event, []User, error) {
+	var members []User
 	events := []Event{}
 
-	memberRows, err := sqlDB.DataBase.Query("select users.id, users.nickname from groupmember left join users on groupmember.userId = users.id where groupid = ?", id)
+	rows, err := sqlDB.DataBase.Query(`
+	select 				
+		groupMember.status, 
+		groupMember.date, 
+		users.id, 
+		fname , 
+		lname , 
+		users.nickname
+	from groupMember left join users on groupMember.userId = users.id 
+	where groupMember.groupid=1`, id)
 	if err != nil {
-		fmt.Println(err.Error())
+		return nil, nil, err
 	}
 
-	for memberRows.Next() {
-		var member UserStruct
-		memberRows.Scan(
-			&member.Id,
-			&member.Username,
+	for rows.Next() {
+		var user User
+		rows.Scan(
+			&user.Status,
+			&user.Date,
+			&user.Id,
+			&user.Firstname,
+			&user.Lastname,
+			&user.Username,
 		)
-		members = append(members, member)
+		members = append(members, user)
 	}
+
+	defer rows.Close()
 
 	eventRows, err := sqlDB.DataBase.Query("select events.id, events.name, events.date, events.description, ownerId, nickname from events left join users on events.ownerId = users.id where groupId = ?", id)
 	if err != nil {
-		fmt.Println(err.Error())
+		return nil, nil, err
 	}
 	for eventRows.Next() {
 		var event Event
@@ -189,7 +230,9 @@ func GetGroupEventsAndMembers(id int) ([]Event, []UserStruct) {
 		events = append(events, event)
 	}
 
-	return events, members
+	defer eventRows.Close()
+
+	return events, members, nil
 }
 
 func SavePost(post Post) ([]Post, error) {

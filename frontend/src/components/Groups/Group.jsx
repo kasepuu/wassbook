@@ -20,7 +20,6 @@ const Group = () => {
     async function fetchData() {
       const response = await getGroup(id);
       setData(response);
-      console.warn(response);
     }
 
     fetchData();
@@ -62,9 +61,9 @@ const Group = () => {
     console.log(cmpnt);
     switch (cmpnt) {
       case "info":
-        return <Info />;
+        return <Info data={data} />;
       case "members":
-        return <Members />;
+        return <Members members={data.Members} />;
       case "events":
         return <Events />;
       default:
@@ -90,12 +89,6 @@ const Group = () => {
             <span onClick={handleMenuClick}>MEMBERS </span>
             <span onClick={handleMenuClick}>EVENTS </span>
           </div>
-
-          {/* <GroupPosts
-            posts={data.Posts}
-            handleCommentSubmit={handleCommentSubmit}
-            handlePostForm={handlePostForm}
-          /> */}
           {renderSwitch(item)}
         </main>
       </div>

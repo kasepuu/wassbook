@@ -1,32 +1,27 @@
 package groups
 
-type UserStruct struct {
-	Id       int
-	Username string
-}
-
 type Group struct {
-	Id          int          `json:"Id"`
-	Name        string       `json:"Name"`
-	Owner       string       `json:"Owner"`
-	OwnerId     int          `json:"OwnerId"`
-	Members     []UserStruct `json:"Members"`
-	Description string       `json:"Description"`
-	Events      []Event      `json:"Events"`
-	Membercount int          `json:"Membercount"`
-	Posts       []Post       `json:"Posts"`
+	Id          int     `json:"Id"`
+	Name        string  `json:"Name"`
+	Owner       string  `json:"Owner"`
+	OwnerId     int     `json:"OwnerId"`
+	Members     []User  `json:"Members"`
+	Description string  `json:"Description"`
+	Events      []Event `json:"Events"`
+	Membercount int     `json:"Membercount"`
+	Posts       []Post  `json:"Posts"`
 	// TODO mõelda kuidas päringus saada arvu
 }
 
 type Event struct {
-	Id          string       `json:"Id"`
-	Description string       `json:"Description"`
-	Date        string       `json:"Date"`
-	Name        string       `json:"Name"`
-	Owner       string       `json:"Owner"`
-	OwnerId     string       `json:"OwnerId"`
-	GroupId     string       `json:"GroupId"`
-	Members     []UserStruct `json:"Members"`
+	Id          string `json:"Id"`
+	Description string `json:"Description"`
+	Date        string `json:"Date"`
+	Name        string `json:"Name"`
+	Owner       string `json:"Owner"`
+	OwnerId     string `json:"OwnerId"`
+	GroupId     string `json:"GroupId"`
+	Members     []User `json:"Members"`
 }
 
 type Post struct {
@@ -53,4 +48,13 @@ type Comment struct {
 	Username string
 	Avatar   string
 	Filename string
+}
+
+type User struct {
+	Id        int
+	Username  string
+	Firstname string
+	Lastname  string
+	Status    string
+	Date      string
 }
