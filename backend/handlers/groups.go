@@ -223,6 +223,40 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GroupInvite(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		senderId := r.MultipartForm.Value["senderId"][0]
+		receiverId := r.MultipartForm.Value["receiverId"][0]
+		groupId := r.MultipartForm.Value["groupId"][0]
+
+		senderInt, _ := strconv.Atoi(senderId)
+		groupInt, _ := strconv.Atoi(groupId)
+		receiverInt, _ := strconv.Atoi(receiverId)
+
+		var posts []groups.Post
+
+		err = groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: "invited"})
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		toSend, _ := json.Marshal(posts)
+		w.WriteHeader(http.StatusCreated)
+		w.Header().Set("content-type", "application/json")
+		w.Write(toSend)
+	}
+}
+
 func saveFile(r *http.Request, userId string) (string, error) {
 	file, handler, err := r.FormFile("file")
 	if err != nil {
@@ -244,7 +278,4 @@ func saveFile(r *http.Request, userId string) (string, error) {
 	savedFileName := "users/" + userId + "/" + filepath.Base(dst.Name())
 
 	return savedFileName, err
-}
-
-func addGroupMember(w http.ResponseWriter, r *http.Request) {
 }

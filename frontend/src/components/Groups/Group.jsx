@@ -63,7 +63,7 @@ const Group = () => {
       case "info":
         return <Info data={data} />;
       case "members":
-        return <Members members={data.Members} />;
+        return <Members data={data} />;
       case "events":
         return <Events />;
       default:

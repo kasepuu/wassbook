@@ -63,14 +63,14 @@ func CreateEvent(event Event) error {
 	return err
 }
 
-func CreateMember(userId, groupId int, status string) error {
+func CreateMember(invite GroupInvite) error {
 	var err error
 	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groupMember (groupId, userId, status) VALUES (?, ?, ?)")
 	if err != nil {
 		return err
 	}
 
-	_, err = statement.Exec(groupId, userId, status)
+	_, err = statement.Exec(invite.GroupId, invite.ReceiverId, invite.Status)
 
 	return err
 }
@@ -170,14 +170,48 @@ func GetGroup(groupId int) (Group, error) {
 		return group, err
 	}
 
+	group.AllUsers, err = GetAllMembers()
+
+	if err != nil {
+		return group, err
+	}
+
 	group.Events, group.Members, err = GetGroupEventsAndMembers(groupId)
 
 	if err != nil {
 		return group, err
 	}
+
 	group.Posts, err = GetGroupPosts(groupId)
 
 	return group, err
+}
+
+func GetAllMembers() ([]User, error) {
+	users := []User{}
+
+	rows, err := sqlDB.DataBase.Query("select id, nickname, fname, lname, datejoined, email from users")
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var user User
+		err := rows.Scan(
+			&user.Id,
+			&user.Username,
+			&user.Firstname,
+			&user.Lastname,
+			&user.Date,
+			&user.Email,
+		)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	defer rows.Close()
+
+	return users, nil
 }
 
 func GetGroupEventsAndMembers(id int) ([]Event, []User, error) {

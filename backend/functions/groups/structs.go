@@ -10,6 +10,7 @@ type Group struct {
 	Events      []Event `json:"Events"`
 	Membercount int     `json:"Membercount"`
 	Posts       []Post  `json:"Posts"`
+	AllUsers    []User  `json:"AllUsers"`
 	// TODO mõelda kuidas päringus saada arvu
 }
 
@@ -57,4 +58,12 @@ type User struct {
 	Lastname  string
 	Status    string
 	Date      string
+	Email     string
+}
+
+type GroupInvite struct {
+	GroupId    int
+	SenderId   int
+	ReceiverId int
+	Status     string
 }

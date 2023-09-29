@@ -24,7 +24,7 @@ export const getGroup = async (id) => {
     }
 }
 
-export const createGroup = async (data) => {    
+export const createGroup = async (data) => {
     const response = await fetch(`${host}/creategroup`, {
         method: "POST",
         body: data
@@ -54,6 +54,21 @@ export const createPost = async (post) => {
     const response = await fetch(`${host}/groups/posts`, {
         method: 'POST',
         body: post
+    });
+
+    switch (response.status) {
+        case 201:
+            let data = await response.json();
+            return data;
+        case 401:
+            console.log("ERR");
+    }
+}
+
+export const inviteMember = async (formData) => {
+    const response = await fetch(`${host}/group/:id/invite`, {
+        method: 'POST',
+        body: formData
     });
 
     switch (response.status) {
