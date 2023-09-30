@@ -240,13 +240,14 @@ func GroupInvite(w http.ResponseWriter, r *http.Request) {
 		groupInt, _ := strconv.Atoi(groupId)
 		receiverInt, _ := strconv.Atoi(receiverId)
 
-		err = groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: "invited"})
-
+		id, err := groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: "invited"})
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
+		err = groups.CreateNotification(groups.Notification{SenderId: senderInt, ReceiverId: receiverInt, Description: "Invited to join group", Status: "invited", GroupMemberId: int(id)})
 
 		users, err := groups.GetAllMembers(groupInt)
 		if err != nil {

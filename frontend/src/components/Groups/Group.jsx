@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { Info } from "./Info";
 import { Members } from "./Members";
 import { Events } from "./Events";
+import { GroupForm } from "./GroupForm";
 
 const Group = () => {
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));

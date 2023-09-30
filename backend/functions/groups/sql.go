@@ -42,7 +42,7 @@ func CreateGroup(group Group) ([]Group, error) {
 		return nil, err
 	}
 
-	err = CreateMember(GroupInvite{ReceiverId: group.OwnerId, GroupId: int(groupId), Status: "accepted"}) // when creating group add creator as member
+	_, err = CreateMember(GroupInvite{ReceiverId: group.OwnerId, GroupId: int(groupId), Status: "accepted"}) // when creating group add creator as member
 	if err != nil {
 		return nil, err
 	}
@@ -63,16 +63,21 @@ func CreateEvent(event Event) error {
 	return err
 }
 
-func CreateMember(invite GroupInvite) error {
+func CreateMember(invite GroupInvite) (int64, error) {
 	var err error
 	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groupMember (groupId, userId, status) VALUES (?, ?, ?)")
 	if err != nil {
-		return err
+		return -1, err
 	}
 
-	_, err = statement.Exec(invite.GroupId, invite.ReceiverId, invite.Status)
+	result, err := statement.Exec(invite.GroupId, invite.ReceiverId, invite.Status)
 
-	return err
+	id, _ := result.LastInsertId()
+
+	if err != nil {
+		return -1, err
+	}
+	return id, err
 }
 
 func CreateEventMember(userId, eventId int, status string) error {
@@ -376,4 +381,19 @@ func GetComments(postId int) ([]Comment, error) {
 	}
 
 	return comments, err
+}
+
+func CreateNotification(notification Notification) error {
+	var err error
+	statement, err := sqlDB.DataBase.Prepare("Insert into notifications (targetid, senderid, description, groupMemberId) values (?, ?, ? , ?)")
+	if err != nil {
+		return err
+	}
+	_, err = statement.Exec(notification.SenderId, notification.ReceiverId, notification.Description, notification.GroupMemberId)
+
+	if err != nil {
+		return err
+	}
+
+	return err
 }

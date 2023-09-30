@@ -67,3 +67,12 @@ type GroupInvite struct {
 	ReceiverId int
 	Status     string
 }
+
+type Notification struct {
+	Id            int
+	SenderId      int
+	ReceiverId    int
+	Description   string
+	GroupMemberId int
+	Status        string
+}

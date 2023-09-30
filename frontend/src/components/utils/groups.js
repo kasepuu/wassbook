@@ -30,8 +30,13 @@ export const createGroup = async (data) => {
         body: data
     });
 
-    return response
-
+    switch (response.status) {
+        case 201:
+            let data = await response.json();
+            return data;
+        default:
+            console.log("ERR");
+    }
 }
 
 export const createComment = async (comment) => {

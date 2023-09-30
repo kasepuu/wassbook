@@ -424,14 +424,14 @@ func ClearNotification(notificationID int, TargetID int, clearAll bool) error {
 }
 
 func LoadNotifications(TargetID int) ([]Notification, error) {
-	rows, err := sqlDB.DataBase.Query("SELECT * FROM notifications WHERE TargetID = ?", TargetID)
+	rows, err := sqlDB.DataBase.Query("SELECT id, targetid, senderid, description FROM notifications WHERE TargetID = ?", TargetID)
 	if err != nil {
 		log.Println("notification sql query error:", err)
 		return nil, err
 	}
 	defer rows.Close()
 
-	var notifications []Notification
+	notifications := []Notification{}
 
 	for rows.Next() {
 		var notification Notification
