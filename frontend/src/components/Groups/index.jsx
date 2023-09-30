@@ -1,5 +1,3 @@
-/// TODO Kuvada membereid Grupi lehel
-
 import "../../css/Feed.css";
 import "../../css/Groups.css";
 
@@ -31,10 +29,7 @@ const Groups = () => {
     data.append("userId", userInfo.UserID);
     let response = await createGroup(data);
 
-    if (response.status != 201) {
-      return;
-    }
-    setGroups(await response.json());
+    setGroups(response);
   };
 
   const submitComment = async (data, post) => {

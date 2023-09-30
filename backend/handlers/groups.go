@@ -111,12 +111,12 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(path.Base(r.URL.Path))
 		fmt.Println(id)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		groups, err := groups.GetGroup(id)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		fmt.Println(id)
@@ -223,6 +223,52 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GroupInvite(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		senderId := r.MultipartForm.Value["senderId"][0]
+		receiverId := r.MultipartForm.Value["receiverId"][0]
+		groupId := r.MultipartForm.Value["groupId"][0]
+		status := r.MultipartForm.Value["status"][0]
+
+		senderInt, _ := strconv.Atoi(senderId)
+		groupInt, _ := strconv.Atoi(groupId)
+		receiverInt, _ := strconv.Atoi(receiverId)
+
+		id, err := groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: status})
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = groups.CreateNotification(groups.Notification{SenderId: senderInt, ReceiverId: receiverInt, Description: "Invited to join group", Status: status, GroupMemberId: int(id)})
+		
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		users, err := groups.GetAllMembers(groupInt)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		toSend, _ := json.Marshal(users)
+		w.WriteHeader(http.StatusCreated)
+		w.Header().Set("content-type", "application/json")
+		w.Write(toSend)
+	}
+}
+
 func saveFile(r *http.Request, userId string) (string, error) {
 	file, handler, err := r.FormFile("file")
 	if err != nil {
@@ -244,7 +290,4 @@ func saveFile(r *http.Request, userId string) (string, error) {
 	savedFileName := "users/" + userId + "/" + filepath.Base(dst.Name())
 
 	return savedFileName, err
-}
-
-func addGroupMember(w http.ResponseWriter, r *http.Request) {
 }

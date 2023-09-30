@@ -13,3 +13,15 @@
 .hide-comments {
     display: none;
 }
+
+.membersInvite li {
+    display: grid;
+    align-items: center;
+    text-decoration: none;
+    grid-template-columns: auto max-content;
+    gap: 10px;
+}
+
+.membersInvite li button {
+    margin-left: 5px;
+}
