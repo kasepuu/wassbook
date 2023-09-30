@@ -235,20 +235,26 @@ func GroupInvite(w http.ResponseWriter, r *http.Request) {
 		senderId := r.MultipartForm.Value["senderId"][0]
 		receiverId := r.MultipartForm.Value["receiverId"][0]
 		groupId := r.MultipartForm.Value["groupId"][0]
+		status := r.MultipartForm.Value["status"][0]
 
 		senderInt, _ := strconv.Atoi(senderId)
 		groupInt, _ := strconv.Atoi(groupId)
 		receiverInt, _ := strconv.Atoi(receiverId)
 
-		id, err := groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: "invited"})
+		id, err := groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: status})
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		err = groups.CreateNotification(groups.Notification{SenderId: senderInt, ReceiverId: receiverInt, Description: "Invited to join group", Status: "invited", GroupMemberId: int(id)})
-
+		err = groups.CreateNotification(groups.Notification{SenderId: senderInt, ReceiverId: receiverInt, Description: "Invited to join group", Status: status, GroupMemberId: int(id)})
+		
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		users, err := groups.GetAllMembers(groupInt)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)

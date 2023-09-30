@@ -226,14 +226,13 @@ func GetGroupEventsAndMembers(id int) ([]Event, []User, error) {
 
 	rows, err := sqlDB.DataBase.Query(`
 	select 				
-		groupMember.status, 
-		groupMember.date, 
+		groupMember.status, 		
 		users.id, 
 		fname , 
 		lname , 
 		users.nickname
 	from groupMember left join users on groupMember.userId = users.id 
-	where groupMember.groupid=1`, id)
+	where groupMember.groupid=? and status = "accepted" `, id)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -242,7 +241,6 @@ func GetGroupEventsAndMembers(id int) ([]Event, []User, error) {
 		var user User
 		rows.Scan(
 			&user.Status,
-			&user.Date,
 			&user.Id,
 			&user.Firstname,
 			&user.Lastname,
@@ -299,11 +297,11 @@ func GetPosts(userId int) ([]Post, error) {
 
 	rows, err := sqlDB.DataBase.Query(
 		`select posts.id, posts.userid, posts.date, posts.content, posts.groupId, posts.filename, users.nickname, groups.name
-		from posts 		
-			left join users on posts.userid=users.id
-			left join groups on posts.groupId = groups.id
-			left join groupMember on groupMember.userId = posts.userId
-		where not posts.groupId = -1 and groupMember.userId =?
+		from posts 
+		LEFT JOIN users on posts.userid = users.id
+		LEFT JOIN groups on posts.groupId= groups.id
+		where groupId in  (select groupId  from groupMember where userid = ?) 
+		and not posts.groupId = -1
 		ORDER BY posts.id DESC `, userId)
 	if err != nil {
 		return nil, err
