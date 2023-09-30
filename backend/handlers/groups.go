@@ -111,12 +111,12 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(path.Base(r.URL.Path))
 		fmt.Println(id)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		groups, err := groups.GetGroup(id)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusConflict)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		fmt.Println(id)
@@ -240,8 +240,6 @@ func GroupInvite(w http.ResponseWriter, r *http.Request) {
 		groupInt, _ := strconv.Atoi(groupId)
 		receiverInt, _ := strconv.Atoi(receiverId)
 
-		var posts []groups.Post
-
 		err = groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: "invited"})
 
 		if err != nil {
@@ -250,7 +248,14 @@ func GroupInvite(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		toSend, _ := json.Marshal(posts)
+		users, err := groups.GetAllMembers(groupInt)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		toSend, _ := json.Marshal(users)
 		w.WriteHeader(http.StatusCreated)
 		w.Header().Set("content-type", "application/json")
 		w.Write(toSend)

@@ -66,7 +66,7 @@ export const createPost = async (post) => {
 }
 
 export const inviteMember = async (formData) => {
-    const response = await fetch(`${host}/group/:id/invite`, {
+    const response = await fetch(`${host}/groups/invite`, {
         method: 'POST',
         body: formData
     });

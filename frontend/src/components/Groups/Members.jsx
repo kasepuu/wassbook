@@ -1,7 +1,7 @@
 import { MemberInvite } from "./MemberInvite";
-import { inviteMember } from "../utils/groups";
 
-export const Members = ({ data }) => {
+
+export const Members = ({ data, inviteHandler }) => {
   const invitePeople = (e) => {
     const dialog = document.querySelector("dialog");
 
@@ -14,10 +14,6 @@ export const Members = ({ data }) => {
     dialog.close();
   };
 
-  const inviteHandler = (member) => {
-    const formData = new FormData();
-    const response = inviteMember(formData);
-  };
   return (
     <div className="membersInvite">
       <h1>Members</h1>

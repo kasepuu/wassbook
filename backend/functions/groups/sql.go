@@ -42,7 +42,7 @@ func CreateGroup(group Group) ([]Group, error) {
 		return nil, err
 	}
 
-	err = CreateMember(group.OwnerId, int(groupId), "accepted") // when creating group add creator as member
+	err = CreateMember(GroupInvite{ReceiverId: group.OwnerId, GroupId: int(groupId), Status: "accepted"}) // when creating group add creator as member
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func GetGroup(groupId int) (Group, error) {
 		return group, err
 	}
 
-	group.AllUsers, err = GetAllMembers()
+	group.AllUsers, err = GetAllMembers(groupId)
 
 	if err != nil {
 		return group, err
@@ -187,10 +187,10 @@ func GetGroup(groupId int) (Group, error) {
 	return group, err
 }
 
-func GetAllMembers() ([]User, error) {
+func GetAllMembers(id int) ([]User, error) {
 	users := []User{}
 
-	rows, err := sqlDB.DataBase.Query("select id, nickname, fname, lname, datejoined, email from users")
+	rows, err := sqlDB.DataBase.Query("select users.id, users.nickname, fname, lname, datejoined, email, ifnull(status, \"null\") as status from users left join groupMember on users.id= groupMember.userId and groupId = ? ", id)
 	if err != nil {
 		return nil, err
 	}
@@ -203,6 +203,7 @@ func GetAllMembers() ([]User, error) {
 			&user.Lastname,
 			&user.Date,
 			&user.Email,
+			&user.Status,
 		)
 		if err != nil {
 			return nil, err

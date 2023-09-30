@@ -2,7 +2,12 @@ import "../../css/Feed.css";
 
 import { GroupPosts } from "./GroupPosts";
 
-import { getGroup, createPost, createComment } from "../utils/groups";
+import {
+  getGroup,
+  createPost,
+  createComment,
+  inviteMember,
+} from "../utils/groups";
 
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
@@ -13,7 +18,13 @@ import { Events } from "./Events";
 const Group = () => {
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
 
-  const [data, setData] = useState({ Posts: [], Members: [], Events: [] });
+  const [data, setData] = useState({
+    Posts: [],
+    Members: [],
+    Events: [],
+    AllUsers: [],
+  });
+  const [item, setItem] = useState("main");
   let { id } = useParams();
 
   useEffect(() => {
@@ -52,18 +63,30 @@ const Group = () => {
     });
   };
 
+  const inviteHandler = async (member) => {
+    const formData = new FormData();
+    formData.append("receiverId", member.Id);
+    formData.append("senderId", data.OwnerId);
+    formData.append("groupId", data.Id);
+
+    const updatedUsers = await inviteMember(formData);
+
+    setData((prevData) => {
+      return { ...prevData, AllUsers: updatedUsers };
+    });
+  };
+
   const handleMenuClick = (e) => {
     setItem(e.target.innerText.toLowerCase().trim());
   };
 
-  const [item, setItem] = useState("main");
   const renderSwitch = (cmpnt) => {
     console.log(cmpnt);
     switch (cmpnt) {
       case "info":
         return <Info data={data} />;
       case "members":
-        return <Members data={data} />;
+        return <Members inviteHandler={inviteHandler} data={data} />;
       case "events":
         return <Events />;
       default:

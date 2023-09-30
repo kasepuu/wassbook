@@ -9,7 +9,11 @@ export const MemberInvite = ({ member, inviteHandler }) => {
     <form onSubmit={submitHandler}>
       <li>
         <h4 class>{member.Username}</h4>
-        <button>invite</button>
+        {member.Status === "null" ? ( 
+          <button>invite</button>
+        ) : (
+          <button disabled>Already invited</button>
+        )}
       </li>
     </form>
   );
