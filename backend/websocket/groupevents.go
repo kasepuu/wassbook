@@ -51,32 +51,41 @@ func LoadEventHandler(event Event, c *Client) error {
 		EventDescription string
 		EventDate        string
 		CreatorNickname  string
+		Response         string
 	}
 
 	type payload struct {
 		GroupID int `json:"GroupID"`
+		UserID  int `json:"UserID"`
 	}
 
 	var events []GroupEventEvent
-	var groupID payload
+	var data payload
 
-	if err := json.Unmarshal(event.Payload, &groupID); err != nil {
+	if err := json.Unmarshal(event.Payload, &data); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
 
 	rows, _ := sqlDB.DataBase.Query(`SELECT events.*, users.nickname
 	FROM events
 	INNER JOIN users ON events.ownerID = users.id
-	WHERE events.GroupID = ?`, groupID.GroupID)
+	WHERE events.GroupID = ?`, data.GroupID)
 	defer rows.Close()
 	for rows.Next() {
 		var event GroupEventEvent
 		rows.Scan(&event.EventID, &event.EventName, &event.EventDate, &event.EventDescription, &event.CreatorID, &event.GroupID, &event.CreatorNickname)
+		event.Response = getEventResponse(event.EventID, data.UserID)
 		events = append(events, event)
 	}
+
 	sendResponse(events, "update_events", c)
 
 	return nil
+}
+
+func getEventResponse(EventID int, UserID int) (resp string) {
+	sqlDB.DataBase.QueryRow(`SELECT status FROM eventMember WHERE userId = ? AND eventId = ?`, UserID, EventID).Scan(&resp)
+	return 
 }
 
 func EventResponseHandler(event Event, c *Client) error {
@@ -106,6 +115,8 @@ func EventResponseHandler(event Event, c *Client) error {
 	}
 
 	fmt.Println("this was received:", newEventResponse)
+
+	sendResponse(newEventResponse, "update_eventResponse", c)
 
 	return nil
 }

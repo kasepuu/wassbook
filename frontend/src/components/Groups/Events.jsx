@@ -6,6 +6,7 @@ export const Events = ({ data }) => {
   const [groupEvents, setGroupEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentDateTime = new Date().toISOString().slice(0, 16);
+  const user = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
 
   const handleNewEventClick = () => {
     setShowPopup(true);
@@ -16,7 +17,6 @@ export const Events = ({ data }) => {
   };
 
   const handleGoingClick = (eventID) => {
-    const user = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
     const payload = {
       UserID: user,
       EventID: eventID,
@@ -26,7 +26,6 @@ export const Events = ({ data }) => {
   };
 
   const handleNotGoingClick = (eventID) => {
-    const user = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
     const payload = {
       UserID: user,
       EventID: eventID,
@@ -70,18 +69,38 @@ export const Events = ({ data }) => {
       eventDateInput.setAttribute('min', minDateTimeISO);
     }
 
-    // Load events when the component mounts
-    window.socket.onmessage = (e) => {
-      const eventData = JSON.parse(e.data);
-      if (eventData.type === "update_events") {
-        if (eventData.payload) {
-          setGroupEvents(eventData.payload)
-          setLoading(false);
+    const handleUpdateEvents = (payload) => {
+    setGroupEvents(payload);
+    setLoading(false);
+  };
+
+  const handleUpdateEventResponse = (payload) => {
+    setGroupEvents((prevGroupEvents) => {
+      return prevGroupEvents.map((event) => {
+        if (event.EventID === payload.EventID) {
+          return {
+            ...event,
+            Response: payload.Response,
+          }
         }
-      } 
-    };
+        return event;
+      });
+    });
+  }
+
+  // Register socket event listeners
+  window.socket.onmessage = (e) => {
+    const eventData = JSON.parse(e.data);
+    if (eventData.type === "update_events") {
+      if (eventData.payload) {
+        handleUpdateEvents(eventData.payload);
+      }
+    } else if (eventData.type === "update_eventResponse") {
+      handleUpdateEventResponse(eventData.payload);
+    }
+  };
     // Request the initial list of events when the component mounts
-    sendEvent("load_events", { GroupID: data.Id });
+    sendEvent("load_events", { UserID: user, GroupID: data.Id });
   }, [data.Id, showPopup]);
 
   return (
@@ -138,10 +157,27 @@ export const Events = ({ data }) => {
                     <td>{event.CreatorNickname}</td>
                     <td>{event.EventDescription}</td>
                     <td>{event.EventDate}</td>
-                    <td>
-                      <button onClick={() => handleGoingClick(event.EventID)}>Going</button>
-                      <button onClick={() => handleNotGoingClick(event.EventID)}>Not Going</button>
-                    </td>
+                    {event.Response ? (
+                      <td>
+                        {event.Response === "Going" ? (
+                          <>
+                            {event.Response}
+                            <button onClick={() => handleNotGoingClick(event.EventID)}>Not Going</button>
+                          </>
+
+                        ) : (
+                          <>
+                            <button onClick={() => handleGoingClick(event.EventID)}>Going</button>
+                            {event.Response}
+                          </>
+                        )}
+                      </td>
+                    ) : (
+                      <td>
+                        <button onClick={() => handleGoingClick(event.EventID)}>Going</button>
+                        <button onClick={() => handleNotGoingClick(event.EventID)}>Not Going</button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
