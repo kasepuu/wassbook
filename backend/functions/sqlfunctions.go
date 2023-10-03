@@ -279,6 +279,42 @@ func GetOnlineStatus(userId int) (isOnline bool) {
 	return isOnline
 }
 
+func GetGroupsInfo(userID int) (Groups []JoinedGroup) {
+	rows, _ := sqlDB.DataBase.Query(`SELECT groupId FROM groupMember WHERE userId = ? AND status = 'accepted'`, userID)
+	defer rows.Close()
+	for rows.Next() {
+		var group JoinedGroup
+		rows.Scan(&group.GroupID)
+		Groups = append(Groups, group)
+	}
+	Groups = GetGroupName(Groups, userID)
+	fmt.Println(Groups, "@@@@@@@@")
+	return
+}
+
+func GetGroupName(Groups []JoinedGroup, userID int) []JoinedGroup {
+	var newGroupInfo []JoinedGroup
+	for _, group := range Groups {
+		sqlDB.DataBase.QueryRow(`SELECT name, id FROM groups WHERE id = ?`, group.GroupID).Scan(&group.GroupName, &group.GroupID)
+		group.UserId = userID
+		group.OtherMembers = GetOtherGroupMemebers(group.GroupID, userID)
+		newGroupInfo = append(newGroupInfo, group)
+	}
+
+	return newGroupInfo
+}
+
+func GetOtherGroupMemebers(GroupID int, UserID int) (MemberIDs []int) {
+	rows, _ := sqlDB.DataBase.Query(`SELECT userId FROM groupMember WHERE groupId = ? AND userId != ?`, GroupID, UserID)
+	defer rows.Close()
+	for rows.Next() {
+		var memberID int
+		rows.Scan(&memberID)
+		MemberIDs = append(MemberIDs, memberID)
+	}
+	return
+}
+
 func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 	var followers []MutualFollower
 	query := `

@@ -81,8 +81,10 @@ func OnConnectionHandler(event Event, c *Client) error {
 				sendResponse(usersMutual, "update_followerslist", client)
 			}
 
-			notifications, errNot := function.LoadNotifications(RequesterID)
+			groupList := function.GetGroupsInfo(payload.RequesterID)
+			sendResponse(groupList, "update_groupslist", c)
 
+			notifications, errNot := function.LoadNotifications(RequesterID)
 			if errNot == nil {
 				sendResponse(len(notifications), "update_notifications", client)
 			}

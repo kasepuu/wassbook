@@ -10,7 +10,6 @@ import PostComments from "./PostComments";
 const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
 
 const handleOverlay = (e) => {
-  console.warn("click");
   e.preventDefault();
 
   const all =

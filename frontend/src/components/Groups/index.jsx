@@ -33,7 +33,6 @@ const Groups = () => {
   };
 
   const submitComment = async (data, post) => {
-    console.warn(data, post);
 
     data.append("userId", userInfo.UserID);
     data.append("postId", post.Id);

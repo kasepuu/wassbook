@@ -5,13 +5,18 @@ const MutualFollowers = () => {
   const [mutualFollowers, setMutualFollowers] = useState([]);
   const [isMessengerOpen, setIsMessengerOpen] = useState(false);
   const [selectedFollower, setSelectedFollower] = useState(null);
+  const [groups, setGroups] = useState([])
 
   useEffect(() => {
     const handleWebSocketMessage = (e) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_followerslist") {
-        console.log("EVENT RECEIVED in MutualFollowers: update_followerslist");
+        console.log("EVENT RECEIVED in MutualFollowers: update_followerslist", eventData.payload);
         setMutualFollowers(eventData.payload);
+      }
+      if (eventData.type === "update_groupslist") {
+        console.log("EVENT RECEIVED in MutualFollowers: update_groupslist", eventData.payload);
+        setGroups(eventData.payload)
       }
     };
 
@@ -62,6 +67,21 @@ const MutualFollowers = () => {
     <div className={`FollowerContainer`}>
       <div className="GroupsList">
         <p>Groups:</p>
+
+        {groups !== null && groups.length > 0 ? (
+          groups.map((group) => (
+            <li
+              key={group.GroupID}
+              onClick={() => {
+                openMessenger(group.GroupName);
+              }}
+            >
+              {group.GroupName}
+            </li>
+          ))
+        ) : (
+          <p>You haven't joined any groups yet.</p>
+        )}
       </div>
 
       <div className="FollowersList">

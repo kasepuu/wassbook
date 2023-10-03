@@ -102,6 +102,13 @@ type MutualFollower struct {
 	UserName string
 }
 
+type JoinedGroup struct {
+	UserId       int
+	OtherMembers []int
+	GroupID      int
+	GroupName    string
+}
+
 type Notification struct {
 	ID          int
 	TargetID    int

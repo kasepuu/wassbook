@@ -53,8 +53,6 @@ const Group = () => {
   };
 
   const handleCommentSubmit = async (data, post) => {
-    console.warn(data, post);
-
     data.append("userId", userInfo.UserID);
     data.append("postId", post.Id);
     data.append("groupId", post.GroupId);
@@ -104,7 +102,6 @@ const Group = () => {
   const isMemberOf = () => {
     if (data.AllUsers === undefined) return;
     return data.AllUsers.find(({ Id, Status }) => {
-      console.warn(Id, userInfo.UserID);
       return Id === userInfo.UserID && Status === "accepted";
     });
   };

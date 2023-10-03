@@ -201,7 +201,7 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           onKeyDown={(e) => {
             const response = {
               SenderID: JSON.parse(sessionStorage.getItem("CurrentUser")).UserID.toString(),
-              ReceiverID: selectedFollower.UserId.toString(),
+              ReceiverID: selectedFollower.UserId,
             };
             sendEvent("is_typing", response);
 

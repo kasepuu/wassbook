@@ -186,6 +186,24 @@ func LoadMutualFollowersHandler(event Event, c *Client) error {
 	return nil
 }
 
+func LoadGroupList(event Event, c *Client) error {
+	fmt.Println("loading grouplist:")
+
+	type Request struct {
+		RequesterID int `JSON:"RequesterID"`
+	}
+	var payload Request
+
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("[follow_decline] bad payload in request: %v", err)
+	}
+
+	groupList := function.GetGroupsInfo(payload.RequesterID)
+	sendResponse(groupList, "update_groupslist", c)
+	
+	return nil
+}
+
 func LoadProfileFollowersHandler(event Event, c *Client) error {
 	fmt.Println("loading profile followers:")
 

@@ -7,7 +7,6 @@ const CommentForm = ({ userInfo, handleCommentSubmit, post }) => {
   const [selectedCommentFile, setSelectedCommentFile] = useState(null);
 
   const handleSubmit = (e) => {
-    console.warn("hello ");
     e.preventDefault();
     let data = new FormData(e.target);
     handleCommentSubmit(data, post);
