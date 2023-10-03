@@ -37,6 +37,10 @@ func (m *wsManager) setupEventHandlers() {
 	m.handlers["send_notification"] = SendNotificationHandler
 	m.handlers["remove_notification"] = RemoveNotificationHandler
 
+	// group events
+	m.handlers["create_event"] = NewEventHandler
+	m.handlers["load_events"] = LoadEventHandler
+
 }
 
 func sendResponse(responseData any, event string, c *Client) {

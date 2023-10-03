@@ -14,7 +14,7 @@ import { useParams } from "react-router-dom";
 import { Info } from "./Info";
 import { Members } from "./Members";
 import { Events } from "./Events";
-import { GroupForm } from "./GroupForm";
+//import { GroupForm } from "./GroupForm";
 
 const Group = () => {
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
@@ -35,7 +35,7 @@ const Group = () => {
     }
 
     fetchData();
-  }, []);
+  }, [id]);
 
   const handlePostForm = async (e) => {
     e.preventDefault();
@@ -89,7 +89,7 @@ const Group = () => {
       case "members":
         return <Members inviteHandler={inviteHandler} data={data} />;
       case "events":
-        return <Events />;
+        return <Events data={data}/>;
       default:
         return (
           <GroupPosts
@@ -102,9 +102,10 @@ const Group = () => {
   };
 
   const isMemberOf = () => {
+    if (data.AllUsers === undefined) return;
     return data.AllUsers.find(({ Id, Status }) => {
       console.warn(Id, userInfo.UserID);
-      return Id == userInfo.UserID && Status == "accepted";
+      return Id === userInfo.UserID && Status === "accepted";
     });
   };
 
