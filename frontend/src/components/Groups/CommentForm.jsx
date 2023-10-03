@@ -5,8 +5,6 @@ import { FaImage } from "react-icons/fa";
 
 const CommentForm = ({ userInfo, handleCommentSubmit, post }) => {
   const [selectedCommentFile, setSelectedCommentFile] = useState(null);
-  let firstName = userInfo.FirstName;
-  let lastName = userInfo.LastName;
 
   const handleSubmit = (e) => {
     console.warn("hello ");
