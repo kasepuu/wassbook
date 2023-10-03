@@ -40,6 +40,7 @@ func (m *wsManager) setupEventHandlers() {
 	// group events
 	m.handlers["create_event"] = NewEventHandler
 	m.handlers["load_events"] = LoadEventHandler
+	m.handlers["event_response"] = EventResponseHandler
 
 }
 

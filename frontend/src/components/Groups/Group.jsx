@@ -131,10 +131,10 @@ const Group = () => {
         {isMemberOf() ? (
           <main>
             <div className="group-menu">
-              <span onClick={handleMenuClick}>DISCUSSION </span>
-              <span onClick={handleMenuClick}>INFO </span>
-              <span onClick={handleMenuClick}>MEMBERS </span>
-              <span onClick={handleMenuClick}>EVENTS </span>
+              <span onClick={handleMenuClick}>Discussion </span>
+              <span onClick={handleMenuClick}>Info </span>
+              <span onClick={handleMenuClick}>Members </span>
+              <span onClick={handleMenuClick}>Events </span>
             </div>
             {renderSwitch(item)}
           </main>

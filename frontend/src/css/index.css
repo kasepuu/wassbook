@@ -8,6 +8,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #2c3e50;
   color: white;
+  overflow: hidden;
 }
 
 code {
@@ -33,4 +34,8 @@ iframe {
   width: 1310px;
   height: 100%;
   background-color: #ddd;
+}
+
+.MainContainer {
+  background-color: #e7e7e7;
 }

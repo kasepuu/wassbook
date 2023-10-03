@@ -5,6 +5,7 @@
   background-color: #e7e7e7;
   overflow-y: auto;
   /* Add a scrollbar when content overflows */
+  color: black;
 }
 
 .feed-container {

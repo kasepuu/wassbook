@@ -78,3 +78,34 @@ func LoadEventHandler(event Event, c *Client) error {
 
 	return nil
 }
+
+func EventResponseHandler(event Event, c *Client) error {
+	type EventResponse struct {
+		UserID   int    `json:"UserID"`
+		EventID  int    `json:"EventID"`
+		Response string `json:"Response"`
+	}
+
+	var newEventResponse EventResponse
+
+	if err := json.Unmarshal(event.Payload, &newEventResponse); err != nil {
+		return fmt.Errorf("bad payload in request: %v", err)
+	}
+
+	statement := `INSERT OR REPLACE INTO eventMember (userId, eventId, status)
+	VALUES (?,?,?)`
+	_, errExec := sqlDB.DataBase.Exec(statement,
+		newEventResponse.UserID,
+		newEventResponse.EventID,
+		newEventResponse.Response,
+	)
+
+	if errExec != nil {
+		log.Println("SQL execution error:", errExec)
+		return errExec
+	}
+
+	fmt.Println("this was received:", newEventResponse)
+
+	return nil
+}

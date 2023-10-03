@@ -27,6 +27,7 @@
 
 .FollowersList {
   padding: 20px;
+  background-color: #e7e7e7;
 }
 
 .FollowersList li {
@@ -36,4 +37,8 @@
 .followersOnProfile {
   padding: 20px;
   overflow-y: auto;
+}
+
+.GroupsList {
+  background-color: #e7e7e7;
 }

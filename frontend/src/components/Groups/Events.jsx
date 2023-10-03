@@ -5,6 +5,7 @@ export const Events = ({ data }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [groupEvents, setGroupEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const currentDateTime = new Date().toISOString().slice(0, 16);
 
   const handleNewEventClick = () => {
     setShowPopup(true);
@@ -12,6 +13,26 @@ export const Events = ({ data }) => {
 
   const handleClosePopup = () => {
     setShowPopup(false);
+  };
+
+  const handleGoingClick = (eventID) => {
+    const user = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
+    const payload = {
+      UserID: user,
+      EventID: eventID,
+      Response: "Going"
+    };
+    sendEvent("event_response", payload);
+  };
+
+  const handleNotGoingClick = (eventID) => {
+    const user = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
+    const payload = {
+      UserID: user,
+      EventID: eventID,
+      Response: "Not Going"
+    };
+    sendEvent("event_response", payload);
   };
 
   const handleFormSubmit = (event) => {
@@ -38,11 +59,21 @@ export const Events = ({ data }) => {
   };
 
   useEffect(() => {
+    // Calculate the minimum date and time for the input
+    const minDateTime = new Date();
+    minDateTime.setMinutes(minDateTime.getMinutes() + 1); // Adding 1 minute to ensure it's in the future
+    const minDateTimeISO = minDateTime.toISOString().slice(0, 16);
+
+    // Set the min attribute of the input element
+    const eventDateInput = document.querySelector('[name="eventDate"]');
+    if (eventDateInput && showPopup) {
+      eventDateInput.setAttribute('min', minDateTimeISO);
+    }
+
     // Load events when the component mounts
     window.socket.onmessage = (e) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_events") {
-        // update the chat log with the received message, only if chat is opened with the right person.
         if (eventData.payload) {
           setGroupEvents(eventData.payload)
           setLoading(false);
@@ -51,7 +82,7 @@ export const Events = ({ data }) => {
     };
     // Request the initial list of events when the component mounts
     sendEvent("load_events", { GroupID: data.Id });
-  }, [data.Id]);
+  }, [data.Id, showPopup]);
 
   return (
     <div>
@@ -76,7 +107,7 @@ export const Events = ({ data }) => {
               </label>
               <label>
                 Event Date:
-                <input type="datetime-local" name="eventDate" required />
+                <input type="datetime-local" name="eventDate" required min={currentDateTime}/>
               </label>
               <button type="submit">Create Event</button>
             </form>
@@ -90,12 +121,31 @@ export const Events = ({ data }) => {
           <p>Loading events...</p>
         ) : (
           <div>
-            <h2>Events</h2>
-            <ul>
-              {groupEvents.map((event) => (
-                <li key={event.EventID}>{event.CreatorNickname} {event.EventName} {event.EventDescription} {event.EventDate}</li>
-              ))}
-            </ul>
+            <table className='eventsTable'>
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Creator</th>
+                  <th>Description</th>
+                  <th>Time</th>
+                  <th>Response</th>
+                </tr>
+              </thead>
+              <tbody>
+                {groupEvents.map((event) => (
+                  <tr key={event.EventID}>
+                    <td>{event.EventName}</td>
+                    <td>{event.CreatorNickname}</td>
+                    <td>{event.EventDescription}</td>
+                    <td>{event.EventDate}</td>
+                    <td>
+                      <button onClick={() => handleGoingClick(event.EventID)}>Going</button>
+                      <button onClick={() => handleNotGoingClick(event.EventID)}>Not Going</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
