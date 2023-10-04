@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strconv"
-
+	
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
 
@@ -75,7 +74,7 @@ func LoadMessagesHandler(event Event, c *Client) error {
 	if err := json.Unmarshal(event.Payload, &requestMessage); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
-
+	
 	receivingUserID := requestMessage.ReceiverID
 	sendingUserID := requestMessage.SenderID
 
@@ -107,8 +106,8 @@ func LoadMessagesHandler(event Event, c *Client) error {
 }
 
 type isTypingFormat struct {
-	SenderID   string `json:"SenderID"`
-	ReceiverID string `json:"ReceiverID"`
+	SenderID   int `json:"SenderID"`
+	ReceiverID int `json:"ReceiverID"`
 }
 
 func IsTypingHandler(event Event, c *Client) error {
@@ -117,9 +116,8 @@ func IsTypingHandler(event Event, c *Client) error {
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
-	ReceiverID, _ := strconv.Atoi(payload.ReceiverID)
 	for client := range c.client.clients {
-		if client.userId == ReceiverID {
+		if client.userId == payload.ReceiverID {
 			sendResponse(payload, "is_typing", client)
 		}
 	}

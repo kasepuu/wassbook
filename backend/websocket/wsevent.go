@@ -42,6 +42,11 @@ func (m *wsManager) setupEventHandlers() {
 	m.handlers["load_events"] = LoadEventHandler
 	m.handlers["event_response"] = EventResponseHandler
 
+	// group chat events
+	m.handlers["send_group_message"] = SendGroupMessageHandler
+	m.handlers["request_group_messages"] = LoadGroupMessagesHandler
+	m.handlers["is_typing_group"] = IsTypingGroupHandler
+
 }
 
 func sendResponse(responseData any, event string, c *Client) {

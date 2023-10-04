@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "../../css/Chat.css";
 import Messenger from "./Messenger";
+import GroupMessenger from "./GroupMsg";
+
 const MutualFollowers = () => {
   const [mutualFollowers, setMutualFollowers] = useState([]);
   const [isMessengerOpen, setIsMessengerOpen] = useState(false);
   const [selectedFollower, setSelectedFollower] = useState(null);
+
   const [groups, setGroups] = useState([])
+  const [isGroupMessengerOpen, setIsGroupMessengerOpen] = useState(false);
+  const [selectedChat, setSelectedChat] = useState(null);
 
   useEffect(() => {
     const handleWebSocketMessage = (e) => {
@@ -32,6 +37,37 @@ const MutualFollowers = () => {
     };
   }, []);
 
+
+  useEffect(() => {
+    const chatInfo = JSON.parse(localStorage.getItem("CurrentChat"));
+
+    if (chatInfo && chatInfo.UserID && chatInfo.Name) {
+      setSelectedChat(chatInfo);
+      setIsGroupMessengerOpen(true);
+    }
+  }, [setSelectedChat, setIsGroupMessengerOpen]);
+
+  const openGroupMessenger = (group) => {
+    closeGroupMessenger(); 
+    closeMessenger();
+    localStorage.setItem("CurrentChat", JSON.stringify(group));
+
+    setIsGroupMessengerOpen(true);
+    setSelectedChat(group);
+  };
+
+  const closeGroupMessenger = () => {
+    localStorage.removeItem("CurrentChat");
+    setIsGroupMessengerOpen(false);
+    setSelectedChat(null);
+  };
+  const chatInfo = JSON.parse(localStorage.getItem("CurrentChat"));
+  if (chatInfo && chatInfo.UserID && chatInfo.UserName) {
+    setSelectedChat(chatInfo);
+    setIsGroupMessengerOpen(true);
+  }
+
+
   useEffect(() => {
     // checking if theres currentchat information stored in localstorage
     const chatInfo = JSON.parse(localStorage.getItem("CurrentChat"));
@@ -44,6 +80,7 @@ const MutualFollowers = () => {
 
   const openMessenger = (follower) => {
     closeMessenger(); // just in case
+    closeGroupMessenger()
     localStorage.setItem("CurrentChat", JSON.stringify(follower));
 
     setIsMessengerOpen(true);
@@ -55,8 +92,6 @@ const MutualFollowers = () => {
     setIsMessengerOpen(false);
     setSelectedFollower(null);
   };
-
-  const chatInfo = JSON.parse(localStorage.getItem("CurrentChat"));
 
   if (chatInfo && chatInfo.UserID && chatInfo.UserName) {
     setSelectedFollower(chatInfo);
@@ -73,7 +108,7 @@ const MutualFollowers = () => {
             <li
               key={group.GroupID}
               onClick={() => {
-                openMessenger(group.GroupName);
+                openGroupMessenger(group);
               }}
             >
               {group.GroupName}
@@ -102,6 +137,13 @@ const MutualFollowers = () => {
           <p>No mutual followers found.</p>
         )}
       </div>
+
+      {isGroupMessengerOpen && selectedChat && (
+        <GroupMessenger
+          selectedChat={selectedChat}
+          closeGroupMessenger={closeGroupMessenger}
+        />
+      )}
 
       {isMessengerOpen && selectedFollower && (
         <Messenger
