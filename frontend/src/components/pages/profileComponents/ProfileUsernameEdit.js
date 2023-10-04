@@ -60,18 +60,21 @@ const ProfileUsernameEdit = ({ userInfo, setUserInfo }) => {
   };
 
   const handleUsernameSaveClick = () => {
-    handleUsernameUpdate(userInfo.UserID, newUsername)
-      .then(() => {
-        setUserInfo((prevUserInfo) => ({
-          ...prevUserInfo,
-          UserName: newUsername,
-        }));
-        setIsEditingUsername(false);
-      })
-      .catch((error) => {
-        console.error("Error updating username:", error);
-      });
-    setIsEditingUsername(false);
+    if (newUsername.length >= 3) {
+      handleUsernameUpdate(userInfo.UserID, newUsername)
+        .then(() => {
+          setUserInfo((prevUserInfo) => ({
+            ...prevUserInfo,
+            UserName: newUsername,
+          }));
+          setIsEditingUsername(false);
+        })
+        .catch((error) => {
+          console.error("Error updating username:", error);
+        });
+    } else {
+      alert("Username must be at least 3 characters long.");
+    }
   };
 
   const handleUsernameCancelClick = () => {
@@ -89,6 +92,7 @@ const ProfileUsernameEdit = ({ userInfo, setUserInfo }) => {
               <div>
                 <input
                   value={newUsername}
+                  placeholder={LoggedUser.UserName}
                   onChange={(e) => setNewUsername(e.target.value)}
                 />
                 <div>
