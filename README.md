@@ -3,8 +3,6 @@
 # TODO
 
 - toodo
-* chati puudused;
-* - group chat
 
 * notification puudused;
 * - disain
