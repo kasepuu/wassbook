@@ -3,12 +3,6 @@
 # TODO
 
 - toodo
-* katki:
-* - username edit ja followeri vastuvõtmisel läheb socket katki????
-
-* funktsionaalsus:
-* - groups
-
 * chati puudused;
 * - group chat
 
@@ -19,7 +13,6 @@
 * - grupid -> teeks nendele ka oma lahtri nagu followeridele?
 * - - invitation request
 * - - entering request
-* - - group eventid
 
 * good practice:
 * - handlereid vähendada, websocketisse ümber teha?
