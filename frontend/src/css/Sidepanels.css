@@ -30,9 +30,12 @@
   background-color: #e7e7e7;
 }
 
+.GroupsList li,
 .FollowersList li {
   cursor: pointer;
 }
+
+
 
 .followersOnProfile {
   padding: 20px;
