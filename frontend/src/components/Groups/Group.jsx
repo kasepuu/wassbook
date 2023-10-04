@@ -87,7 +87,7 @@ const Group = () => {
       case "members":
         return <Members inviteHandler={inviteHandler} data={data} />;
       case "events":
-        return <Events data={data}/>;
+        return <Events data={data} />;
       default:
         return (
           <GroupPosts
@@ -114,6 +114,8 @@ const Group = () => {
     formData.append("status", "accepted");
 
     const updatedUsers = await inviteMember(formData);
+
+    console.log(updatedUsers)
 
     setData((prevData) => {
       return { ...prevData, AllUsers: updatedUsers };

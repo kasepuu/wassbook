@@ -65,7 +65,7 @@ func CreateEvent(event Event) error {
 
 func CreateMember(invite GroupInvite) (int64, error) {
 	var err error
-	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groupMember (groupId, userId, status) VALUES (?, ?, ?)")
+	statement, err := sqlDB.DataBase.Prepare("INSERT OR REPLACE INTO groupMember (groupId, userId, status) VALUES (?, ?, ?)")
 	if err != nil {
 		return -1, err
 	}

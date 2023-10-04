@@ -17,7 +17,7 @@ export const GroupForm = ({ handleSubmit }) => {
   return (
     <>
       <dialog>
-        <button onClick={closeDialog} autofocus>
+        <button onClick={closeDialog} autoFocus>
           Close
         </button>
 

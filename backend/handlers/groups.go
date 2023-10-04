@@ -249,7 +249,7 @@ func GroupInvite(w http.ResponseWriter, r *http.Request) {
 		}
 
 		err = groups.CreateNotification(groups.Notification{SenderId: senderInt, ReceiverId: receiverInt, Description: "Invited to join group", Status: status, GroupMemberId: int(id)})
-		
+		fmt.Println(err)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

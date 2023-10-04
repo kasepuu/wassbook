@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { sendEvent } from "../../websocket"; // Assuming you have WebSocket functions for sending and receiving events
+import { sendEvent } from "../../websocket";
+import { FaArrowCircleDown } from "react-icons/fa";
 
 export const Events = ({ data }) => {
   const [showPopup, setShowPopup] = useState(false);
@@ -70,38 +71,51 @@ export const Events = ({ data }) => {
     }
 
     const handleUpdateEvents = (payload) => {
-    setGroupEvents(payload);
-    setLoading(false);
-  };
+      setGroupEvents(payload);
+      setLoading(false);
+    };
 
-  const handleUpdateEventResponse = (payload) => {
-    setGroupEvents((prevGroupEvents) => {
-      return prevGroupEvents.map((event) => {
-        if (event.EventID === payload.EventID) {
-          return {
-            ...event,
-            Response: payload.Response,
+    const handleUpdateEventResponse = (payload) => {
+      setGroupEvents((prevGroupEvents) => {
+        return prevGroupEvents.map((event) => {
+          if (event.EventID === payload.EventID) {
+            return {
+              ...event,
+              Response: payload.Response,
+            }
           }
-        }
-        return event;
+          return event;
+        });
       });
-    });
-  }
-
-  // Register socket event listeners
-  window.socket.onmessage = (e) => {
-    const eventData = JSON.parse(e.data);
-    if (eventData.type === "update_events") {
-      if (eventData.payload) {
-        handleUpdateEvents(eventData.payload);
-      }
-    } else if (eventData.type === "update_eventResponse") {
-      handleUpdateEventResponse(eventData.payload);
     }
-  };
+
+    // Register socket event listeners
+    window.socket.onmessage = (e) => {
+      const eventData = JSON.parse(e.data);
+      if (eventData.type === "update_events") {
+        if (eventData.payload) {
+          handleUpdateEvents(eventData.payload);
+        }
+      } else if (eventData.type === "update_eventResponse") {
+        handleUpdateEventResponse(eventData.payload);
+      }
+    };
     // Request the initial list of events when the component mounts
     sendEvent("load_events", { UserID: user, GroupID: data.Id });
   }, [data.Id, showPopup]);
+
+  const showAttending = (e) => {
+
+    const dialog = document.querySelector("dialog");
+
+    dialog.showModal();
+  };
+
+  const closeDialog = () => {
+    const dialog = document.querySelector("dialog");
+
+    dialog.close();
+  };
 
   return (
     <div>
@@ -126,7 +140,7 @@ export const Events = ({ data }) => {
               </label>
               <label>
                 Event Date:
-                <input type="datetime-local" name="eventDate" required min={currentDateTime}/>
+                <input type="datetime-local" name="eventDate" required min={currentDateTime} />
               </label>
               <button type="submit">Create Event</button>
             </form>
@@ -148,6 +162,7 @@ export const Events = ({ data }) => {
                   <th>Description</th>
                   <th>Time</th>
                   <th>Response</th>
+                  <th>Attending</th>
                 </tr>
               </thead>
               <tbody>
@@ -157,6 +172,7 @@ export const Events = ({ data }) => {
                     <td>{event.CreatorNickname}</td>
                     <td>{event.EventDescription}</td>
                     <td>{event.EventDate}</td>
+
                     {event.Response ? (
                       <td>
                         {event.Response === "Going" ? (
@@ -164,7 +180,6 @@ export const Events = ({ data }) => {
                             {event.Response}
                             <button onClick={() => handleNotGoingClick(event.EventID)}>Not Going</button>
                           </>
-
                         ) : (
                           <>
                             <button onClick={() => handleGoingClick(event.EventID)}>Going</button>
@@ -178,6 +193,20 @@ export const Events = ({ data }) => {
                         <button onClick={() => handleNotGoingClick(event.EventID)}>Not Going</button>
                       </td>
                     )}
+                    <td>{event.Attending}
+                      <dialog>
+                        <button onClick={closeDialog} autoFocus>
+                          Close
+                        </button>
+                        <ul>
+                          {event.AttendingMembers.map((member) => (
+                            <div>{member.Nickname} {member.Response}</div>
+                          ))}
+                        </ul>
+                        <article></article>
+                      </dialog>
+                      <button onClick={showAttending}><FaArrowCircleDown /></button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
