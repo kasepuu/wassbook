@@ -166,7 +166,7 @@ export const Events = ({ data }) => {
                 </tr>
               </thead>
               <tbody>
-                {groupEvents.map((event) => (
+                {groupEvents === null ? (<>No events!</>) : (<>{groupEvents.map((event) => (
                   <tr key={event.EventID}>
                     <td>{event.EventName}</td>
                     <td>{event.CreatorNickname}</td>
@@ -199,16 +199,20 @@ export const Events = ({ data }) => {
                           Close
                         </button>
                         <ul>
-                          {event.AttendingMembers.map((member) => (
-                            <div>{member.Nickname} {member.Response}</div>
-                          ))}
+                          {event.AttendingMembers === null ? (
+                            <><div>No one attending yet!</div></>) : (
+                            <>{event.AttendingMembers.map((member) => (
+                              <div>{member.Nickname} {member.Response}</div>
+                            ))}</>
+                          )}
+
                         </ul>
                         <article></article>
                       </dialog>
                       <button onClick={showAttending}><FaArrowCircleDown /></button>
                     </td>
                   </tr>
-                ))}
+                ))}</>)}
               </tbody>
             </table>
           </div>
