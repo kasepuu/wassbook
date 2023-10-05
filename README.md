@@ -4,20 +4,7 @@
 
 - toodo
 
-* notification nõuded:
-* - peab nägema igal lehel
-* - followi saaja peab notificationi saama uue followi puhul (private profile)
-* - kui keegi saadab group invitationi peab tekkima notification (kust saab vastu võtta)
-* - kui keegi üritab grupiga joinida peab grupi omanik/admin notificationi saama (kust saab vastu võtta)
-* - kui keegi loob group evendi siis liikmed peavad saama notificationi
-
-* notification puudused;
-* - disain
-* - sendEvent("send_notification", payload) -> lisada tegevustele mis võiks teavituse saata
-* - following request (meil nendele eraldi lahter?)
-* - grupid -> teeks nendele ka oma lahtri nagu followeridele?
-* - - invitation request
-* - - entering request
+* - websockeitga uuendused üle vaadata (update_notifications) (update_follower_requests)
 
 * good practice:
 * - handlereid vähendada, websocketisse ümber teha?

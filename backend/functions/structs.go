@@ -115,3 +115,14 @@ type Notification struct {
 	SenderID    int
 	Description string
 }
+
+// struct used for fetching group requests
+type GroupRequest struct {
+	UserInfo  UserInfo
+	IsInvite  bool // true=invite  false=request
+	GroupInfo GroupRequestInfo
+}
+type GroupRequestInfo struct {
+	ID   int
+	Name string
+}

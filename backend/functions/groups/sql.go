@@ -31,12 +31,12 @@ func GetUsers() ([]User, error) {
 
 func CreateGroup(group Group) ([]Group, error) {
 	var err error
-	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groups (name, ownerId, description) VALUES (?,?,?)")
+	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groups (name, tag, ownerId, description) VALUES (?,?,?,?)")
 	// currentTime := time.Now().Format(time.RFC3339)
 	if err != nil {
 		return nil, err
 	}
-	result, err := statement.Exec(group.Name, group.OwnerId, group.Description)
+	result, err := statement.Exec(group.Name, group.Tag, group.OwnerId, group.Description)
 	groupId, _ := result.LastInsertId()
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func GetGroups() ([]Group, error) {
 	var err error
 	groups := []Group{}
 
-	rows, err := sqlDB.DataBase.Query("select groups.id, groups.name, groups.description, fname || \" \" || lname as owner, ownerId from groups left join users on groups.ownerId = users.id")
+	rows, err := sqlDB.DataBase.Query("select groups.id, groups.name, groups.tag ,groups.description, fname || \" \" || lname as owner, ownerId from groups left join users on groups.ownerId = users.id")
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +106,7 @@ func GetGroups() ([]Group, error) {
 		rows.Scan(
 			&group.Id,
 			&group.Name,
+			&group.Tag,
 			&group.Description,
 			&group.Owner,
 			&group.OwnerId,
@@ -158,7 +159,8 @@ func GetGroup(groupId int) (Group, error) {
 	err := sqlDB.DataBase.QueryRow(`
 	select
 		groups.id,
-		groups.name, 
+		groups.name,
+		groups.tag, 
 		groups.description, 
 		fname || " " || lname as owner, 
 		ownerId 
@@ -167,6 +169,7 @@ func GetGroup(groupId int) (Group, error) {
 	`, groupId).Scan(
 		&group.Id,
 		&group.Name,
+		&group.Tag,
 		&group.Description,
 		&group.Owner,
 		&group.OwnerId,

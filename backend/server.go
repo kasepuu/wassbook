@@ -68,7 +68,7 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/update-user-description", handler.UpdateUserDescriptionHandler)
 	corsMux.HandleFunc("/update-user-name", handler.UpdateUserNameHandler)
 	corsMux.HandleFunc("/update-profile-picture/", handler.UpdateProfilePictureHandler)
-	corsMux.HandleFunc("/fetch-users-trying-to-follow", handler.FetchUsersTryingToFollow)
+	corsMux.HandleFunc("/fetch-requests", handler.FetchUserRequests) // request fetching
 	corsMux.HandleFunc("/fetch-notifications", handler.FetchNotifications)
 
 	corsMux.HandleFunc("/getMutualFollowers", handler.DisplayMutualFollowers)

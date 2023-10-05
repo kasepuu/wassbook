@@ -32,7 +32,7 @@ func SendFollowHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			users, err := function.FetchUsersWithFollowStatus(TargetID, "pending")
+			users, err := function.FetchFollowRequests(TargetID, "pending")
 			if err == nil {
 				fmt.Println("update_follower_requests")
 				sendResponse(len(users), "update_follower_requests", client)
@@ -69,7 +69,7 @@ func SendUnFollowHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			users, err := function.FetchUsersWithFollowStatus(TargetID, "pending")
+			users, err := function.FetchFollowRequests(TargetID, "pending")
 			if err == nil {
 				sendResponse(len(users), "update_follower_requests", client)
 			}
@@ -102,7 +102,7 @@ func AcceptFollowHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			users, err := function.FetchUsersWithFollowStatus(TargetID, "pending")
+			users, err := function.FetchFollowRequests(TargetID, "pending")
 			if err == nil {
 				sendResponse(len(users), "update_follower_requests", client)
 			}
@@ -147,7 +147,7 @@ func DeclineFollowHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			usersUnderRequests, errReq := function.FetchUsersWithFollowStatus(TargetID, "pending")
+			usersUnderRequests, errReq := function.FetchFollowRequests(TargetID, "pending")
 			if errReq == nil {
 				sendResponse(len(usersUnderRequests), "update_follower_requests", client)
 			}
@@ -200,7 +200,7 @@ func LoadGroupList(event Event, c *Client) error {
 
 	groupList := function.GetGroupsInfo(payload.RequesterID)
 	sendResponse(groupList, "update_groupslist", c)
-	
+
 	return nil
 }
 
@@ -224,5 +224,83 @@ func LoadProfileFollowersHandler(event Event, c *Client) error {
 	if errMut == nil {
 		sendResponse(profileFollowing, "profile_followinglist", c)
 	}
+	return nil
+}
+
+// group requests
+func AcceptGroupRequestHandler(event Event, c *Client) error {
+	type Request struct {
+		RequesterID int `JSON:"RequesterID"`
+		GroupID     int `JSON:"GroupID"`
+	}
+	var payload Request
+
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("[group_request_accept] bad payload in request: %v", err)
+	}
+
+	RequesterID := payload.RequesterID
+	GroupID := payload.GroupID
+
+	function.SetGroupStatus(RequesterID, GroupID, "accepted")
+
+	return nil
+}
+
+func DeclineGroupRequestHandler(event Event, c *Client) error {
+	type Request struct {
+		RequesterID int `JSON:"RequesterID"`
+		GroupID     int `JSON:"GroupID"`
+	}
+	var payload Request
+
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("[group_request_decline] bad payload in request: %v", err)
+	}
+
+	RequesterID := payload.RequesterID
+	GroupID := payload.GroupID
+
+	err := function.SetGroupStatus(RequesterID, GroupID, "remove")
+	if err != nil {
+		fmt.Println("something went wronk!", err)
+	}
+	return nil
+}
+func AcceptGroupInviteHandler(event Event, c *Client) error {
+	type Request struct {
+		RequesterID int `JSON:"RequesterID"`
+		GroupID     int `JSON:"GroupID"`
+	}
+	var payload Request
+
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("[group_invite_accept] bad payload in request: %v", err)
+	}
+
+	RequesterID := payload.RequesterID
+	GroupID := payload.GroupID
+
+	function.SetGroupStatus(RequesterID, GroupID, "accepted")
+
+	return nil
+}
+
+func DeclineGroupInviteHandler(event Event, c *Client) error {
+	type Request struct {
+		RequesterID int `JSON:"RequesterID"`
+		GroupID     int `JSON:"GroupID"`
+	}
+	var payload Request
+
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("[group_invite_decline] bad payload in request: %v", err)
+	}
+
+	RequesterID := payload.RequesterID
+	GroupID := payload.GroupID
+
+	function.SetGroupStatus(RequesterID, GroupID, "remove")
+
 	return nil
 }

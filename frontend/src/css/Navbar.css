@@ -104,7 +104,7 @@ a {
 
   margin-top: 10px;
 
-  width: 200px;
+  width: 280px;
   height: 250px;
   border: 2px solid #b6b6b6;
 
@@ -116,6 +116,8 @@ a {
 
 .dropdown-contents {
   color: black;
+  display: flex;
+  flex-direction: column;
 }
 
 .dropdown-result {

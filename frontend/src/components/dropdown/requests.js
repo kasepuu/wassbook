@@ -1,26 +1,24 @@
-import Follower from "./follower";
+import Request from "./request";
 import { backendHost } from "../..";
 import { useEffect, useState } from "react";
-
 const FollowersDropDown = ({ isOpen, onClose }) => {
-  const [usersTryingToFollow, setUsersTryingToFollow] = useState([]);
+  const [requests, setRequests] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!isOpen) return;
     const CurrentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
 
-    fetch(
-      `${backendHost}/fetch-users-trying-to-follow?UserID=${CurrentUser.UserID}`
-    )
+    fetch(`${backendHost}/fetch-requests?UserID=${CurrentUser.UserID}`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to load users that are trying to follow");
+          throw new Error("Failed to l1oad users that are trying to follow");
         }
         return response.json();
       })
       .then((data) => {
-        setUsersTryingToFollow(data);
+        console.log("requests:", data);
+        setRequests(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -29,9 +27,12 @@ const FollowersDropDown = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   return (
-    <div className="dropdown">
-      <Follower users={usersTryingToFollow} isLoading={isLoading} />
-    </div>
+    <>
+      {" "}
+      <div className="dropdown">
+        <Request requests={requests} isLoading={isLoading} />
+      </div>
+    </>
   );
 };
 

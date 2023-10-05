@@ -72,7 +72,8 @@ func FetchNotifications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-func FetchUsersTryingToFollow(w http.ResponseWriter, r *http.Request) {
+
+func FetchUserRequests(w http.ResponseWriter, r *http.Request) {
 	userid := r.URL.Query().Get("UserID")
 	uid, err := strconv.Atoi(userid)
 	if err != nil {
@@ -83,34 +84,47 @@ func FetchUsersTryingToFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	Users, fetchErr := function.FetchUsersWithFollowStatus(uid, "pending")
-	if fetchErr != nil {
+	FollowRequests, fetchErr := function.FetchFollowRequests(uid, "pending")
+	GroupRequests, fetchErr2 := function.FetchGroupJoinRequests(uid)
+	GroupInvites, fetchErr3 := function.FetchGroupInviteRequests(uid)
+
+	if fetchErr != nil || fetchErr2 != nil || fetchErr3 != nil {
 		log.Println("Errors encountered when trying to fetch:", fetchErr)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Internal issue, please try again later!"))
 		return
 	}
 
-	fmt.Println("FOLLOWERS > Fetched users:", Users)
-
-	if len(Users) == 0 {
+	if len(FollowRequests) == 0 && len(GroupRequests) == 0 && len(GroupInvites) == 0 {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 
-	var UsersInfo []function.UserInfo
-	for u := 0; u < len(Users); u++ {
-		userinfo, err := function.FetchUserInformation(Users[u], 0)
+	var FollowerRequests []function.UserInfo
+	for u := 0; u < len(FollowRequests); u++ {
+		userinfo, err := function.FetchUserInformation(FollowRequests[u], 0)
 		if err != nil {
-			log.Println("Error at UserID:", Users[u], "- error message:", err)
+			log.Println("Error at UserID:", FollowRequests[u], "- error message:", err)
 			continue
 		}
 
-		UsersInfo = append(UsersInfo, userinfo)
+		FollowerRequests = append(FollowerRequests, userinfo)
 	}
 
+	type Response struct {
+		FollowerRequests []function.UserInfo
+		GroupRequests    []function.GroupRequest
+		GroupInvites     []function.GroupRequest
+	}
+
+	var resp Response
+
+	resp.FollowerRequests = FollowerRequests
+	resp.GroupRequests = GroupRequests
+	resp.GroupInvites = GroupInvites
+
 	w.WriteHeader(http.StatusOK)
-	encodeErr := json.NewEncoder(w).Encode(UsersInfo)
+	encodeErr := json.NewEncoder(w).Encode(resp)
 	if encodeErr != nil {
 		log.Println(encodeErr)
 		return

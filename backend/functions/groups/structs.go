@@ -2,6 +2,7 @@ package groups
 
 type Group struct {
 	Id          int     `json:"Id"`
+	Tag         string  `json:"Tag"`
 	Name        string  `json:"Name"`
 	Owner       string  `json:"Owner"`
 	OwnerId     int     `json:"OwnerId"`

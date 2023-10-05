@@ -1,5 +1,5 @@
 import "../../css/Feed.css";
-
+import { sendEvent } from "../../websocket";
 import { GroupPosts } from "./GroupPosts";
 
 import {
@@ -69,6 +69,14 @@ const Group = () => {
     formData.append("groupId", data.Id);
     formData.append("status", "invited");
 
+    const notificationPayload = {
+      TargetID: member.id,
+      SenderID: data.OwnerId,
+      Description: "New group Invite!",
+    };
+
+    sendEvent("send_notification", notificationPayload);
+
     const updatedUsers = await inviteMember(formData);
 
     setData((prevData) => {
@@ -111,11 +119,17 @@ const Group = () => {
     formData.append("receiverId", userInfo.UserID);
     formData.append("senderId", data.OwnerId);
     formData.append("groupId", data.Id);
-    formData.append("status", "accepted");
+    formData.append("status", "pending");
+
+    const notificationPayload = {
+      TargetID: data.OwnerId,
+      SenderID: userInfo.UserID,
+      Description: `${userInfo.FirstName} wants to join your group!`,
+    };
+
+    sendEvent("send_notification", notificationPayload);
 
     const updatedUsers = await inviteMember(formData);
-
-    console.log(updatedUsers)
 
     setData((prevData) => {
       return { ...prevData, AllUsers: updatedUsers };

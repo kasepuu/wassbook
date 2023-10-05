@@ -27,14 +27,19 @@ func (m *wsManager) setupEventHandlers() {
 	m.handlers["request_messages"] = LoadMessagesHandler
 	m.handlers["is_typing"] = IsTypingHandler
 
-	// follower events
+	// events regarding requests
 	m.handlers["send_follow_request"] = SendFollowHandler
 	m.handlers["send_unfollow_request"] = SendUnFollowHandler
 	m.handlers["accept_follow_request"] = AcceptFollowHandler
 	m.handlers["decline_follow_request"] = DeclineFollowHandler
+	m.handlers["accept_group_invite"] = AcceptGroupInviteHandler
+	m.handlers["decline_group_invite"] = DeclineGroupInviteHandler
+	m.handlers["accept_group_request"] = AcceptGroupRequestHandler
+	m.handlers["decline_group_request"] = DeclineGroupRequestHandler
 
 	// notification events
 	m.handlers["send_notification"] = SendNotificationHandler
+	m.handlers["send_group_notification"] = SendGroupNotificationHandler
 	m.handlers["remove_notification"] = RemoveNotificationHandler
 
 	// group events
@@ -76,9 +81,12 @@ func OnConnectionHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == RequesterID {
-			users, err := function.FetchUsersWithFollowStatus(RequesterID, "pending")
-			if err == nil {
-				sendResponse(len(users), "update_follower_requests", client)
+			users, err := function.FetchFollowRequests(RequesterID, "pending")
+			users2, err2 := function.FetchGroupInviteRequests(RequesterID)
+			users3, err3 := function.FetchGroupJoinRequests(RequesterID)
+
+			if err == nil && err2 == nil && err3 == nil {
+				sendResponse(len(users)+len(users2)+len(users3), "update_follower_requests", client)
 			}
 
 			usersMutual, errMut := function.GetMutualFollowers(RequesterID)

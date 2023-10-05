@@ -27,6 +27,12 @@ export const GroupForm = ({ handleSubmit }) => {
             <label>Name</label>
             <input type="text" name="name" />
           </div>
+
+          <div className="form-control">
+            <label>Tag</label>
+            <input type="text" name="tag" />
+          </div>
+
           <div className="form-control">
             <label>Description</label>
             <input type="text" name="description" />

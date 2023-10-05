@@ -2,7 +2,6 @@ package function
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"sort"
@@ -36,9 +35,16 @@ func GetUserName(UserID int) (UserName string) {
 	return UserName
 }
 
-func GetUserIdFomMessage(User string) (userID int) {
-	sqlDB.DataBase.QueryRow("SELECT id FROM users WHERE username = ?", User).Scan(&userID)
-	return
+func GetGroupNameByID(GroupID int, Type string) (GroupName string) {
+	// name || tag
+	query := "SELECT " + Type + " FROM groups WHERE id = ?"
+	sqlDB.DataBase.QueryRow(query, GroupID).Scan(&GroupName)
+	return GroupName
+}
+
+func GetUserIdFomMessage(User string) (UserID int) {
+	sqlDB.DataBase.QueryRow("SELECT id FROM users WHERE username = ?", User).Scan(&UserID)
+	return UserID
 }
 
 func SaveFollow(UserID int, ReceiverID int, Status string) {
@@ -97,13 +103,14 @@ func UpdateUsername(UserID int, newUsername string) error {
 	return nil
 }
 
-func FetchUsersWithFollowStatus(targetID int, status string) (Users []int, err error) {
+func FetchFollowRequests(targetID int, status string) (Users []int, err error) {
 	// two types of status: following, pending
-	if status != "following" && status != "pending" {
-		return nil, errors.New("invalid status")
-	}
+	// if status != "following" && status != "pending" {
+	// 	return nil, errors.New("invalid status")
+	// }
 
-	rows, queryErr := sqlDB.DataBase.Query("SELECT userid FROM followers WHERE status = ? AND targetid = ?", status, targetID)
+	sqlQuery := "SELECT userid FROM followers WHERE status = ? AND targetid = ?"
+	rows, queryErr := sqlDB.DataBase.Query(sqlQuery, status, targetID)
 	if queryErr != nil {
 		log.Println("[Followers] - something went wrong while trying to QUERY:", queryErr)
 		return nil, queryErr
@@ -118,7 +125,98 @@ func FetchUsersWithFollowStatus(targetID int, status string) (Users []int, err e
 		Users = append(Users, userid)
 	}
 
-	return Users, nil
+	fmt.Println("USER:", targetID, "HAS REQUESTS FROM:", Users)
+
+	return Users, err
+}
+
+func FetchGroupJoinRequests(targetID int) (request []GroupRequest, err error) {
+	// two types of status: following, pending
+	status := "pending"
+	sqlQuery := `
+SELECT gm.userId, gm.groupId
+FROM groupMember AS gm
+JOIN groups AS g ON gm.groupId = g.id
+WHERE gm.status = ? AND g.ownerId = ?
+`
+	rows, queryErr := sqlDB.DataBase.Query(sqlQuery, status, targetID)
+	if queryErr != nil {
+		log.Println("[Followers] - something went wrong while trying to QUERY:", queryErr)
+		return nil, queryErr
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var gRequest GroupRequest
+		var userid, groupid int
+		var userInfoErr error
+		if scanErr := rows.Scan(&userid, &groupid); scanErr != nil {
+			return nil, scanErr
+		}
+
+		gRequest.GroupInfo.ID = groupid
+		gRequest.GroupInfo.Name = GetGroupNameByID(groupid, "tag")
+
+		gRequest.UserInfo, userInfoErr = FetchUserInformation(userid, targetID)
+		if userInfoErr != nil {
+			log.Println("Error loading info for user:", userid)
+			continue
+		}
+		request = append(request, gRequest)
+	}
+
+	return request, err
+}
+
+func FetchGroupInviteRequests(targetID int) (request []GroupRequest, err error) {
+	status := "invited"
+	sqlQuery := `
+SELECT gm.userId, gm.groupId
+FROM groupMember AS gm
+JOIN groups AS g ON gm.groupId = g.id
+WHERE gm.status = ?
+`
+	rows, queryErr := sqlDB.DataBase.Query(sqlQuery, status)
+	if queryErr != nil {
+		log.Println("[Followers] - something went wrong while trying to QUERY:", queryErr)
+		return nil, queryErr
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var gRequest GroupRequest
+		var userid, groupid int
+		var userInfoErr error
+		if scanErr := rows.Scan(&userid, &groupid); scanErr != nil {
+			return nil, scanErr
+		}
+
+		gRequest.GroupInfo.ID = groupid
+		gRequest.GroupInfo.Name = GetGroupNameByID(groupid, "tag")
+		gRequest.IsInvite = true
+
+		gRequest.UserInfo, userInfoErr = FetchUserInformation(userid, targetID)
+		if userInfoErr != nil {
+			log.Println("Error loading info for user:", userid)
+			continue
+		}
+		request = append(request, gRequest)
+	}
+
+	return request, err
+}
+
+func SetGroupStatus(userid int, groupid int, changeStatusTo string) error {
+	query := "UPDATE groupMember SET status = ? WHERE userId = ? AND groupId = ?"
+
+	if changeStatusTo == "remove" {
+		query = "DELETE FROM groupMember WHERE userId = ? AND groupId = ?"
+		_, err := sqlDB.DataBase.Exec(query, userid, groupid)
+		return err
+	}
+
+	_, err := sqlDB.DataBase.Exec(query, changeStatusTo, userid, groupid)
+	return err
 }
 
 func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr error) {
@@ -290,6 +388,18 @@ func GetGroupsInfo(userID int) (Groups []JoinedGroup) {
 	Groups = GetGroupName(Groups, userID)
 	fmt.Println(Groups, "@@@@@@@@")
 	return
+}
+
+func GetGroupMembers(groupID int) (Users []int) {
+	rows, _ := sqlDB.DataBase.Query(`SELECT userId FROM groupMember WHERE status = 'accepted' AND groupId = ?`, groupID)
+	defer rows.Close()
+	for rows.Next() {
+		var uid int
+		rows.Scan(&uid)
+		Users = append(Users, uid)
+	}
+
+	return Users
 }
 
 func GetGroupName(Groups []JoinedGroup, userID int) []JoinedGroup {

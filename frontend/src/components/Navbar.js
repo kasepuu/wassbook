@@ -10,10 +10,10 @@ import {
   FaUsers,
   FaBell,
   FaUserCircle,
-  FaUserFriends,
+  FaNetworkWired,
 } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import FollowersDropDown from "./dropdown/followers";
+import FollowersDropDown from "./dropdown/requests";
 import NotificationsDropdown from "./dropdown/notifications";
 
 const Navbar = () => {
@@ -93,6 +93,8 @@ const Navbar = () => {
             <NotificationsDropdown isOpen={isNotificationsOpen} />
           )}
         </div>
+
+        {/* follower & group-join requests */}
         <div
           onClick={(e) => {
             onFollowersClick(e);
@@ -100,7 +102,7 @@ const Navbar = () => {
           className="followersBTN"
         >
           <span className="notification-design">{followerRequests}</span>
-          <FaUserFriends /> Followers
+          <FaNetworkWired /> Requests
           {isFollowersOpen && <FollowersDropDown isOpen={isFollowersOpen} />}
         </div>
 

@@ -19,11 +19,12 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		name := r.FormValue("name")
 		description := r.FormValue("description")
+		tag := r.FormValue("tag")
 		userId := r.FormValue("userId")
 
 		userInt, _ := strconv.Atoi(userId)
 
-		groups, err := groups.CreateGroup(groups.Group{Name: name, Description: description, OwnerId: userInt})
+		groups, err := groups.CreateGroup(groups.Group{Name: name, Tag: tag, Description: description, OwnerId: userInt})
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -241,20 +242,21 @@ func GroupInvite(w http.ResponseWriter, r *http.Request) {
 		groupInt, _ := strconv.Atoi(groupId)
 		receiverInt, _ := strconv.Atoi(receiverId)
 
-		id, err := groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: status})
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		// id, err :=
+		groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: status})
+		// if err != nil {
+		// 	w.WriteHeader(http.StatusBadRequest)
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
 
-		err = groups.CreateNotification(groups.Notification{SenderId: senderInt, ReceiverId: receiverInt, Description: "Invited to join group", Status: status, GroupMemberId: int(id)})
-		fmt.Println(err)
-		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		// err = groups.CreateNotification(groups.Notification{SenderId: senderInt, ReceiverId: receiverInt, Description: "Invited to join group", Status: status, GroupMemberId: int(id)})
+		// fmt.Println(err)
+		// if err != nil {
+		// 	w.WriteHeader(http.StatusBadRequest)
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
 		users, err := groups.GetAllMembers(groupInt)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)

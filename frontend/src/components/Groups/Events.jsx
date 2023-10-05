@@ -54,6 +54,15 @@ export const Events = ({ data }) => {
       EventDescription: formDataObject.eventDescription,
       EventDate: formDataObject.eventDate,
     };
+
+    const notificationPayload = {
+      GroupID: data.Id,
+      SenderID: creator,
+      Type: "event",
+      Topic: formDataObject.eventName,
+    };
+
+    sendEvent("send_group_notification", notificationPayload);
     sendEvent("create_event", payload);
     setShowPopup(false);
   };

@@ -18,3 +18,13 @@ func SortUsers(users []UserInfo) []UserInfo {
 
 	return users
 }
+
+// helper function to check if a value is present in a slice
+func Contains(slice []int, value int) bool {
+	for _, item := range slice {
+		if item == value {
+			return true
+		}
+	}
+	return false
+}

@@ -40,3 +40,7 @@ iframe {
 .MainContainer {
   background-color: #e7e7e7;
 }
+
+.coloredMessage {
+  color: darkblue;
+}

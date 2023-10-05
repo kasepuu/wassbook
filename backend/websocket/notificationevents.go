@@ -33,6 +33,61 @@ func SendNotificationHandler(event Event, c *Client) error {
 			if errMut == nil {
 				sendResponse(usersMutual, "update_followerslist", c)
 			}
+			notifications, errNot := function.LoadNotifications(client.userId)
+			if errNot == nil {
+				sendResponse(len(notifications), "update_notifications", client)
+			}
+		}
+	}
+
+	return nil
+}
+
+func SendGroupNotificationHandler(event Event, c *Client) error {
+	fmt.Println("New notification has been sent!")
+	type Requester struct {
+		GroupID  int    `JSON:"GroupID"`
+		SenderID int    `JSON:"SenderID"`
+		Type     string `JSON:"Type"`
+		Topic    string `JSON:"Topic"`
+	}
+	var payload Requester
+
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("bad payload in request: %v", err)
+	}
+
+	fmt.Println("GroupEvent Payload:", payload)
+
+	Members := function.GetGroupMembers(payload.GroupID)
+	fmt.Println("mebmers:;", Members)
+	SenderID := payload.SenderID
+	Type := payload.Type
+	Topic := payload.Topic
+
+	GroupName := function.GetGroupNameByID(payload.GroupID, "tag")
+	fmt.Println("group tag:", GroupName, "group name:", function.GetGroupNameByID(payload.GroupID, "name"))
+
+	if Type == "event" {
+		Topic = "New event: '" + Topic + "' in " + GroupName
+	}
+
+	for m := 0; m < len(Members); m++ {
+		if Members[m] != SenderID {
+			function.SaveNotification(Members[m], SenderID, Topic)
+		}
+	}
+
+	for client := range c.client.clients {
+		if client.userId != SenderID && function.Contains(Members, client.userId) {
+			usersMutual, errMut := function.GetMutualFollowers(client.userId)
+			if errMut == nil {
+				sendResponse(usersMutual, "update_followerslist", client)
+			}
+			notifications, errNot := function.LoadNotifications(client.userId)
+			if errNot == nil {
+				sendResponse(len(notifications), "update_notifications", client)
+			}
 		}
 	}
 
