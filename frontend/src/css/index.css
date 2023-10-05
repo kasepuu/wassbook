@@ -24,6 +24,7 @@ iframe {
   border-style: solid;
   border-image: linear-gradient(to top, rgb(69, 255, 255), rgb(0, 0, 131)) 1;
 }
+
 .center-vertically {
   position: absolute;
   top: 50%;

@@ -3,6 +3,7 @@
     overflow-y: auto;
     padding: 10px;
     margin: 10px;
+    /* min-width: fit-content; */
 }
 
 .group-names h3 {
@@ -36,17 +37,19 @@
     margin: 25px 0;
     font-size: 0.9em;
     font-family: sans-serif;
-    min-width: 400px;
+    /* min-width: 400px; */
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     border-radius: 20px;
     overflow-y: auto;
+    overflow: hidden;
 }
 
 .eventsTable thead tr {
-    background-color: #007bff;
-    color: #ffffff;
+    /* background-color: #007bff; */
+    color: #007bff;
     text-align: left;
-    border-radius: 20px 20px 0 0;
+    border-radius: 20px;
+    border-bottom: 1px solid black;
 }
 
 .eventsTable th,
@@ -65,9 +68,10 @@
     background-color: #f3f3f3;
 }
 
-.eventsTable tbody tr:last-of-type {
+/* .eventsTable tbody tr:last-of-type {
     border-bottom: 2px solid #007bff;
-}
+} */
+
 .group-menu {
     width: 100%;
     display: flex;
@@ -82,7 +86,6 @@
     background-color: #f0f0f0;
     border: 1px solid #ccc;
     border-radius: 5px;
-
 }
 
 .group-menu span:hover {
