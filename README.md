@@ -13,20 +13,29 @@
 * - mobile view?
 
 * - lõpu asjad:
-* - docker
 * - db migration
 
 ## ABOUT
 
+- Our social network project is created with React & Golang
+
 ###### This project must:
 
-- be similar to facebook
+- Be Facebook-like social network with features as such:
+
+* Followers
+* Profile
+* Posts
+* Groups
+* Notifications
+* Chats
 
 ## USAGE
 
 ```
- start frontend > sh start.sh
- start backend > go run . <port> // port is optional, this will be 8081 by default
+ start without docker > sh start.sh
+ start with docker > sh start_docker.sh (linux users might have to run with sudo)
+ close docker > sh stop_docker.sh
 ```
 
 ### EXISTING USERS
@@ -52,6 +61,7 @@ CHAT indicators:
 up to date node verison (v20.5.1)
 up to date npm version (9.8.0)
 sqlite3,
+docker-compose,
 system with golang support,
 a modern browser with websocket support
 ```
@@ -60,8 +70,6 @@ a modern browser with websocket support
 
 ```
 Routing > https://www.youtube.com/watch?v=Ul3y1LXxzdU&ab_channel=WebDevSimplified
-
-
 WebSocket > https://www.youtube.com/watch?v=pKpKv9MKN-E&ab_channel=ProgrammingPercy
 ```
 
