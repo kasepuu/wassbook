@@ -1,1 +1,0 @@
-CREATE TABLE IF NOT EXISTS sqlite_sequence(name,seq)
