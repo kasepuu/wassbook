@@ -35,7 +35,7 @@ func GetUserName(UserID int) (UserName string) {
 }
 
 func GetUserCredential(UserID int, column string) (credential string) {
-	query := "SELECT " + column + "FROM users WHERE id = ?"
+	query := "SELECT " + column + " FROM users WHERE id = ?"
 	sqlDB.DataBase.QueryRow(query, UserID).Scan(&credential)
 	return credential
 }

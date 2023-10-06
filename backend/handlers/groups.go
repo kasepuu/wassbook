@@ -2,13 +2,15 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strconv"
-	"strings"
+	"time"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 	groups "01.kood.tech/git/kasepuu/social-network/backend/functions/groups"
@@ -208,6 +210,7 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 		savedFile, noFileErr := saveFile(r, userId)
 
 		if noFileErr != nil {
+			log.Println(noFileErr)
 			posts, _ = groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Content: content}) // SIIS KUI POLE FAILI
 		} else {
 			posts, _ = groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Filename: savedFile, Content: content}) // FAIL SALVESTATUD
@@ -292,12 +295,19 @@ func saveFile(r *http.Request, userId string) (string, error) {
 
 	fileData := handler.Header.Get("Content-Disposition")
 	ext := filepath.Ext(fileData)
-	ext = strings.TrimSuffix(ext, "\"")
 
-	dst, err := os.CreateTemp("backend/users/"+userId, "post-images-*"+ext)
+	tempFileName := fmt.Sprintf("post-images-%d%s", time.Now().UnixNano(), ext)
+
+	uploadDir := filepath.Join("backend/users", userId)
+	if err := os.MkdirAll(uploadDir, os.ModePerm); err != nil {
+		return "", err
+	}
+
+	dst, err := os.Create(filepath.Join(uploadDir, tempFileName))
 	if err != nil {
 		return "", err
 	}
+	defer dst.Close()
 
 	_, err = io.Copy(dst, file)
 

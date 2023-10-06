@@ -304,7 +304,7 @@ func GetPosts(userId int) ([]Post, error) {
 	posts := []Post{}
 
 	rows, err := sqlDB.DataBase.Query(
-		`select posts.id, posts.userid, posts.date, posts.content, posts.groupId, posts.filename, users.nickname, groups.name
+		`select posts.id, posts.userid, posts.date, posts.content, posts.groupId, posts.filename, users.nickname, groups.name, posts.fname, posts.lname
 		from posts 
 		LEFT JOIN users on posts.userid = users.id
 		LEFT JOIN groups on posts.groupId= groups.id
@@ -326,6 +326,8 @@ func GetPosts(userId int) ([]Post, error) {
 			&post.Filename,
 			&post.Username,
 			&post.GroupName,
+			&post.FirstName,
+    		&post.LastName,
 		)
 
 		comments, err := GetComments(post.Id)

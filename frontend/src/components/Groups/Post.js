@@ -1,5 +1,3 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 
 import "../../css/Feed.css";
 import { backendHost } from "../../index.js";
@@ -24,8 +22,6 @@ const handleOverlay = (e) => {
 };
 
 const Post = ({ post, handleCommentSubmit }) => {
-  let { id } = useParams();
-
   return (
     <div className="feed-post" key={post.Id}>
       <div onClick={handleOverlay} className="post-header">
@@ -39,7 +35,7 @@ const Post = ({ post, handleCommentSubmit }) => {
           className="profile-picture"
         />
         <div className="post-title">
-          {post.GroupName} {post.Date}
+        {post.FirstName} {post.LastName} In {post.GroupName}
         </div>
       </div>
 

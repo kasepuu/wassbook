@@ -3,7 +3,6 @@
 # TODO
 
 - public profiilile follow panna -> ei näe tema followers only postitusi! -> edit: näeb aga peab refreshima
-- group positused: ei näita/salvesta nime, pilti postitusele kaasa panna ei saa, või kui saab siis ta seda ülese ei lae/ ei oska kuvada
 - group invited -> 2 tükki tuli korraga (ja real-times ei uuendanud)
 - group invited -> ainult followerid panna nimekirja?
 - register&login -> error handling üle vaadata.
