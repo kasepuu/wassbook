@@ -89,7 +89,6 @@ func LoadMessagesHandler(event Event, c *Client) error {
 				ChatLog:     chatLog,
 				TotalCount:  totalCount,
 			}
-			fmt.Println("THIS INFO IS BEING PROCESSED:", chatLog)
 
 			sendResponse(payload, "update_messages", client)
 		}

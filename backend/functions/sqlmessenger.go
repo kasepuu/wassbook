@@ -1,7 +1,6 @@
 package function
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -25,8 +24,6 @@ func LoadMessages(senderID int, receiverID int, limit int) (chatLog []ReturnChat
 	const countQuery = `SELECT COUNT(*) 
                         FROM chat 
                         WHERE (userid = ? AND receiverid = ?) OR (receiverid = ? AND userid = ?)`
-
-	fmt.Println("getting messages between:", senderID, receiverID, limit)
 
 	err := sqlDB.DataBase.QueryRow(countQuery, senderID, receiverID, senderID, receiverID).Scan(&totalCount)
 	if err != nil {
@@ -52,7 +49,6 @@ func LoadMessages(senderID int, receiverID int, limit int) (chatLog []ReturnChat
 
 		chatLog = append(chatLog, ReturnChatData{UserName: GetUserName(sender), ReceiverName: GetUserName(receiver), Message: message, Date: date})
 	}
-	fmt.Println("loaded messages:", chatLog)
 
 	return reverse(chatLog), totalCount
 }

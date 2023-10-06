@@ -49,7 +49,6 @@ func LoadGroupMessages(GroupID int, senderID int, limit int) (chatLog []ReturnGr
 
 		chatLog = append(chatLog, ReturnGroupChatData{UserName: GetUserName(sender), SenderID: sender, Message: message, Date: date})
 	}
-	fmt.Println("loaded messages:", chatLog)
 
 	return reverse(chatLog), totalCount
 }
