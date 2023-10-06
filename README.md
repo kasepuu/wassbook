@@ -34,18 +34,13 @@
 ### EXISTING USERS
 
 ```
-if you are too lazy, you can try out the forum with dummy accounts (123 is the password):
-> m2nky
-> 7Eleven
-> Isabella
-```
-
-### GOOD TO KNOW
-
-```
-CHAT indicators:
- 🟢online
- ⚪offline
+if you are too lazy, you can try out the network with dummy accounts (123 is the password):
+> sass
+> rain
+> kasepuu
+> juss
+> andrei
+> erik
 ```
 
 ##### MAIN-REQUIREMENTS
