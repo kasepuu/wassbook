@@ -34,7 +34,6 @@ export function updateToken(usernameChange = false) {
 }
 
 export function loadUser() {
-  console.log("loading user");
   const jwtToken = getCookieValue("Bearer");
   if (jwtToken) {
     const userInfo = getUserInfoFromToken(jwtToken);
@@ -67,7 +66,7 @@ export async function tokenValidation() {
 
     if (response.ok) {
       const message = await response.text();
-      console.log("Everything is working fine:", message);
+      console.log("Authorization was a success:", message);
       loadUser();
       return true;
     } else {

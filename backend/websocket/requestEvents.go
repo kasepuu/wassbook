@@ -3,13 +3,13 @@ package ws
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
 func SendFollowHandler(event Event, c *Client) error {
-	fmt.Println("send follow request")
 	// send_follow_request
 	type SendFollowEvent struct {
 		RequesterID int    `json:"RequesterID"`
@@ -34,11 +34,9 @@ func SendFollowHandler(event Event, c *Client) error {
 		if client.userId == TargetID {
 			users, err := function.FetchFollowRequests(TargetID, "pending")
 			if err == nil {
-				fmt.Println("update_follower_requests")
 				sendResponse(len(users), "update_follower_requests", client)
 			}
 		} else if client.userId == RequesterID {
-			fmt.Println("reloading profile")
 			sendResponse(payload, "reload_profile_page", client)
 		}
 	}
@@ -47,7 +45,6 @@ func SendFollowHandler(event Event, c *Client) error {
 }
 
 func SendUnFollowHandler(event Event, c *Client) error {
-	fmt.Println("send unfollow request")
 	// send_follow_request
 	type SendFollowEvent struct {
 		RequesterID int `json:"RequesterID"`
@@ -124,7 +121,6 @@ func AcceptFollowHandler(event Event, c *Client) error {
 }
 
 func DeclineFollowHandler(event Event, c *Client) error {
-	fmt.Println("declining follow request:")
 	type Request struct {
 		RequesterID int `JSON:"RequesterID"`
 		TargetID    int `JSON:"TargetID"`
@@ -139,7 +135,6 @@ func DeclineFollowHandler(event Event, c *Client) error {
 	TargetID := payload.TargetID
 
 	err := function.SetFollowStatus(RequesterID, TargetID, "remove", "pending")
-	fmt.Println("declining follow request:")
 
 	if err != nil {
 		return err
@@ -168,8 +163,6 @@ func DeclineFollowHandler(event Event, c *Client) error {
 }
 
 func LoadMutualFollowersHandler(event Event, c *Client) error {
-	fmt.Println("loading mutual followers:")
-
 	type Request struct {
 		RequesterID int `JSON:"RequesterID"`
 	}
@@ -187,8 +180,6 @@ func LoadMutualFollowersHandler(event Event, c *Client) error {
 }
 
 func LoadGroupList(event Event, c *Client) error {
-	fmt.Println("loading grouplist:")
-
 	type Request struct {
 		RequesterID int `JSON:"RequesterID"`
 	}
@@ -205,8 +196,6 @@ func LoadGroupList(event Event, c *Client) error {
 }
 
 func LoadProfileFollowersHandler(event Event, c *Client) error {
-	fmt.Println("loading profile followers:")
-
 	type Request struct {
 		SenderID int `JSON:"SenderID"`
 	}
@@ -263,7 +252,7 @@ func DeclineGroupRequestHandler(event Event, c *Client) error {
 
 	err := function.SetGroupStatus(RequesterID, GroupID, "remove")
 	if err != nil {
-		fmt.Println("something went wronk!", err)
+		log.Println("There was an error setting group status:", err)
 	}
 	return nil
 }

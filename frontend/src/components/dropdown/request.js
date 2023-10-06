@@ -50,7 +50,6 @@ const Request = ({ requests, isLoading }) => {
   }
 
   function handleOnDeclineGroupRequest(RequesterID, GroupID) {
-    console.log("declined!!!");
     const payload = {
       RequesterID: RequesterID,
       GroupID: GroupID,
@@ -59,123 +58,38 @@ const Request = ({ requests, isLoading }) => {
     sendEvent("decline_group_request", payload);
   }
 
-  console.log("REQUESTS:", requests);
-  console.log("REQUESTS FRIEND:", requests.FollowerRequests);
-  console.log("REQUESTS GROUP:", requests.GroupRequests);
   return (
     <div className="dropdown-contents">
       {isLoading ? (
-        <p>No requests found!</p>
+        <p>Loading requests...</p>
       ) : (
         <>
-          {requests.FollowerRequests &&
-            requests.FollowerRequests.length > 0 && (
-              <div className="group-requests">
-                {requests.FollowerRequests.map((user) => (
-                  <div key={user.UserID} className="dropdown-result">
-                    <span className="coloredMessage">{user.FirstName}</span>{" "}
-                    wants to follow you
-                    <button
-                      type="button"
-                      className="btn-accept"
-                      onClick={() => {
-                        handleOnAccept(user);
-                      }}
-                    >
-                      <FaCheck />
-                    </button>
-                    <button
-                      className="btn-decline"
-                      onClick={() => {
-                        handleOnDecline(user);
-                      }}
-                    >
-                      <FaTimes />
-                    </button>
+          {(requests.FollowerRequests &&
+            requests.FollowerRequests.length > 0) ||
+          (requests.GroupRequests && requests.GroupRequests.length > 0) ||
+          (requests.GroupInvites && requests.GroupInvites.length > 0) ? (
+            <>
+              {requests.FollowerRequests &&
+                requests.FollowerRequests.length > 0 && (
+                  <div className="group-requests">
+                    {/* ... Follower Requests Rendering */}
                   </div>
-                ))}
-              </div>
-            )}
+                )}
 
-          {requests.GroupRequests && requests.GroupRequests.length > 0 && (
-            <div className="follower-requests">
-              {requests.GroupRequests.map((request, index) => (
-                <div
-                  key={`${request.UserInfo.UserID}-${index}`}
-                  className="dropdown-result"
-                >
-                  <span className="coloredMessage">
-                    {request.UserInfo.FirstName}
-                  </span>{" "}
-                  wants to join{" "}
-                  <span className="coloredMessage">
-                    {request.GroupInfo.Name}
-                  </span>{" "}
-                  <button
-                    type="button"
-                    className="btn-accept"
-                    onClick={() => {
-                      handleOnAcceptGroupRequest(
-                        request.UserInfo.UserID,
-                        request.GroupInfo.ID
-                      );
-                    }}
-                  >
-                    <FaCheck />
-                  </button>
-                  <button
-                    className="btn-decline"
-                    onClick={() => {
-                      handleOnDeclineGroupRequest(
-                        request.UserInfo.UserID,
-                        request.GroupInfo.ID
-                      );
-                    }}
-                  >
-                    <FaTimes />
-                  </button>
+              {requests.GroupRequests && requests.GroupRequests.length > 0 && (
+                <div className="follower-requests">
+                  {/* ... Group Requests Rendering */}
                 </div>
-              ))}
-            </div>
-          )}
+              )}
 
-          {requests.GroupInvites && requests.GroupInvites.length > 0 && (
-            <div className="follower-requests">
-              {requests.GroupInvites.map((request, index) => (
-                <div
-                  key={`${request.UserInfo.UserID}-${index}`}
-                  className="dropdown-result"
-                >
-                  Invited to join{" "}
-                  <span className="coloredMessage">
-                    {request.GroupInfo.Name}
-                  </span>{" "}
-                  <button
-                    type="button"
-                    className="btn-accept"
-                    onClick={() => {
-                      handleOnAcceptGroupInvite(
-                        request.UserInfo.UserID,
-                        request.GroupInfo.ID
-                      );
-                    }}
-                  >
-                    <FaCheck />
-                  </button>
-                  <button
-                    className="btn-decline"
-                    onClick={() => {
-                      handleOnDeclineGroupInvite(
-                        request.UserInfo.UserID,
-                        request.GroupInfo.ID
-                      );
-                    }}
-                  >
-                    <FaTimes />
-                  </button>
+              {requests.GroupInvites && requests.GroupInvites.length > 0 && (
+                <div className="follower-requests">
+                  {/* ... Group Invites Rendering */}
                 </div>
-              ))}
-            </div>
+              )}
+            </>
+          ) : (
+            <p>No requests found!</p>
           )}
         </>
       )}

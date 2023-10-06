@@ -1,8 +1,5 @@
 import "../../css/Feed.css";
-import React, { useState, useRef } from "react";
-import { backendHost } from "../../index.js";
-import { FaImage } from "react-icons/fa";
-
+import React, { useState } from "react";
 const CommentForm = ({ userInfo, handleCommentSubmit, post }) => {
   const [selectedCommentFile, setSelectedCommentFile] = useState(null);
 

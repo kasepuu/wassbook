@@ -24,7 +24,10 @@ const Profile = () => {
   if (id === undefined || !id) id = LoggedUser.UserName;
   if (id === LoggedUser.UserName) isLocalUser = true;
   const [userInfo, setUserInfo] = useState({});
-  const isPublicProfile = userInfo.PrivateStatus === 0 || userInfo.FollowStatus === "following" || userInfo.UserID === LoggedUser.UserID;
+  const isPublicProfile =
+    userInfo.PrivateStatus === 0 ||
+    userInfo.FollowStatus === "following" ||
+    userInfo.UserID === LoggedUser.UserID;
   const [profilePicUrl, setProfilePicUrl] = useState(
     `${backendHost}/users/${userInfo.UserID}/profilepic/profilepic`
   );
@@ -36,7 +39,6 @@ const Profile = () => {
     window.socket.onmessage = (e) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "reload_profile_page") {
-        console.log("REFRESHING PROFILE");
         setRefreshProfile(true);
       }
       // update notifications
@@ -124,8 +126,9 @@ const Profile = () => {
             <p className="lastname">
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
-            {userInfo.PrivateStatus === 0 || userInfo.FollowStatus === "following" ||
-              userInfo.UserID === LoggedUser.UserID ? (
+            {userInfo.PrivateStatus === 0 ||
+            userInfo.FollowStatus === "following" ||
+            userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -142,10 +145,7 @@ const Profile = () => {
               userInfo={userInfo}
               setUserInfo={setUserInfo}
             />
-            <ProfileFollow
-              userInfo={userInfo}
-              isLocalUser={isLocalUser}
-            />
+            <ProfileFollow userInfo={userInfo} isLocalUser={isLocalUser} />
             {userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <button
@@ -170,7 +170,14 @@ const Profile = () => {
         </div>
         <>
           {isPublicProfile ? (
-            <p>{userInfo.PrivateStatus === 0 && userInfo.FollowStatus !== "following" && userInfo.UserID !== LoggedUser.UserID ? 'Public' : 'All'} posts by {userInfo.FirstName}:</p>
+            <p>
+              {userInfo.PrivateStatus === 0 &&
+              userInfo.FollowStatus !== "following" &&
+              userInfo.UserID !== LoggedUser.UserID
+                ? "Public"
+                : "All"}{" "}
+              posts by {userInfo.FirstName}:
+            </p>
           ) : (
             <p>Public posts by {userInfo.FirstName}:</p>
           )}

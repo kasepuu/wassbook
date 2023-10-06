@@ -112,7 +112,7 @@ func UpdateJwt(w http.ResponseWriter, r *http.Request) {
 	}
 	token, err := CreateJWT(function.GetUserName(uid))
 	if err != nil {
-		log.Println(err)
+		log.Println("Error creating token, maybe one alreay exists?", err)
 		http.Error(w, "Error creating JWT", http.StatusInternalServerError)
 		return
 	}

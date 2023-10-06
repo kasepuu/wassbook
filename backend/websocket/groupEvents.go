@@ -32,7 +32,6 @@ func NewEventHandler(event Event, c *Client) error {
 		log.Println("SQL execution error:", errExec)
 		return errExec
 	}
-	fmt.Println("this was received:", newEvent)
 	return nil
 }
 func LoadEventHandler(event Event, c *Client) error {
@@ -119,7 +118,6 @@ func EventResponseHandler(event Event, c *Client) error {
 		log.Println("SQL execution error:", errExec)
 		return errExec
 	}
-	fmt.Println("this was received:", newEventResponse)
 	sendResponse(newEventResponse, "update_eventResponse", c)
 	return nil
 }

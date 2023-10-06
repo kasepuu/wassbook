@@ -2,7 +2,6 @@ package function
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"sort"
 	"strings"
@@ -125,8 +124,6 @@ func FetchFollowRequests(targetID int, status string) (Users []int, err error) {
 		Users = append(Users, userid)
 	}
 
-	fmt.Println("USER:", targetID, "HAS REQUESTS FROM:", Users)
-
 	return Users, err
 }
 
@@ -244,7 +241,7 @@ func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 
 	parsedTime, err := time.Parse(time.RFC3339Nano, inputDate)
 	if err != nil {
-		fmt.Println("Error parsing date:", err)
+		log.Println("Error parsing date:", err)
 		return
 	}
 
@@ -340,7 +337,7 @@ func SortByLastMessage(users []UserResponse, uid int) (sortedUsers []UserRespons
 	for i := 0; i < len(users); i++ {
 		rows, err := sqlDB.DataBase.Query(sql, uid, users[i].UserID, uid, users[i].UserID)
 		if err != nil {
-			fmt.Println(err)
+			log.Println("SQL error at message sorting:", err)
 		}
 		defer rows.Close()
 
@@ -386,7 +383,6 @@ func GetGroupsInfo(userID int) (Groups []JoinedGroup) {
 		Groups = append(Groups, group)
 	}
 	Groups = GetGroupName(Groups, userID)
-	fmt.Println(Groups, "@@@@@@@@")
 	return
 }
 
@@ -451,8 +447,6 @@ func GetMutualFollowers(userID int) ([]MutualFollower, error) {
 		}
 	}
 
-	fmt.Println("mutual followers for:", followers)
-
 	return followers, nil
 }
 
@@ -480,8 +474,6 @@ func GetProfileFollowers(userID int) ([]MutualFollower, error) {
 		followers = append(followers, MutualFollower{UserId: userId, UserName: userName})
 	}
 
-	fmt.Println("profile followers for:", followers)
-
 	return followers, nil
 }
 
@@ -508,8 +500,6 @@ func GetProfileFollowing(userID int) ([]MutualFollower, error) {
 		}
 		followers = append(followers, MutualFollower{UserId: userId, UserName: userName})
 	}
-
-	fmt.Println("profile following for:", followers)
 
 	return followers, nil
 }

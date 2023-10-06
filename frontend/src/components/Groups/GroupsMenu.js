@@ -8,14 +8,13 @@ export const GroupsMenu = ({ groups }) => {
     dialog.showModal();
   };
 
-  
   return (
     <>
       <h1>Groups</h1>
       <button onClick={openDialog}>Create group</button>
       <div className="group-names">
         {groups.map((group) => (
-          <Link to={`/groups/${group.Id}`}>
+          <Link to={`/groups/${group.Id}`} key={group.Id}>
             <h3>{group.Name}</h3>
           </Link>
         ))}

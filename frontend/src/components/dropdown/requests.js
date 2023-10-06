@@ -14,10 +14,12 @@ const FollowersDropDown = ({ isOpen, onClose }) => {
         if (!response.ok) {
           throw new Error("Failed to l1oad users that are trying to follow");
         }
+        if (response.status === 204) {
+          return [];
+        }
         return response.json();
       })
       .then((data) => {
-        console.log("requests:", data);
         setRequests(data);
         setIsLoading(false);
       })

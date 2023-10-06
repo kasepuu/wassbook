@@ -58,8 +58,6 @@ func FetchNotifications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("FOLLOWERS > Fetched notifications:", Notifications)
-
 	if len(Notifications) == 0 {
 		w.WriteHeader(http.StatusNoContent)
 		return
@@ -137,8 +135,6 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 	requestedBy := r.URL.Query().Get("RequestedBy")
 	loggedUserId := function.GetUserID(requestedBy)
 
-	fmt.Println("fetch request received!", openedProfile, "profile opened, requested by:", requestedBy)
-
 	UserInfo, fetchErr := function.FetchUserInformation(function.GetUserID(openedProfile), loggedUserId)
 	if fetchErr != nil {
 		log.Println("Error fetching user information at profile request! Error Message:", fetchErr)
@@ -147,13 +143,6 @@ func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	// if UserInfo.PrivateStatus == 1 && UserInfo.UserID != loggedUserId {
-	// 	UserInfo.Email = "Private"
-	// 	UserInfo.DateOfBirth = nil
-	// 	UserInfo.Description = "Private"
-	// 	UserInfo.DateJoined = "Private"
-	// }
 
 	w.WriteHeader(http.StatusOK)
 	err := json.NewEncoder(w).Encode(UserInfo)
@@ -220,8 +209,6 @@ WHERE
 
 func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
 	currentUserId := r.URL.Query().Get("UserID")
-	tempid, _ := strconv.Atoi(currentUserId)
-	fmt.Println("followerlist fetch requested by:", currentUserId, function.GetUserName(tempid))
 
 	stmt := `
 	SELECT DISTINCT followers.userid, users.nickname
@@ -246,11 +233,8 @@ func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
 			log.Fatalf("Err: %s", err)
 		}
 
-		// Add userid:nickname pair to the map
 		followers[userid] = nickname
 	}
-
-	fmt.Println(followers, "aree following:", currentUserId, function.GetUserName(tempid))
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(followers) // Encode the map as JSON and send it in the response
@@ -436,7 +420,6 @@ func UpdateProfilePictureHandler(w http.ResponseWriter, r *http.Request) {
 func FetchPostsCreatedBy(w http.ResponseWriter, r *http.Request) {
 	profileUserId := r.URL.Query().Get("userID")
 	loggedUserId := r.URL.Query().Get("loggedUserID")
-	log.Println(profileUserId, loggedUserId)
 	rows, err := sqlDB.DataBase.Query(`SELECT DISTINCT p.*
 	FROM posts AS p
 	LEFT JOIN (
@@ -501,8 +484,6 @@ func DisplayMutualFollowers(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&request)
 
-	fmt.Println("mutualfolowers requested by:", request.UserID, function.GetUserName(request.UserID))
-
 	if err != nil {
 		w.WriteHeader(http.StatusConflict)
 		return
@@ -520,8 +501,6 @@ func DisplayMutualFollowers(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Println(mutualFollowers, "aren following:", request.UserID, function.GetUserName(request.UserID))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

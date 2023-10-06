@@ -1,5 +1,5 @@
 import React from "react";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
 import { sendEvent } from "../../websocket";
 
 const Notification = ({ notifications, isLoading }) => {
@@ -12,11 +12,8 @@ const Notification = ({ notifications, isLoading }) => {
       ClearAll: all,
     };
 
-    console.log("AT NOTIFCIATINOS CLEAR: SENDING THIS PAYLAOD:", payload);
     sendEvent("remove_notification", payload);
   }
-
-  console.log("loaded_notifications:", notifications);
 
   return (
     <div className="dropdown-contents">
@@ -49,7 +46,7 @@ const Notification = ({ notifications, isLoading }) => {
           </div>
         </>
       ) : (
-        <p>No notifications to display.</p>
+        <p>No notifications to display</p>
       )}
     </div>
   );

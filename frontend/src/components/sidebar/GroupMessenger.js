@@ -12,9 +12,10 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
   const [chatLog, setChatLog] = useState([]);
   const [messagesToLoad, setMessagesToLoad] = useState(10);
   const [totalMessages, setTotalMessages] = useState(0); // Total number of messages
-  const [prevScrollHeight, setScrollHeight] = useState(0)
+  const [prevScrollHeight, setScrollHeight] = useState(0);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [shouldResetMessagesToLoad, setShouldResetMessagesToLoad] = useState(true);
+  const [shouldResetMessagesToLoad, setShouldResetMessagesToLoad] =
+    useState(true);
   const [scrollingEnabled, setScrollingEnabled] = useState(true);
 
   // get current chat
@@ -26,8 +27,11 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
       setChatLog([]);
       setShouldResetMessagesToLoad(false);
     }
-    if (prevScrollHeight === 0 && totalMessages === 0 && messagesToLoad === 10) {
-      console.log("INFO HERE", selectedChat, prevScrollHeight, totalMessages, chatLog, messagesToLoad);
+    if (
+      prevScrollHeight === 0 &&
+      totalMessages === 0 &&
+      messagesToLoad === 10
+    ) {
       setShouldResetMessagesToLoad(true);
       loadMessagesFromBackend();
     }
@@ -52,26 +56,32 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_group_messages") {
         // update the chat log with the received message, only if chat is opened with the right person.
-        if (eventData.payload &&
-          JSON.parse(localStorage.getItem("CurrentChat")).GroupID === eventData.payload.CurrentChat &&
-          eventData.payload.ChatLog) {
-          setTotalMessages(eventData.payload.TotalCount)
+        if (
+          eventData.payload &&
+          JSON.parse(localStorage.getItem("CurrentChat")).GroupID ===
+            eventData.payload.CurrentChat &&
+          eventData.payload.ChatLog
+        ) {
+          setTotalMessages(eventData.payload.TotalCount);
           setChatLog(eventData.payload.ChatLog);
-          document.getElementById('chatstatus').innerHTML = ""
+          document.getElementById("chatstatus").innerHTML = "";
         }
       } else if (eventData.type === "is_typing_group") {
-        const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"))
-        const chatStatus = document.getElementById('chatstatus')
-        if (!chatStatus) { return }
-        if (eventData.payload.UserID === currentUser.UserID) { return }
+        const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+        const chatStatus = document.getElementById("chatstatus");
+        if (!chatStatus) {
+          return;
+        }
+        if (eventData.payload.UserID === currentUser.UserID) {
+          return;
+        }
 
-        clearTimeout(timeOut)
-        let messageformat = `📱${eventData.payload.UserName} is typing...`
-        chatStatus.innerHTML = messageformat
+        clearTimeout(timeOut);
+        let messageformat = `📱${eventData.payload.UserName} is typing...`;
+        chatStatus.innerHTML = messageformat;
         timeOut = setTimeout(function () {
-          chatStatus.innerHTML = ""
+          chatStatus.innerHTML = "";
         }, 1000);
-
       } else {
         //notification
       }
@@ -81,14 +91,17 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
   const handleScroll = () => {
     const chatLogContainer = chatLogRef.current;
 
-    if (chatLogContainer.scrollTop <= 0 &&
+    if (
+      chatLogContainer.scrollTop <= 0 &&
       messagesToLoad <= totalMessages &&
-      chatLog.length > 0 && scrollingEnabled) {
+      chatLog.length > 0 &&
+      scrollingEnabled
+    ) {
       setScrollingEnabled(false);
 
-      setScrollHeight(chatLogContainer.scrollHeight)
+      setScrollHeight(chatLogContainer.scrollHeight);
       setMessagesToLoad(messagesToLoad + 10); // Load 10 more messages
-      loadMessagesFromBackend()
+      loadMessagesFromBackend();
       setTimeout(() => {
         setScrollingEnabled(true);
       }, 500);
@@ -97,15 +110,15 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
 
   useEffect(() => {
     chatLogRef.current.addEventListener("scroll", handleScroll);
-
   }, [messagesToLoad, totalMessages, scrollingEnabled]);
 
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight - prevScrollHeight; // Adjust scroll position
+      chatLogRef.current.scrollTop =
+        chatLogRef.current.scrollHeight - prevScrollHeight; // Adjust scroll position
     }
     if (chatLogRef.current.scrollTop <= 0 && messagesToLoad < totalMessages) {
-      loadMessagesFromBackend()
+      loadMessagesFromBackend();
     }
   }, [chatLog]);
 
@@ -167,11 +180,11 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
           </div>
         ) : (
           chatLog.map((message, index) => (
-            
             <div
               key={index}
-              className={`chat-log-${message.SenderID === selectedChat.UserId ? "from" : "to"
-                }`}
+              className={`chat-log-${
+                message.SenderID === selectedChat.UserId ? "from" : "to"
+              }`}
             >
               <div className="chat-log-content">
                 <div className="chat-log-to-image">{message.UserName}</div>
@@ -179,7 +192,7 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
               </div>
               <div className="chat-log-to-date">
                 {message.UserName === selectedChat.UserName
-                  ? `Received on: ${message.Date}`  
+                  ? `Received on: ${message.Date}`
                   : `Sent on: ${message.Date}`}
               </div>
             </div>
@@ -187,7 +200,9 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
         )}
       </div>
       {/*other chat elements*/}
-      <div id="chatstatus" className="chat-status">{/*status -> is typing etc...*/}</div>
+      <div id="chatstatus" className="chat-status">
+        {/*status -> is typing etc...*/}
+      </div>
       <div className="chat-close" onClick={closeGroupMessenger}>
         X
       </div>
@@ -201,9 +216,11 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
             const response = {
-              SenderID: JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
+              SenderID: JSON.parse(sessionStorage.getItem("CurrentUser"))
+                .UserID,
               ReceiverIDs: selectedChat.OtherMembers,
-              UserName: JSON.parse(sessionStorage.getItem("CurrentUser")).UserName
+              UserName: JSON.parse(sessionStorage.getItem("CurrentUser"))
+                .UserName,
             };
             sendEvent("is_typing_group", response);
 

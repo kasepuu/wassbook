@@ -3,7 +3,6 @@ package ws
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
@@ -28,8 +27,6 @@ func SendGroupMessageHandler(event Event, c *Client) error {
 	if err := json.Unmarshal(event.Payload, &sendMessage); err != nil {
 		return fmt.Errorf("bad payload in send message: %v", err)
 	}
-
-	fmt.Println("this was received:", sendMessage)
 
 	sendingUserID := sendMessage.UserID
 
@@ -98,7 +95,6 @@ func LoadGroupMessagesHandler(event Event, c *Client) error {
 				TotalCount:  totalCount,
 			}
 			sendResponse(payload, "update_group_messages", client)
-			fmt.Println("SENT SOMETHING:", payload)
 		}
 	}
 
@@ -113,7 +109,6 @@ type isTypingGroupFormat struct {
 
 func IsTypingGroupHandler(event Event, c *Client) error {
 	var payload isTypingGroupFormat
-	log.Println(string(event.Payload))
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}

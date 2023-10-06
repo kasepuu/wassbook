@@ -1,4 +1,3 @@
-import { sendEvent } from "../../websocket";
 const host = `http://${window.location.hostname}:8081`;
 
 export const getGroups = async (id) => {

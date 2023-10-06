@@ -44,7 +44,6 @@ const Feed = () => {
   }, [userInfo.UserID, setPosts]);
 
   const getFollowersList = () => {
-    console.log("getting followers list");
     fetch(`${backendHost}/getfollowerslist?UserID=${userInfo.UserID}`, {
       method: "GET",
     })
@@ -56,7 +55,6 @@ const Feed = () => {
       })
       .then((data) => {
         setFollowersList(data);
-        console.log(followersList);
       })
       .catch((error) => {
         console.error("Error fetching followers list:", error);

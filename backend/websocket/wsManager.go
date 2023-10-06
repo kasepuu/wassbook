@@ -3,7 +3,6 @@ package ws
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -43,7 +42,6 @@ func (m *wsManager) routeEvent(event Event, c *Client) error {
 		}
 		return nil
 	} else {
-		fmt.Println("event:", event)
 		return errors.New("[FATAL] There is no such event type")
 	}
 }

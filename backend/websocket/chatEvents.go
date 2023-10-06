@@ -3,8 +3,7 @@ package ws
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-	
+
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
 
@@ -21,8 +20,6 @@ func SendMessageHandler(event Event, c *Client) error {
 	if err := json.Unmarshal(event.Payload, &sendMessage); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
-
-	fmt.Println("this was received:", sendMessage)
 
 	receivingUserID := sendMessage.ReceiverID
 	sendingUserID := sendMessage.SenderID
@@ -43,17 +40,15 @@ func SendMessageHandler(event Event, c *Client) error {
 		if client.userId == sendMessage.ReceiverID {
 			chatLog, totalCount = function.LoadMessages(sendMessage.ReceiverID, c.userId, 10)
 			currentChat = c.userId
-			fmt.Println("LOG THE RECEUIVER IS RECEVING:", chatLog)
 		} else if client.userId == sendMessage.SenderID {
 			chatLog, totalCount = function.LoadMessages(c.userId, sendMessage.ReceiverID, 10)
 			currentChat = sendMessage.ReceiverID
-			fmt.Println("LOG THE SENDER IS RECEVING:", chatLog)
 		}
 
 		payload := ResponseStruct{
 			CurrentChat: currentChat,
 			ChatLog:     chatLog,
-			TotalCount: totalCount,
+			TotalCount:  totalCount,
 		}
 		sendResponse(payload, "update_messages", client)
 		// sendResponse(payload, "update_notifications", client)
@@ -74,7 +69,7 @@ func LoadMessagesHandler(event Event, c *Client) error {
 	if err := json.Unmarshal(event.Payload, &requestMessage); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
-	
+
 	receivingUserID := requestMessage.ReceiverID
 	sendingUserID := requestMessage.SenderID
 
@@ -83,10 +78,8 @@ func LoadMessagesHandler(event Event, c *Client) error {
 		ChatLog     []function.ReturnChatData
 		TotalCount  int
 	}
+
 	// Prepare the response payload
-
-	fmt.Println("connection between:", receivingUserID, sendingUserID)
-
 	for client := range c.client.clients {
 		if client.userId == requestMessage.SenderID {
 			chatLog, totalCount := function.LoadMessages(sendingUserID, receivingUserID, requestMessage.Limit)
@@ -112,7 +105,7 @@ type isTypingFormat struct {
 
 func IsTypingHandler(event Event, c *Client) error {
 	var payload isTypingFormat
-	log.Println(event)
+
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}

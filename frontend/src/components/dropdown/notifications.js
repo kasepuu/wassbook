@@ -12,12 +12,14 @@ const NotificationsDropDown = ({ isOpen, onClose }) => {
     fetch(`${backendHost}/fetch-notifications?UserID=${CurrentUser.UserID}`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to load users that are trying to follow");
+          throw new Error("Failed to load notifications");
+        }
+        if (response.status === 204) {
+          return [];
         }
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         setNotifications(data);
         setIsLoading(false);
       })

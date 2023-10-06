@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Info } from "./Info";
 import { Members } from "./Members";
-import { Events } from "./Events";
+import { Events } from "./Events.js";
 //import { GroupForm } from "./GroupForm";
 
 const Group = () => {

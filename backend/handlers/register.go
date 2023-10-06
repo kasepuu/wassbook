@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -22,8 +21,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		log.Println("Something went wrong, while decoding register details")
 		return
 	}
-
-	fmt.Println("register dob:", RegisterDetails.DateOfBirth)
 
 	validDetails := fieldVerification(RegisterDetails)
 

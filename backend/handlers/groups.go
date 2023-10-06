@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -110,7 +109,6 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		id, err := strconv.Atoi(path.Base(r.URL.Path))
-		fmt.Println(id)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -120,7 +118,6 @@ func GetGroup(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		fmt.Println(id)
 
 		users, _ := json.Marshal(groups)
 		w.WriteHeader(200)
@@ -135,6 +132,10 @@ func GroupPosts(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		id, err := strconv.Atoi(path.Base(r.URL.Path))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusConflict)
+			return
+		}
 
 		groups, err := groups.GetPosts(id)
 		if err != nil {
@@ -242,21 +243,8 @@ func GroupInvite(w http.ResponseWriter, r *http.Request) {
 		groupInt, _ := strconv.Atoi(groupId)
 		receiverInt, _ := strconv.Atoi(receiverId)
 
-		// id, err :=
 		groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: status})
-		// if err != nil {
-		// 	w.WriteHeader(http.StatusBadRequest)
-		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
 
-		// err = groups.CreateNotification(groups.Notification{SenderId: senderInt, ReceiverId: receiverInt, Description: "Invited to join group", Status: status, GroupMemberId: int(id)})
-		// fmt.Println(err)
-		// if err != nil {
-		// 	w.WriteHeader(http.StatusBadRequest)
-		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
 		users, err := groups.GetAllMembers(groupInt)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -280,7 +268,6 @@ func saveFile(r *http.Request, userId string) (string, error) {
 	fileData := handler.Header.Get("Content-Disposition")
 	ext := filepath.Ext(fileData)
 	ext = strings.TrimSuffix(ext, "\"")
-	fmt.Println(ext, fileData)
 
 	dst, err := os.CreateTemp("backend/users/"+userId, "post-images-*"+ext)
 	if err != nil {

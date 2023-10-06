@@ -11,7 +11,7 @@ const ProfileFollowers = () => {
     };
 
     if (window.socket && window.socket.readyState === WebSocket.OPEN) {
-      sendEvent("getProfile_followerslist", payload);
+      sendEvent("request_profile_followerslist", payload);
     }
   }, []);
 
@@ -19,11 +19,9 @@ const ProfileFollowers = () => {
     const handleWebSocketMessage = (e) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "profile_followerslist") {
-        console.log("EVENT RECEIVED in Sidebar: profile_followerslist");
         setFollowersList(eventData.payload);
       }
       if (eventData.type === "profile_followinglist") {
-        console.log("EVENT RECEIVED in Sidebar: profile_followerslist");
         setFollowingList(eventData.payload);
       }
     };

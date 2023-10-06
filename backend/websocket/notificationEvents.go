@@ -44,7 +44,6 @@ func SendNotificationHandler(event Event, c *Client) error {
 }
 
 func SendGroupNotificationHandler(event Event, c *Client) error {
-	fmt.Println("New notification has been sent!")
 	type Requester struct {
 		GroupID  int    `JSON:"GroupID"`
 		SenderID int    `JSON:"SenderID"`
@@ -57,16 +56,13 @@ func SendGroupNotificationHandler(event Event, c *Client) error {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
 
-	fmt.Println("GroupEvent Payload:", payload)
-
 	Members := function.GetGroupMembers(payload.GroupID)
-	fmt.Println("mebmers:;", Members)
+
 	SenderID := payload.SenderID
 	Type := payload.Type
 	Topic := payload.Topic
 
 	GroupName := function.GetGroupNameByID(payload.GroupID, "tag")
-	fmt.Println("group tag:", GroupName, "group name:", function.GetGroupNameByID(payload.GroupID, "name"))
 
 	if Type == "event" {
 		Topic = "New event: '" + Topic + "' in " + GroupName
@@ -95,7 +91,6 @@ func SendGroupNotificationHandler(event Event, c *Client) error {
 }
 
 func RemoveNotificationHandler(event Event, c *Client) error {
-	fmt.Println("Notification has been cleared")
 	type Request struct {
 		NotificationID int  `JSON:"NotificationID"`
 		TargetID       int  `JSON:"TargetID"`

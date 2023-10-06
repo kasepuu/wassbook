@@ -39,7 +39,7 @@ function Router() {
                     .UserID,
                 };
 
-                sendEvent("getProfile_followerslist", payload);
+                sendEvent("request_profile_followerslist", payload);
               }
             })
             .catch((e) => {
@@ -57,7 +57,6 @@ function Router() {
           navigate("/login");
           return;
         }
-        console.log("Authorization status:", AuthorizedStatus);
       } catch (error) {
         console.error("[Authorization] Error:", error);
       }

@@ -44,10 +44,8 @@ const Navbar = () => {
     const handleWebSocketMessage = (e) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_notifications") {
-        console.log("EVENT RECEIVED: update_notifications");
         setNotficationsCount(eventData.payload ? eventData.payload : "");
       } else if (eventData.type === "update_follower_requests") {
-        console.log("EVENT RECEIVED: update_follower_requests");
         setFollowerRequests(eventData.payload ? eventData.payload : "");
       }
     };

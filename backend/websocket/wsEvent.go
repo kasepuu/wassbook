@@ -20,7 +20,7 @@ type EventHandler func(event Event, c *Client) error
 func (m *wsManager) setupEventHandlers() {
 	m.handlers["on_connection"] = OnConnectionHandler
 	m.handlers["request_mutualfollowers"] = LoadMutualFollowersHandler
-	m.handlers["getProfile_followerslist"] = LoadProfileFollowersHandler
+	m.handlers["request_profile_followerslist"] = LoadProfileFollowersHandler
 
 	// chat events
 	m.handlers["send_message"] = SendMessageHandler
@@ -67,7 +67,6 @@ func sendResponse(responseData any, event string, c *Client) {
 }
 
 func OnConnectionHandler(event Event, c *Client) error {
-	fmt.Println("connection event handlign..")
 	type Requester struct {
 		RequesterID int `JSON:"RequesterID"`
 	}

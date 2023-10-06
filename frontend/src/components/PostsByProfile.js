@@ -8,9 +8,10 @@ const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
   //const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
   function loadFeed() {
-    console.log(userID, loggedUserID)
-    fetch(`${backendHost}/getPostByUserId?userID=${userID}&loggedUserID=${loggedUserID}`, {
-    })
+    fetch(
+      `${backendHost}/getPostByUserId?userID=${userID}&loggedUserID=${loggedUserID}`,
+      {}
+    )
       .then((response) => response.json())
       .catch((error) => {
         console.error("Error updating private status:", error);
@@ -20,8 +21,6 @@ const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
           setPosts([]);
           return;
         }
-
-        console.log(data);
 
         const postsArray = data.map((post) => ({
           title: `${post.FirstName} ${post.LastName} - ${post.Date}`,

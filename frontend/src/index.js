@@ -8,13 +8,12 @@ import Register from "./components/pages/Register.js";
 import Login from "./components/pages/Login.js";
 import Game1 from "./components/pages/Game1.js";
 import Profile from "./components/pages/Profile.js";
-import Group from "./components/Groups/Group.jsx";
+import Group from "./components/Groups/Group.js";
 import Groups from "./components/Groups";
 import Error from "./components/pages/Error.js";
 import Logout from "./components/pages/Logout.js";
 import Feed from "./components/pages/Feed.js";
 import "./css/Sidepanels.css";
-import { sendEvent } from "./websocket.js";
 export const backendHost = "http://localhost:8081";
 
 export function connectAndSendEvents() {

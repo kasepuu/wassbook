@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "../../css/Chat.css";
 import Messenger from "./Messenger";
-import GroupMessenger from "./GroupMsg";
+import GroupMessenger from "./GroupMessenger";
 
 const MutualFollowers = () => {
   const [mutualFollowers, setMutualFollowers] = useState([]);
   const [isMessengerOpen, setIsMessengerOpen] = useState(false);
   const [selectedFollower, setSelectedFollower] = useState(null);
 
-  const [groups, setGroups] = useState([])
+  const [groups, setGroups] = useState([]);
   const [isGroupMessengerOpen, setIsGroupMessengerOpen] = useState(false);
   const [selectedChat, setSelectedChat] = useState(null);
 
@@ -16,12 +16,10 @@ const MutualFollowers = () => {
     const handleWebSocketMessage = (e) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_followerslist") {
-        console.log("EVENT RECEIVED in MutualFollowers: update_followerslist", eventData.payload);
         setMutualFollowers(eventData.payload);
       }
       if (eventData.type === "update_groupslist") {
-        console.log("EVENT RECEIVED in MutualFollowers: update_groupslist", eventData.payload);
-        setGroups(eventData.payload)
+        setGroups(eventData.payload);
       }
     };
 
@@ -37,7 +35,6 @@ const MutualFollowers = () => {
     };
   }, []);
 
-
   useEffect(() => {
     const chatInfo = JSON.parse(localStorage.getItem("CurrentChat"));
 
@@ -48,7 +45,7 @@ const MutualFollowers = () => {
   }, [setSelectedChat, setIsGroupMessengerOpen]);
 
   const openGroupMessenger = (group) => {
-    closeGroupMessenger(); 
+    closeGroupMessenger();
     closeMessenger();
     localStorage.setItem("CurrentChat", JSON.stringify(group));
 
@@ -67,7 +64,6 @@ const MutualFollowers = () => {
     setIsGroupMessengerOpen(true);
   }
 
-
   useEffect(() => {
     // checking if theres currentchat information stored in localstorage
     const chatInfo = JSON.parse(localStorage.getItem("CurrentChat"));
@@ -80,7 +76,7 @@ const MutualFollowers = () => {
 
   const openMessenger = (follower) => {
     closeMessenger(); // just in case
-    closeGroupMessenger()
+    closeGroupMessenger();
     localStorage.setItem("CurrentChat", JSON.stringify(follower));
 
     setIsMessengerOpen(true);
@@ -102,7 +98,6 @@ const MutualFollowers = () => {
     <div className={`FollowerContainer`}>
       <div className="GroupsList">
         <p>Groups:</p>
-
         {groups !== null && groups.length > 0 ? (
           groups.map((group) => (
             <li

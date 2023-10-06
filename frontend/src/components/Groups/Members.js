@@ -1,6 +1,5 @@
 import { MemberInvite } from "./MemberInvite";
 
-
 export const Members = ({ data, inviteHandler }) => {
   const invitePeople = (e) => {
     const dialog = document.querySelector("dialog");
@@ -19,13 +18,17 @@ export const Members = ({ data, inviteHandler }) => {
       <h1>Members</h1>
 
       <dialog>
-        <button onClick={closeDialog} autofocus>
+        <button onClick={closeDialog} autoFocus>
           Close
         </button>
 
         <ul>
           {data.AllUsers.map((member) => (
-            <MemberInvite inviteHandler={inviteHandler} member={member} />
+            <MemberInvite
+              key={member.Username}
+              inviteHandler={inviteHandler}
+              member={member}
+            />
           ))}
         </ul>
         <article></article>
@@ -36,7 +39,7 @@ export const Members = ({ data, inviteHandler }) => {
       </button>
 
       {data.Members.map((member) => (
-        <h4>{member.Username}</h4>
+        <h4 key={member.Username}>{member.Username}</h4>
       ))}
     </div>
   );
