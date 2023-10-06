@@ -303,7 +303,7 @@ func GetPosts(userId int) ([]Post, error) {
 		from posts 
 		LEFT JOIN users on posts.userid = users.id
 		LEFT JOIN groups on posts.groupId= groups.id
-		where groupId in  (select groupId  from groupMember where userid = ?) 
+		where groupId in (select groupId from groupMember where userid = ? AND status = "accepted") 
 		and not posts.groupId = -1
 		ORDER BY posts.id DESC `, userId)
 	if err != nil {

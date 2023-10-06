@@ -9,6 +9,11 @@ import (
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
 
+type Request struct {
+	RequesterID int `JSON:"RequesterID"`
+	TargetID    int `JSON:"TargetID"`
+}
+
 func SendFollowHandler(event Event, c *Client) error {
 	// send_follow_request
 	type SendFollowEvent struct {
@@ -79,10 +84,6 @@ func SendUnFollowHandler(event Event, c *Client) error {
 }
 
 func AcceptFollowHandler(event Event, c *Client) error {
-	type Request struct {
-		RequesterID int `JSON:"RequesterID"`
-		TargetID    int `JSON:"TargetID"`
-	}
 	var payload Request
 
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
@@ -121,10 +122,7 @@ func AcceptFollowHandler(event Event, c *Client) error {
 }
 
 func DeclineFollowHandler(event Event, c *Client) error {
-	type Request struct {
-		RequesterID int `JSON:"RequesterID"`
-		TargetID    int `JSON:"TargetID"`
-	}
+
 	var payload Request
 
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
@@ -218,18 +216,15 @@ func LoadProfileFollowersHandler(event Event, c *Client) error {
 
 // group requests
 func AcceptGroupRequestHandler(event Event, c *Client) error {
-	type Request struct {
-		RequesterID int `JSON:"RequesterID"`
-		GroupID     int `JSON:"GroupID"`
-	}
+
 	var payload Request
 
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		return fmt.Errorf("[group_request_accept] bad payload in request: %v", err)
 	}
-
+	log.Println(payload)
 	RequesterID := payload.RequesterID
-	GroupID := payload.GroupID
+	GroupID := payload.TargetID
 
 	function.SetGroupStatus(RequesterID, GroupID, "accepted")
 
@@ -237,10 +232,6 @@ func AcceptGroupRequestHandler(event Event, c *Client) error {
 }
 
 func DeclineGroupRequestHandler(event Event, c *Client) error {
-	type Request struct {
-		RequesterID int `JSON:"RequesterID"`
-		GroupID     int `JSON:"GroupID"`
-	}
 	var payload Request
 
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
@@ -248,7 +239,7 @@ func DeclineGroupRequestHandler(event Event, c *Client) error {
 	}
 
 	RequesterID := payload.RequesterID
-	GroupID := payload.GroupID
+	GroupID := payload.TargetID
 
 	err := function.SetGroupStatus(RequesterID, GroupID, "remove")
 	if err != nil {
@@ -257,10 +248,6 @@ func DeclineGroupRequestHandler(event Event, c *Client) error {
 	return nil
 }
 func AcceptGroupInviteHandler(event Event, c *Client) error {
-	type Request struct {
-		RequesterID int `JSON:"RequesterID"`
-		GroupID     int `JSON:"GroupID"`
-	}
 	var payload Request
 
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
@@ -268,7 +255,7 @@ func AcceptGroupInviteHandler(event Event, c *Client) error {
 	}
 
 	RequesterID := payload.RequesterID
-	GroupID := payload.GroupID
+	GroupID := payload.TargetID
 
 	function.SetGroupStatus(RequesterID, GroupID, "accepted")
 
@@ -276,10 +263,7 @@ func AcceptGroupInviteHandler(event Event, c *Client) error {
 }
 
 func DeclineGroupInviteHandler(event Event, c *Client) error {
-	type Request struct {
-		RequesterID int `JSON:"RequesterID"`
-		GroupID     int `JSON:"GroupID"`
-	}
+
 	var payload Request
 
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
@@ -287,7 +271,7 @@ func DeclineGroupInviteHandler(event Event, c *Client) error {
 	}
 
 	RequesterID := payload.RequesterID
-	GroupID := payload.GroupID
+	GroupID := payload.TargetID
 
 	function.SetGroupStatus(RequesterID, GroupID, "remove")
 

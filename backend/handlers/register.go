@@ -38,7 +38,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	password := RegisterDetails.Password
 	dateofbirth := RegisterDetails.DateOfBirth
 	datejoined := time.Now().Format(time.RFC3339Nano)
-	avatar := ""
 	description := ""
 	privateStatus := 1 // 0 -> public, 1 -> private
 
@@ -65,14 +64,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	row, err := sqlDB.DataBase.Prepare(`INSERT INTO users (nickname, fname, lname, dateofbirth, datejoined, password, email, avatar, description, private) 
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+	row, err := sqlDB.DataBase.Prepare(`INSERT INTO users (nickname, fname, lname, dateofbirth, datejoined, password, email, description, private) 
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`)
 	if err != nil {
 		log.Println("register sql query error:", err)
 		return
 	}
 
-	_, execError := row.Exec(uname, fname, lname, dateofbirth, datejoined, password, email, avatar, description, privateStatus)
+	_, execError := row.Exec(uname, fname, lname, dateofbirth, datejoined, password, email, description, privateStatus)
 	if execError != nil {
 		log.Println("register sql exec error:", execError)
 	}
