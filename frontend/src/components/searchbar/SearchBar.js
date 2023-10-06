@@ -19,7 +19,6 @@ const SearchBar = ({ setResults }) => {
     )
       .then((response) => response.json())
       .then((json) => {
-        console.log("fetched using this value:", `"${value}"`, json);
         setResults(json); // Assuming the backend returns filtered results
       })
       .catch((error) => {

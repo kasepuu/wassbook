@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
+	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
 )
 
 func NewEventHandler(event Event, c *Client) error {

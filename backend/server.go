@@ -1,13 +1,13 @@
-package app
+package main
 
 import (
 	"log"
 	"net/http"
 	"strings"
 
+	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
 	handler "01.kood.tech/git/kasepuu/social-network/backend/handlers"
 	ws "01.kood.tech/git/kasepuu/social-network/backend/websocket"
-	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
 type CorsHandler struct {

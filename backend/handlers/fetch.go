@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"strconv"
 
+	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
-	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
 func FetchSearchBarUsers(w http.ResponseWriter, r *http.Request) {

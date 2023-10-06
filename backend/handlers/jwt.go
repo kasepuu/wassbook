@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
-	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 	"github.com/dgrijalva/jwt-go"
 )
 

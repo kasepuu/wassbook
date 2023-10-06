@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
+	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
 )
 
 type UserInfo struct {
@@ -222,7 +222,7 @@ func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 
 	var DateOfBirthFormatted string
 
-	fetchErr = sqlDB.DataBase.QueryRow(`SELECT id, nickname, fname, lname, dateofbirth, datejoined, email, avatar, description, private FROM users WHERE id = ?`, UserID).Scan(
+	fetchErr = sqlDB.DataBase.QueryRow(`SELECT id, nickname, fname, lname, dateofbirth, datejoined, email, description, private FROM users WHERE id = ?`, UserID).Scan(
 		&User.UserID,
 		&User.UserName,
 		&User.FirstName,
@@ -230,7 +230,6 @@ func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 		&DateOfBirthFormatted,
 		&User.DateJoined,
 		&User.Email,
-		&User.Avatar,
 		&User.Description,
 		&User.PrivateStatus,
 	)

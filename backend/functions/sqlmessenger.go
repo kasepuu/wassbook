@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	sqlDB "01.kood.tech/git/kasepuu/social-network/database"
+	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
 )
 
 type ReturnChatData struct {
@@ -26,20 +26,18 @@ func LoadMessages(senderID int, receiverID int, limit int) (chatLog []ReturnChat
                         FROM chat 
                         WHERE (userid = ? AND receiverid = ?) OR (receiverid = ? AND userid = ?)`
 
-
 	fmt.Println("getting messages between:", senderID, receiverID, limit)
 
 	err := sqlDB.DataBase.QueryRow(countQuery, senderID, receiverID, senderID, receiverID).Scan(&totalCount)
-    if err != nil {
-        log.Println(err)
-    }
+	if err != nil {
+		log.Println(err)
+	}
 
 	rows, err := sqlDB.DataBase.Query(query, senderID, receiverID, senderID, receiverID, limit)
 	if err != nil {
 		log.Println(err)
 	}
 	defer rows.Close()
-
 
 	for rows.Next() {
 		var sender, receiver int
