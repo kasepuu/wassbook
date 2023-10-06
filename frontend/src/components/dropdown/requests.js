@@ -1,7 +1,7 @@
 import Request from "./request";
 import { backendHost } from "../..";
 import { useEffect, useState } from "react";
-const FollowersDropDown = ({ isOpen, onClose }) => {
+const FollowersDropDown = ({ isOpen }) => {
   const [requests, setRequests] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
