@@ -8,19 +8,6 @@
 - group invited -> ainult followerid panna nimekirja?
 - register&login -> error handling üle vaadata.
 
-- toodo
-
-* - websockeitga uuendused üle vaadata (update_notifications) (update_follower_requests)
-
-* good practice:
-* - handlereid vähendada, websocketisse ümber teha?
-* - error handlingut juurde, register/login jms formid, ümber disainida
-* - kood ilusamaks
-* - mobile view?
-
-* - lõpu asjad:
-* - db migration
-
 ## ABOUT
 
 - Our social network project is created with React & Golang
