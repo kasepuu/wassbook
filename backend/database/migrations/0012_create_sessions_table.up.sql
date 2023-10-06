@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS sessions (
+    id INTEGER,
+    token TEXT UNIQUE,
+    userid INTEGER UNIQUE,
+    PRIMARY KEY (id AUTOINCREMENT)
+)
