@@ -243,8 +243,12 @@ func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 	User.DateOfBirth = strings.Split(DateOfBirthFormatted, " ")
 
 	inputDate := User.DateJoined
+	
+	if len(inputDate) == 10 {
+		inputDate += " 00:00:00"
+	}
 
-	parsedTime, err := time.Parse(time.RFC3339Nano, inputDate)
+	parsedTime, err := time.Parse("2006-01-02 15:04:05", inputDate)
 	if err != nil {
 		log.Println("Error parsing date:", err)
 		return

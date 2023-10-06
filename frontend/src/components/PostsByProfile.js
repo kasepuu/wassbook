@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import profilePicture from "../page-images/blank.png";
 import { backendHost } from "../index.js";
 
-const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
+export const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
   const [posts, setPosts] = useState([]);
   //const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
