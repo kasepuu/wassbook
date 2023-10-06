@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"io"
 	"log"
@@ -13,10 +11,10 @@ import (
 	"time"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
+	"github.com/google/uuid"
 )
 
 func Savepost(w http.ResponseWriter, r *http.Request) {
-	// Parse the form data including the image
 	err := r.ParseMultipartForm(10 << 20) // Limit the file size to 10MB
 	if err != nil {
 		log.Println("Error parsing multipart form:", err)
@@ -25,7 +23,6 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Read the content blob from the form
 	contentBlob, _, err := r.FormFile("content")
 	if err != nil {
 		log.Println("Error getting content blob:", err)
@@ -35,7 +32,6 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 	}
 	defer contentBlob.Close()
 
-	// Read the content of the blob
 	contentBytes, err := io.ReadAll(contentBlob)
 	if err != nil {
 		log.Println("Error reading content blob:", err)
@@ -44,7 +40,6 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Unmarshal the JSON data from the contentBytes
 	var PostData PostForm
 	err = json.Unmarshal(contentBytes, &PostData)
 	if err != nil {
@@ -54,17 +49,11 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	PostData.Date = time.Now().Format("02.01.2006 15:04")
-	// Log successful decoding
-	log.Println("JSON data decoded successfully:", PostData)
-
-	// Extract the image file
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		PostData.Filename = "-"
 	} else {
 		defer file.Close()
-
-		// Save the image to a specific location
 		currentDir, err := os.Getwd()
 		if err != nil {
 			log.Println("Error getting current working directory:", err)
@@ -81,17 +70,10 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 			w.Write([]byte("Internal issue, please try again later!"))
 			return
 		}
-
-		randomBytes := make([]byte, 16) // 16 bytes = 128 bits
-		_, err = rand.Read(randomBytes)
-		if err != nil {
-			log.Println("Error")
-		}
-		randomFilename := hex.EncodeToString(randomBytes) + "_" + handler.Filename
-		PostData.Filename = randomFilename
-
-		// Construct the image path with the randomized filename
-		imagePath := filepath.Join(imageDir, randomFilename)
+		uuidFileName := uuid.New().String()
+		fileExt := filepath.Ext(handler.Filename)
+		imagePath := filepath.Join(imageDir, uuidFileName+fileExt)
+		PostData.Filename = uuidFileName + fileExt
 
 		f, err := os.Create(imagePath)
 		if err != nil {
@@ -110,8 +92,6 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
-	// Insert the data into the database
 
 	statement := `INSERT INTO posts (userId, fname, lname, date, content, groupId, filename, privacy) VALUES (?,?,?,?,?,?,?,?)`
 	id, errExec := sqlDB.DataBase.Exec(statement,

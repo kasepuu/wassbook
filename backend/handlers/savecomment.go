@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"io"
 	"log"
@@ -13,10 +11,10 @@ import (
 	"time"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
+	"github.com/google/uuid"
 )
 
 func SaveComment(w http.ResponseWriter, r *http.Request) {
-	// Parse the form data including the image
 	err := r.ParseMultipartForm(10 << 20) // Limit the file size to 10MB
 	if err != nil {
 		log.Println("Error parsing multipart form:", err)
@@ -25,7 +23,6 @@ func SaveComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Read the content blob from the form
 	contentBlob, _, err := r.FormFile("content")
 	if err != nil {
 		log.Println("Error getting content blob:", err)
@@ -35,7 +32,6 @@ func SaveComment(w http.ResponseWriter, r *http.Request) {
 	}
 	defer contentBlob.Close()
 
-	// Read the content of the blob
 	contentBytes, err := io.ReadAll(contentBlob)
 	if err != nil {
 		log.Println("Error reading content blob:", err)
@@ -44,7 +40,6 @@ func SaveComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Unmarshal the JSON data from the contentBytes
 	var CommentData CommentForm
 	err = json.Unmarshal(contentBytes, &CommentData)
 	if err != nil {
@@ -54,8 +49,6 @@ func SaveComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	CommentData.Date = time.Now().Format("02.01.2006 15:04")
-	// Log successful decoding
-	log.Println("JSON data decoded successfully:", CommentData)
 
 	// Extract the image file
 	file, handler, err := r.FormFile("file")
@@ -82,16 +75,10 @@ func SaveComment(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		randomBytes := make([]byte, 16) // 16 bytes = 128 bits
-		_, err = rand.Read(randomBytes)
-		if err != nil {
-			log.Println("Error")
-		}
-		randomFilename := hex.EncodeToString(randomBytes) + "_" + handler.Filename
-		CommentData.Filename = randomFilename
-
-		// Construct the image path with the randomized filename
-		imagePath := filepath.Join(imageDir, randomFilename)
+		uuidFileName := uuid.New().String()
+		fileExt := filepath.Ext(handler.Filename)
+		imagePath := filepath.Join(imageDir, uuidFileName+fileExt)
+		CommentData.Filename = uuidFileName + fileExt
 
 		f, err := os.Create(imagePath)
 		if err != nil {
