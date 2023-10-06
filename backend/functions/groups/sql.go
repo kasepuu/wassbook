@@ -4,6 +4,7 @@ import (
 	"time"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
+	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 )
 
 func GetUsers() ([]User, error) {
@@ -278,12 +279,16 @@ func GetGroupEventsAndMembers(id int) ([]Event, []User, error) {
 
 func SavePost(post Post) ([]Post, error) {
 	var err error
-	statement, err := sqlDB.DataBase.Prepare("INSERT INTO posts (userId, date, content, groupId, filename) VALUES (?,?,?,?,?)")
-	currentTime := time.Now().Format("02.01.2006 15:04")
+	statement, err := sqlDB.DataBase.Prepare("INSERT INTO posts (userId, fname, lname, date, content, groupId, filename) VALUES (?,?,?,?,?,?,?)")
+	currentTime := time.Now().Format(time.RFC3339)
 	if err != nil {
 		return nil, err
 	}
-	_, err = statement.Exec(post.UserId, currentTime, post.Content, post.GroupId, post.Filename)
+
+	fname := function.GetUserCredential(post.UserId, "fname")
+	lname := function.GetUserCredential(post.UserId, "lname")
+
+	_, err = statement.Exec(post.UserId, fname, lname, currentTime, post.Content, post.GroupId, post.Filename)
 
 	if err != nil {
 		return nil, err

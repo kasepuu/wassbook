@@ -34,6 +34,12 @@ func GetUserName(UserID int) (UserName string) {
 	return UserName
 }
 
+func GetUserCredential(UserID int, column string) (credential string) {
+	query := "SELECT " + column + "FROM users WHERE id = ?"
+	sqlDB.DataBase.QueryRow(query, UserID).Scan(&credential)
+	return credential
+}
+
 func GetGroupNameByID(GroupID int, Type string) (GroupName string) {
 	// name || tag
 	query := "SELECT " + Type + " FROM groups WHERE id = ?"
