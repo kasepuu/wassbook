@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	dbFilePath := "database/database.db"
+	dbFilePath := "backend/database/database.db"
 	if _, err := os.Stat(dbFilePath); os.IsNotExist(err) {
 		// File does not exist, create a new database and populate it with data
 		db, err := sql.Open("sqlite3", dbFilePath)
