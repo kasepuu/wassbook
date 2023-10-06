@@ -6,6 +6,8 @@ import (
 	"log"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
+	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
+	"01.kood.tech/git/kasepuu/social-network/backend/functions/groups"
 )
 
 func NewEventHandler(event Event, c *Client) error {
@@ -120,4 +122,81 @@ func EventResponseHandler(event Event, c *Client) error {
 	}
 	sendResponse(newEventResponse, "update_eventResponse", c)
 	return nil
+}
+
+func EventGroupJoin(event Event, c *Client) error {
+	type Request struct {
+		ReceiverID int    `json:"ReceiverID"`
+		SenderID   int    `json:"SenderID"`
+		GroupID    int    `json:"GroupID"`
+		Status     string `json:"Status"`
+	}
+	var payload Request
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("bad payload in request: %v", err)
+	}
+
+	senderId := payload.SenderID
+	receiverId := payload.ReceiverID // the one that gets the invitation/leaves
+	groupId := payload.GroupID
+	status := payload.Status
+
+	var invite groups.GroupInvite
+	invite.SenderId = senderId
+	invite.ReceiverId = receiverId
+	invite.GroupId = groupId
+	invite.Status = status
+
+	_, err := groups.CreateMember(invite)
+	if err != nil {
+		fmt.Println("err:", err)
+		return err
+	}
+	message := function.GetUserName(receiverId) + " wants to join " + function.GetGroupNameByID(groupId, "tag")
+	err = function.SaveNotification(senderId, receiverId, message)
+	if err == nil {
+		for client := range c.client.clients {
+			if client.userId == receiverId {
+				sendResponse("", "update_group_page", client)
+				UpdateRequestsAndNotifications(receiverId, client)
+			} else if client.userId == senderId {
+				UpdateRequestsAndNotifications(senderId, client)
+			}
+		}
+	}
+	return err
+}
+
+func EventGroupLeave(event Event, c *Client) error {
+	type Request struct {
+		ReceiverID int    `json:"ReceiverID"`
+		SenderID   int    `json:"SenderID"`
+		GroupID    int    `json:"GroupID"`
+		Status     string `json:"Status"`
+	}
+	var payload Request
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("bad payload in request: %v", err)
+	}
+
+	senderId := payload.SenderID
+	receiverId := payload.ReceiverID // the one that gets the invitation/leaves?
+	groupId := payload.GroupID
+
+	err := function.SetGroupStatus(receiverId, groupId, "remove")
+	if err != nil {
+		return err
+	}
+
+	err = function.RemoveNotification(senderId, receiverId, "wants to join")
+	if err == nil {
+		for client := range c.client.clients {
+			if client.userId == receiverId {
+				UpdateRequestsAndNotifications(receiverId, client)
+			} else if client.userId == senderId {
+				UpdateRequestsAndNotifications(senderId, client)
+			}
+		}
+	}
+	return err
 }

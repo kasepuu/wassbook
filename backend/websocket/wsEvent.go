@@ -46,12 +46,13 @@ func (m *wsManager) setupEventHandlers() {
 	m.handlers["create_event"] = NewEventHandler
 	m.handlers["load_events"] = LoadEventHandler
 	m.handlers["event_response"] = EventResponseHandler
+	m.handlers["request_group_join"] = EventGroupJoin
+	m.handlers["request_group_leave"] = EventGroupLeave
 
 	// group chat events
 	m.handlers["send_group_message"] = SendGroupMessageHandler
 	m.handlers["request_group_messages"] = LoadGroupMessagesHandler
 	m.handlers["is_typing_group"] = IsTypingGroupHandler
-
 }
 
 func sendResponse(responseData any, event string, c *Client) {
@@ -80,28 +81,35 @@ func OnConnectionHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == RequesterID {
-			users, err := function.FetchFollowRequests(RequesterID, "pending")
-			users2, err2 := function.FetchGroupInviteRequests(RequesterID)
-			users3, err3 := function.FetchGroupJoinRequests(RequesterID)
-
-			if err == nil && err2 == nil && err3 == nil {
-				sendResponse(len(users)+len(users2)+len(users3), "update_follower_requests", client)
-			}
-
-			usersMutual, errMut := function.GetMutualFollowers(RequesterID)
-			if errMut == nil {
-				sendResponse(usersMutual, "update_followerslist", client)
-			}
-
-			groupList := function.GetGroupsInfo(payload.RequesterID)
-			sendResponse(groupList, "update_groupslist", c)
-
-			notifications, errNot := function.LoadNotifications(RequesterID)
-			if errNot == nil {
-				sendResponse(len(notifications), "update_notifications", client)
-			}
+			UpdateRequestsAndNotifications(RequesterID, client)
 		}
 	}
 
 	return nil
+}
+
+// function that responds updated notifications etc...
+func UpdateRequestsAndNotifications(UserID int, client *Client) {
+	notifications, errNot := function.LoadNotifications(UserID)
+	if errNot == nil {
+		sendResponse(len(notifications), "update_notifications", client)
+	}
+
+	users, err := function.FetchFollowRequests(UserID, "pending")
+	users2, err2 := function.FetchGroupInviteRequests(UserID)
+	users3, err3 := function.FetchGroupJoinRequests(UserID)
+
+	if err == nil && err2 == nil && err3 == nil {
+		sendResponse(len(users)+len(users2)+len(users3), "update_requests", client)
+	} else {
+		fmt.Println("unable to update_requests", err, err2, err3)
+	}
+
+	usersMutual, errMut := function.GetMutualFollowers(UserID)
+	if errMut == nil {
+		sendResponse(usersMutual, "update_followerslist", client)
+	}
+
+	groupList := function.GetGroupsInfo(UserID)
+	sendResponse(groupList, "update_groupslist", client)
 }

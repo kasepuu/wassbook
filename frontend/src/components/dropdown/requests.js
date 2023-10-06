@@ -12,7 +12,7 @@ const FollowersDropDown = ({ isOpen }) => {
     fetch(`${backendHost}/fetch-requests?UserID=${CurrentUser.UserID}`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error("Failed to l1oad users that are trying to follow");
+          throw new Error("Failed to load users that are trying to follow");
         }
         if (response.status === 204) {
           return [];

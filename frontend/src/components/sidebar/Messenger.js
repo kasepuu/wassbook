@@ -4,7 +4,6 @@ import "../../css/Chat.css";
 // import EmojiPicker from "emoji-picker-react";
 const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
 let timeOut;
-
 const Messenger = ({ selectedFollower, closeMessenger }) => {
   const [message, setMessage] = useState("");
   const inputRef = useRef(null);
@@ -12,13 +11,11 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
   const [chatLog, setChatLog] = useState([]);
   const [messagesToLoad, setMessagesToLoad] = useState(10);
   const [totalMessages, setTotalMessages] = useState(0); // Total number of messages
-  const [prevScrollHeight, setScrollHeight] = useState(0)
+  const [prevScrollHeight, setScrollHeight] = useState(0);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [shouldResetMessagesToLoad, setShouldResetMessagesToLoad] = useState(true);
+  const [shouldResetMessagesToLoad, setShouldResetMessagesToLoad] =
+    useState(true);
   const [scrollingEnabled, setScrollingEnabled] = useState(true);
-
-
-
   // get current chat
   useEffect(() => {
     if (shouldResetMessagesToLoad) {
@@ -28,11 +25,23 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
       setChatLog([]);
       setShouldResetMessagesToLoad(false);
     }
-    if (prevScrollHeight === 0 && totalMessages === 0 && messagesToLoad === 10) {
-      console.log("INFO HERE", selectedFollower, prevScrollHeight, totalMessages, chatLog, messagesToLoad);
+    if (
+      prevScrollHeight === 0 &&
+      totalMessages === 0 &&
+      messagesToLoad === 10
+    ) {
+      console.log(
+        "INFO HERE",
+        selectedFollower,
+        prevScrollHeight,
+        totalMessages,
+        chatLog,
+        messagesToLoad
+      );
       setShouldResetMessagesToLoad(true);
       loadMessagesFromBackend();
     }
+    // eslint-disable-next-line
   }, [selectedFollower, shouldResetMessagesToLoad]);
 
   function loadMessagesFromBackend() {
@@ -45,7 +54,6 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
     };
     sendEvent("request_messages", payload);
   }
-
   // event listener for chat updates
   useEffect(() => {
     // event listener to existing ws connection
@@ -53,66 +61,69 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_messages") {
         // update the chat log with the received message, only if chat is opened with the right person.
-        if (eventData.payload &&
-          JSON.parse(localStorage.getItem("CurrentChat")).UserId === eventData.payload.CurrentChat &&
-          eventData.payload.ChatLog) {
-          setTotalMessages(eventData.payload.TotalCount)
+        if (
+          eventData.payload &&
+          JSON.parse(localStorage.getItem("CurrentChat")).UserId ===
+            eventData.payload.CurrentChat &&
+          eventData.payload.ChatLog
+        ) {
+          setTotalMessages(eventData.payload.TotalCount);
           setChatLog(eventData.payload.ChatLog);
-          document.getElementById('chatstatus').innerHTML = ""
+          document.getElementById("chatstatus").innerHTML = "";
         }
       } else if (eventData.type === "is_typing") {
-        const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"))
-        const chatStatus = document.getElementById('chatstatus')
-        if (!chatStatus) { return }
-        if (selectedFollower.UserName === currentUser.UserName) { return }
-
-        clearTimeout(timeOut)
-        let messageformat = `📱${selectedFollower.UserName} is typing...`
-        chatStatus.innerHTML = messageformat
+        const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+        const chatStatus = document.getElementById("chatstatus");
+        if (!chatStatus) {
+          return;
+        }
+        if (selectedFollower.UserName === currentUser.UserName) {
+          return;
+        }
+        clearTimeout(timeOut);
+        let messageformat = `📱${selectedFollower.UserName} is typing...`;
+        chatStatus.innerHTML = messageformat;
         timeOut = setTimeout(function () {
-          chatStatus.innerHTML = ""
+          chatStatus.innerHTML = "";
         }, 1000);
-
       } else {
         //notification
       }
     };
   }, [selectedFollower]);
-
   const handleScroll = () => {
     const chatLogContainer = chatLogRef.current;
-
-    if (chatLogContainer.scrollTop <= 0 &&
+    if (
+      chatLogContainer.scrollTop <= 0 &&
       messagesToLoad <= totalMessages &&
-      chatLog.length > 0 && scrollingEnabled) {
+      chatLog.length > 0 &&
+      scrollingEnabled
+    ) {
       setScrollingEnabled(false);
-
-      setScrollHeight(chatLogContainer.scrollHeight)
+      setScrollHeight(chatLogContainer.scrollHeight);
       setMessagesToLoad(messagesToLoad + 10); // Load 10 more messages
-      loadMessagesFromBackend()
+      loadMessagesFromBackend();
       setTimeout(() => {
         setScrollingEnabled(true);
       }, 500);
     }
   };
-
   useEffect(() => {
     chatLogRef.current.addEventListener("scroll", handleScroll);
-
+    // eslint-disable-next-line
   }, [messagesToLoad, totalMessages, scrollingEnabled]);
-
   useEffect(() => {
     if (chatLogRef.current) {
-      chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight - prevScrollHeight; // Adjust scroll position
+      chatLogRef.current.scrollTop =
+        chatLogRef.current.scrollHeight - prevScrollHeight; // Adjust scroll position
     }
     if (chatLogRef.current.scrollTop <= 0 && messagesToLoad < totalMessages) {
-      loadMessagesFromBackend()
+      loadMessagesFromBackend();
     }
+    // eslint-disable-next-line
   }, [chatLog]);
-
   const sendMessage = (sender, receiver) => {
     if (message.trim() === "") return;
-
     const payload = {
       Message: convertEmoticonsToEmoji(message),
       SenderID: sender,
@@ -121,12 +132,10 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
     setMessage("");
     sendEvent("send_message", payload);
   };
-
   // emoticon functions
   const handleEmojiSelect = (emoji) => {
     setMessage((prevMsg) => prevMsg + emoji.emoji);
   };
-
   const convertEmoticonsToEmoji = (text) => {
     const emojiDictionary = {
       ":)": "😊",
@@ -141,13 +150,10 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
       "3:)": "😈",
       "3:(": "👿",
     };
-
     // emoticon Regex
     const emoticonRegex = /:\)|:-\)|:\(|:-\(|:D|:-D|:'D|>D|:'(|3:)|3:\(/g;
-
     return text.replace(emoticonRegex, (match) => {
       const emoji = emojiDictionary[match];
-
       if (emoji) {
         return emoji;
       } else {
@@ -155,7 +161,6 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
       }
     });
   };
-
   return (
     <div className="Messenger">
       <div className="chat-title">📪{selectedFollower.UserName}</div>
@@ -169,8 +174,9 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           chatLog.map((message, index) => (
             <div
               key={index}
-              className={`chat-log-${message.UserName === selectedFollower.UserName ? "to" : "from"
-                }`}
+              className={`chat-log-${
+                message.UserName === selectedFollower.UserName ? "to" : "from"
+              }`}
             >
               <div className="chat-log-content">
                 <div className="chat-log-to-image">{message.UserName}</div>
@@ -186,7 +192,9 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
         )}
       </div>
       {/*other chat elements*/}
-      <div id="chatstatus" className="chat-status">{/*status -> is typing etc...*/}</div>
+      <div id="chatstatus" className="chat-status">
+        {/*status -> is typing etc...*/}
+      </div>
       <div className="chat-close" onClick={closeMessenger}>
         X
       </div>
@@ -200,15 +208,14 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
             const response = {
-              SenderID: JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
+              SenderID: JSON.parse(sessionStorage.getItem("CurrentUser"))
+                .UserID,
               ReceiverID: selectedFollower.UserId,
             };
             sendEvent("is_typing", response);
-
             if (e.key === "Enter" && !e.shiftKey) {
               // Calling the sendMessage function when Enter is pressed
               e.preventDefault();
-
               sendMessage(
                 JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
                 selectedFollower.UserId
@@ -217,7 +224,6 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           }}
           ref={inputRef} // Assign the ref to the input element
         />
-
         <div
           className="emoji-button"
           onClick={() => {
@@ -226,7 +232,6 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
         >
           😄
         </div>
-
         <button
           className="send-button"
           onClick={() => {
@@ -239,7 +244,6 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
         >
           Send
         </button>
-
         {showEmojiPicker && (
           //   style={{ display: showEmojiPicker ? "block" : "none" }}
           <div className="emoticon-picker">
@@ -258,5 +262,4 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
     </div>
   );
 };
-
 export default Messenger;

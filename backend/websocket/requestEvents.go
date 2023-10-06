@@ -10,8 +10,8 @@ import (
 )
 
 type Request struct {
-	RequesterID int `JSON:"RequesterID"`
-	TargetID    int `JSON:"TargetID"`
+	RequesterID int `JSON:"RequesterID"` // user that requested
+	TargetID    int `JSON:"TargetID"`    // target user || target group
 }
 
 func SendFollowHandler(event Event, c *Client) error {
@@ -37,11 +37,9 @@ func SendFollowHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			users, err := function.FetchFollowRequests(TargetID, "pending")
-			if err == nil {
-				sendResponse(len(users), "update_follower_requests", client)
-			}
+			UpdateRequestsAndNotifications(TargetID, client)
 		} else if client.userId == RequesterID {
+			UpdateRequestsAndNotifications(RequesterID, client)
 			sendResponse(payload, "reload_profile_page", client)
 		}
 	}
@@ -71,11 +69,9 @@ func SendUnFollowHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			users, err := function.FetchFollowRequests(TargetID, "pending")
-			if err == nil {
-				sendResponse(len(users), "update_follower_requests", client)
-			}
+			UpdateRequestsAndNotifications(TargetID, client)
 		} else if client.userId == RequesterID {
+			UpdateRequestsAndNotifications(RequesterID, client)
 			sendResponse(payload, "reload_profile_page", client)
 		}
 	}
@@ -100,19 +96,9 @@ func AcceptFollowHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			users, err := function.FetchFollowRequests(TargetID, "pending")
-			if err == nil {
-				sendResponse(len(users), "update_follower_requests", client)
-			}
-			usersMutual, errMut := function.GetMutualFollowers(TargetID)
-			if errMut == nil {
-				sendResponse(usersMutual, "update_followerslist", client)
-			}
+			UpdateRequestsAndNotifications(TargetID, client)
 		} else if client.userId == RequesterID {
-			usersMutual, errMut := function.GetMutualFollowers(RequesterID)
-			if errMut == nil {
-				sendResponse(usersMutual, "update_followerslist", client)
-			}
+			UpdateRequestsAndNotifications(RequesterID, client)
 			sendResponse(payload, "reload_profile_page", client)
 		}
 
@@ -129,6 +115,8 @@ func DeclineFollowHandler(event Event, c *Client) error {
 		return fmt.Errorf("[follow_decline] bad payload in request: %v", err)
 	}
 
+	fmt.Println(payload)
+
 	RequesterID := payload.RequesterID
 	TargetID := payload.TargetID
 
@@ -140,19 +128,9 @@ func DeclineFollowHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			usersUnderRequests, errReq := function.FetchFollowRequests(TargetID, "pending")
-			if errReq == nil {
-				sendResponse(len(usersUnderRequests), "update_follower_requests", client)
-			}
-			usersMutual, errMut := function.GetMutualFollowers(TargetID)
-			if errMut == nil {
-				sendResponse(usersMutual, "update_followerslist", client)
-			}
+			UpdateRequestsAndNotifications(TargetID, client)
 		} else if client.userId == RequesterID {
-			usersMutual, errMut := function.GetMutualFollowers(RequesterID)
-			if errMut == nil {
-				sendResponse(usersMutual, "update_followerslist", client)
-			}
+			UpdateRequestsAndNotifications(RequesterID, client)
 			sendResponse(payload, "reload_profile_page", client)
 		}
 	}
@@ -216,7 +194,6 @@ func LoadProfileFollowersHandler(event Event, c *Client) error {
 
 // group requests
 func AcceptGroupRequestHandler(event Event, c *Client) error {
-
 	var payload Request
 
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
@@ -225,8 +202,18 @@ func AcceptGroupRequestHandler(event Event, c *Client) error {
 	log.Println(payload)
 	RequesterID := payload.RequesterID
 	GroupID := payload.TargetID
+	GroupOwnerID := function.GetGroupOwnerID(GroupID)
 
 	function.SetGroupStatus(RequesterID, GroupID, "accepted")
+
+	for client := range c.client.clients {
+		if client.userId == RequesterID {
+			sendResponse("", "update_group_page", client)
+			UpdateRequestsAndNotifications(RequesterID, client)
+		} else if client.userId == GroupOwnerID {
+			UpdateRequestsAndNotifications(GroupOwnerID, client)
+		}
+	}
 
 	return nil
 }
@@ -240,11 +227,22 @@ func DeclineGroupRequestHandler(event Event, c *Client) error {
 
 	RequesterID := payload.RequesterID
 	GroupID := payload.TargetID
+	GroupOwnerID := function.GetGroupOwnerID(GroupID)
 
 	err := function.SetGroupStatus(RequesterID, GroupID, "remove")
 	if err != nil {
 		log.Println("There was an error setting group status:", err)
 	}
+
+	for client := range c.client.clients {
+		if client.userId == RequesterID {
+			sendResponse("", "update_group_page", client)
+			UpdateRequestsAndNotifications(RequesterID, client)
+		} else if client.userId == GroupOwnerID {
+			UpdateRequestsAndNotifications(GroupOwnerID, client)
+		}
+	}
+
 	return nil
 }
 func AcceptGroupInviteHandler(event Event, c *Client) error {
@@ -258,6 +256,12 @@ func AcceptGroupInviteHandler(event Event, c *Client) error {
 	GroupID := payload.TargetID
 
 	function.SetGroupStatus(RequesterID, GroupID, "accepted")
+
+	for client := range c.client.clients {
+		if client.userId == RequesterID {
+			UpdateRequestsAndNotifications(RequesterID, client)
+		}
+	}
 
 	return nil
 }
@@ -274,6 +278,12 @@ func DeclineGroupInviteHandler(event Event, c *Client) error {
 	GroupID := payload.TargetID
 
 	function.SetGroupStatus(RequesterID, GroupID, "remove")
+
+	for client := range c.client.clients {
+		if client.userId == RequesterID {
+			UpdateRequestsAndNotifications(RequesterID, client)
+		}
+	}
 
 	return nil
 }

@@ -29,7 +29,11 @@ const Request = ({ requests, isLoading }) => {
                       type="button"
                       className="btn-accept"
                       onClick={() => {
-                        handleOption(user.ID, LoggedUser.UserID, "accept_follow_request");
+                        handleOption(
+                          user.UserID,
+                          LoggedUser.UserID,
+                          "accept_follow_request"
+                        );
                       }}
                     >
                       <FaCheck />
@@ -37,7 +41,11 @@ const Request = ({ requests, isLoading }) => {
                     <button
                       className="btn-decline"
                       onClick={() => {
-                        handleOption(user.ID, LoggedUser.UserID, "decline_follow_request");
+                        handleOption(
+                          user.UserID,
+                          LoggedUser.UserID,
+                          "decline_follow_request"
+                        );
                       }}
                     >
                       <FaTimes />
@@ -64,7 +72,11 @@ const Request = ({ requests, isLoading }) => {
                     type="button"
                     className="btn-accept"
                     onClick={() => {
-                      handleOption(request.UserInfo.UserID, request.GroupInfo.ID, "accept_group_request");
+                      handleOption(
+                        request.UserInfo.UserID,
+                        request.GroupInfo.ID,
+                        "accept_group_request"
+                      );
                     }}
                   >
                     <FaCheck />
@@ -72,7 +84,11 @@ const Request = ({ requests, isLoading }) => {
                   <button
                     className="btn-decline"
                     onClick={() => {
-                      handleOption(request.UserInfo.UserID, request.GroupInfo.ID, "decline_group_request");
+                      handleOption(
+                        request.UserInfo.UserID,
+                        request.GroupInfo.ID,
+                        "decline_group_request"
+                      );
                     }}
                   >
                     <FaTimes />
@@ -96,8 +112,11 @@ const Request = ({ requests, isLoading }) => {
                     type="button"
                     className="btn-accept"
                     onClick={() => {
-                      handleOption(request.UserInfo.UserID, request.GroupInfo.ID, "accept_group_invite");
-
+                      handleOption(
+                        request.UserInfo.UserID,
+                        request.GroupInfo.ID,
+                        "accept_group_invite"
+                      );
                     }}
                   >
                     <FaCheck />
@@ -105,7 +124,11 @@ const Request = ({ requests, isLoading }) => {
                   <button
                     className="btn-decline"
                     onClick={() => {
-                      handleOption(request.UserInfo.UserID, request.GroupInfo.ID, "decline_group_invite");
+                      handleOption(
+                        request.UserInfo.UserID,
+                        request.GroupInfo.ID,
+                        "decline_group_invite"
+                      );
                     }}
                   >
                     <FaTimes />
@@ -114,9 +137,9 @@ const Request = ({ requests, isLoading }) => {
               ))}
             </div>
           )}
-          {!requests.GroupInvites && !requests.GroupRequests && !requests.FollowerRequests && (
-            <p>No requests found!</p>
-          )}
+          {!requests.GroupInvites &&
+            !requests.GroupRequests &&
+            !requests.FollowerRequests && <p>No requests found!</p>}
         </>
       )}
     </div>

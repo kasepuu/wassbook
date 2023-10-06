@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 	groups "01.kood.tech/git/kasepuu/social-network/backend/functions/groups"
 )
 
@@ -223,6 +224,30 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		w.Write(toSend)
 	}
+}
+
+func CancelGroupJoin(w http.ResponseWriter, r *http.Request) {
+	senderID := r.FormValue("senderId")
+	receiverID := r.FormValue("receiverId")
+	groupID := r.FormValue("groupId")
+
+	sid, _ := strconv.Atoi(senderID)
+	tid, _ := strconv.Atoi(receiverID)
+	gid, _ := strconv.Atoi(groupID)
+
+	err := function.SetGroupStatus(tid, gid, "remove")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = function.RemoveNotification(sid, tid, "your group")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func GroupInvite(w http.ResponseWriter, r *http.Request) {

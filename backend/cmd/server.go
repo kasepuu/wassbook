@@ -90,6 +90,7 @@ func StartServer(port string) {
 	corsMux.HandleFunc("/groups/posts", handler.GroupPosts)
 	corsMux.HandleFunc("/groups/comments", handler.SaveGroupComment)
 	corsMux.HandleFunc("/groups/invite", handler.GroupInvite)
+	corsMux.HandleFunc("/cancel-group-request", handler.CancelGroupJoin)
 
 	log.Printf("backend is running at: http://localhost:" + port + "/\n")
 	log.Printf("frontend should be running at: http://localhost:" + "8080" + "/\n")

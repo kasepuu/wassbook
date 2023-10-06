@@ -409,6 +409,11 @@ func GetGroupName(Groups []JoinedGroup, userID int) []JoinedGroup {
 	return newGroupInfo
 }
 
+func GetGroupOwnerID(GroupID int) (ownerId int) {
+	sqlDB.DataBase.QueryRow("SELECT ownerId FROM groups WHERE id = ?", GroupID).Scan(&ownerId)
+	return ownerId
+}
+
 func GetOtherGroupMemebers(GroupID int, UserID int) (MemberIDs []int) {
 	rows, _ := sqlDB.DataBase.Query(`SELECT userId FROM groupMember WHERE groupId = ? AND userId != ?`, GroupID, UserID)
 	defer rows.Close()
@@ -533,6 +538,27 @@ func SaveNotification(TargetID int, SenderID int, description string) error {
 	_, execError := row.Exec(TargetID, SenderID, description)
 	if execError != nil {
 		log.Println("notification sql exec error:", execError)
+	}
+
+	return nil
+}
+
+func RemoveNotification(TargetID int, SenderID int, descriptionSlice string) error {
+	row, err := sqlDB.DataBase.Prepare(`
+		DELETE FROM notifications 
+		WHERE targetid = ? 
+		AND senderid = ? 
+		AND description LIKE '%' || ? || '%'
+	`)
+
+	if err != nil {
+		log.Println("remove notification sql query error:", err)
+		return err
+	}
+
+	_, execError := row.Exec(TargetID, SenderID, descriptionSlice)
+	if execError != nil {
+		log.Println("remove notification sql exec error:", execError)
 	}
 
 	return nil

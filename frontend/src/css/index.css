@@ -44,3 +44,30 @@ iframe {
 .coloredMessage {
   color: darkblue;
 }
+
+.confirmation-dialog {
+  width: 200px;
+  height: 150px;
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  transform: translate(-50%);
+  color: wheat;
+  background-color: #666666;
+  border: 1px solid black;
+
+  font-size: x-large;
+  border-radius: 10px;
+}
+
+.confirmation-dialog button {
+  padding: 10px 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  background-color: #wheat;
+}
+
+.confirmation-dialog button:hover {
+  color: red;
+  background-color: #ddd;
+}

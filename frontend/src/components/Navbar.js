@@ -19,7 +19,7 @@ import NotificationsDropdown from "./dropdown/notifications";
 const Navbar = () => {
   const [isNotificationsOpen, setNotificationsOpened] = useState(false);
   const [isFollowersOpen, setFollowersOpened] = useState(false);
-  const [followerRequests, setFollowerRequests] = useState("");
+  const [requests, setRequests] = useState("");
   const [notificationsCount, setNotficationsCount] = useState("");
   const navigate = useNavigate();
 
@@ -45,8 +45,8 @@ const Navbar = () => {
       const eventData = JSON.parse(e.data);
       if (eventData.type === "update_notifications") {
         setNotficationsCount(eventData.payload ? eventData.payload : "");
-      } else if (eventData.type === "update_follower_requests") {
-        setFollowerRequests(eventData.payload ? eventData.payload : "");
+      } else if (eventData.type === "update_requests") {
+        setRequests(eventData.payload ? eventData.payload : "");
       }
     };
 
@@ -60,7 +60,7 @@ const Navbar = () => {
         window.socket.addEventListener("message", handleWebSocketMessage);
       }
     };
-  }, [setFollowerRequests]);
+  }, [setRequests]);
 
   return (
     <nav className="Navbar">
@@ -99,7 +99,7 @@ const Navbar = () => {
           }}
           className="followersBTN"
         >
-          <span className="notification-design">{followerRequests}</span>
+          <span className="notification-design">{requests}</span>
           <FaNetworkWired /> Requests
           {isFollowersOpen && <FollowersDropDown isOpen={isFollowersOpen} />}
         </div>

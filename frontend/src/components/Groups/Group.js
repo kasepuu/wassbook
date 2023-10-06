@@ -1,7 +1,7 @@
 import "../../css/Feed.css";
 import { sendEvent } from "../../websocket";
 import { GroupPosts } from "./GroupPosts";
-
+import ConfirmationDialog from "../ConfirmationDialog";
 import {
   getGroup,
   createPost,
@@ -14,10 +14,13 @@ import { useParams } from "react-router-dom";
 import { Info } from "./Info";
 import { Members } from "./Members";
 import { Events } from "./Events.js";
+import { backendHost } from "../..";
 //import { GroupForm } from "./GroupForm";
 
 const Group = () => {
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [refreshPage, setRefreshPage] = useState(false);
 
   const [data, setData] = useState({
     Posts: [],
@@ -28,14 +31,37 @@ const Group = () => {
   const [item, setItem] = useState("main");
   let { id } = useParams();
 
+  // websocket connection to allow real time page refresh (on request accept/decline)
+  useEffect(() => {
+    const handleWebSocketMessage = (e) => {
+      const eventData = JSON.parse(e.data);
+      if (eventData.type === "update_group_page") {
+        setRefreshPage(true);
+      }
+    };
+
+    if (window.socket) {
+      window.socket.addEventListener("message", handleWebSocketMessage);
+    }
+
+    return () => {
+      // Cleanup: Remove the event listener when the component unmounts
+      if (window.socket) {
+        window.socket.addEventListener("message", handleWebSocketMessage);
+      }
+    };
+  }, [setRefreshPage]);
+
   useEffect(() => {
     async function fetchData() {
       const response = await getGroup(id);
       setData(response);
     }
-
     fetchData();
-  }, [id]);
+    if (refreshPage) {
+      setRefreshPage(false);
+    }
+  }, [refreshPage, id]);
 
   const handlePostForm = async (e) => {
     e.preventDefault();
@@ -69,13 +95,13 @@ const Group = () => {
     formData.append("groupId", data.Id);
     formData.append("status", "invited");
 
-    const notificationPayload = {
-      TargetID: member.id,
-      SenderID: data.OwnerId,
-      Description: "New group Invite!",
-    };
+    // const notificationPayload = {
+    //   TargetID: member.id,
+    //   SenderID: data.OwnerId,
+    //   Description: "New group Invite!",
+    // };
 
-    sendEvent("send_notification", notificationPayload);
+    // sendEvent("send_notification", notificationPayload);
 
     const updatedUsers = await inviteMember(formData);
 
@@ -114,26 +140,88 @@ const Group = () => {
     });
   };
 
-  const handleJoin = async () => {
+  const isPending = () => {
+    if (data.AllUsers === undefined) return;
+    return data.AllUsers.find(({ Id, Status }) => {
+      return Id === userInfo.UserID && Status === "pending";
+    });
+  };
+
+  const handleJoinf = async () => {
     const formData = new FormData();
     formData.append("receiverId", userInfo.UserID);
     formData.append("senderId", data.OwnerId);
     formData.append("groupId", data.Id);
     formData.append("status", "pending");
 
-    const notificationPayload = {
-      TargetID: data.OwnerId,
-      SenderID: userInfo.UserID,
-      Description: `${userInfo.FirstName} wants to join your group!`,
-    };
-
-    sendEvent("send_notification", notificationPayload);
+    // const notificationPayload = {
+    //   TargetID: data.OwnerId,
+    //   SenderID: userInfo.UserID,
+    //   Description: `${userInfo.FirstName} wants to join your group!`,
+    // };
+    // sendEvent("send_notification", notificationPayload);
 
     const updatedUsers = await inviteMember(formData);
 
     setData((prevData) => {
       return { ...prevData, AllUsers: updatedUsers };
     });
+  };
+
+  const handleJoin = () => {
+    const payload = {
+      ReceiverID: userInfo.UserID,
+      SenderID: data.OwnerId,
+      GroupID: data.Id,
+      Status: "pending",
+    };
+
+    sendEvent("request_group_join", payload);
+  };
+
+  const handleCancelRequest = () => {
+    setShowConfirmation(true);
+  };
+
+  const handleLeaveGroup = () => {
+    const payload = {
+      ReceiverID: userInfo.UserID,
+      SenderID: data.OwnerId,
+      GroupID: data.Id,
+      Status: "pending",
+    };
+
+    sendEvent("request_group_leave", payload);
+
+    setRefreshPage(true);
+    setShowConfirmation(false);
+  };
+
+  const handleLeaveGroup2 = () => {
+    const formData = new FormData();
+    formData.append("receiverId", userInfo.UserID);
+    formData.append("senderId", data.OwnerId);
+    formData.append("groupId", data.Id);
+    formData.append("status", "remove");
+
+    fetch(`${backendHost}/cancel-group-request`, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (response.ok) {
+          setRefreshPage(true);
+          console.log("Request cancelled successfully.");
+        } else {
+          console.error("Error cancelling group request.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error occurred while cancelling group request:", error);
+      });
+
+    setRefreshPage(true);
+    setShowConfirmation(false);
   };
 
   return (
@@ -148,9 +236,26 @@ const Group = () => {
               <span onClick={handleMenuClick}>Info </span>
               <span onClick={handleMenuClick}>Members </span>
               <span onClick={handleMenuClick}>Events </span>
+              <span onClick={handleCancelRequest}>Leave Group</span>
             </div>
             {renderSwitch(item)}
+
+            <ConfirmationDialog
+              open={showConfirmation}
+              onClose={() => setShowConfirmation(false)}
+              onConfirm={handleLeaveGroup}
+            />
           </main>
+        ) : isPending() ? (
+          <>
+            <h3>Your join request is pending approval.</h3>
+            <button onClick={handleCancelRequest}>Cancel Request</button>
+            <ConfirmationDialog
+              open={showConfirmation}
+              onClose={() => setShowConfirmation(false)}
+              onConfirm={handleLeaveGroup}
+            />
+          </>
         ) : (
           <>
             <h3>To join this group, press button below</h3>

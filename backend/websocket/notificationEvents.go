@@ -8,7 +8,6 @@ import (
 )
 
 func SendNotificationHandler(event Event, c *Client) error {
-	fmt.Println("New notification has been sent!")
 	type Requester struct {
 		TargetID    int    `JSON:"TargetID"`
 		SenderID    int    `JSON:"SenderID"`
@@ -26,17 +25,16 @@ func SendNotificationHandler(event Event, c *Client) error {
 	}
 
 	TargetID := payload.TargetID
+	SenderID := payload.SenderID
+
+	fmt.Println("notification target:", function.GetUserName(TargetID))
+	fmt.Println("notification sender:", function.GetUserName(SenderID))
 
 	for client := range c.client.clients {
 		if client.userId == TargetID {
-			usersMutual, errMut := function.GetMutualFollowers(TargetID)
-			if errMut == nil {
-				sendResponse(usersMutual, "update_followerslist", c)
-			}
-			notifications, errNot := function.LoadNotifications(client.userId)
-			if errNot == nil {
-				sendResponse(len(notifications), "update_notifications", client)
-			}
+			UpdateRequestsAndNotifications(TargetID, client)
+		} else if client.userId == SenderID {
+			UpdateRequestsAndNotifications(SenderID, client)
 		}
 	}
 
@@ -107,10 +105,7 @@ func RemoveNotificationHandler(event Event, c *Client) error {
 
 	for client := range c.client.clients {
 		if client.userId == payload.TargetID {
-			usersMutual, errMut := function.GetMutualFollowers(payload.TargetID)
-			if errMut == nil {
-				sendResponse(usersMutual, "update_followerslist", c)
-			}
+			UpdateRequestsAndNotifications(payload.TargetID, client)
 		}
 	}
 

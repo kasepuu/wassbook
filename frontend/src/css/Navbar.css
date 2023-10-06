@@ -107,6 +107,7 @@ a {
   width: 280px;
   height: 250px;
   border: 2px solid #b6b6b6;
+  overflow-y: auto;
 
   /* Center vertically */
   display: flex;
@@ -123,6 +124,15 @@ a {
 .dropdown-result {
   padding-top: 10px;
   text-align: center;
+}
+
+.clearNotifications {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  color: black;
+  background-color: #b6b6b6;
+  width: 100%;
 }
 
 .follower-requests-image {
@@ -148,13 +158,4 @@ a {
 .notification-design {
   color: lightcoral; /* Dark gray or your preferred gray shade */
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Add a slight text shadow */
-}
-
-.clearNotifications {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  color: black;
-  background-color: #b6b6b6;
-  width: 100%;
 }
