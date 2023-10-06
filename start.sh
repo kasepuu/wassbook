@@ -14,7 +14,7 @@
 ) & (
     
     echo "Starting backend server..."
-    go run ./backend
+    go run ./backend/cmd
 )
 
 # Wait for both servers to finish
