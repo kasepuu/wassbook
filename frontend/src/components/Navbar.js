@@ -104,7 +104,12 @@ const Navbar = () => {
           {isFollowersOpen && <FollowersDropDown isOpen={isFollowersOpen} />}
         </div>
 
-        <Link to="/logout" onClick={handleLogout}>
+        <Link
+          to="/logout"
+          onClick={(e) => {
+            handleLogout(e);
+          }}
+        >
           <FaDoorOpen /> Logout
         </Link>
       </div>

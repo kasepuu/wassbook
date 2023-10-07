@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { sendEvent } from "../../websocket";
 import "../../css/Chat.css";
+import { getLoggedUserFromStorage } from "../..";
 // import EmojiPicker from "emoji-picker-react";
 const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
 let timeOut;
@@ -16,6 +17,7 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
   const [shouldResetMessagesToLoad, setShouldResetMessagesToLoad] =
     useState(true);
   const [scrollingEnabled, setScrollingEnabled] = useState(true);
+  const LoggedUser = getLoggedUserFromStorage(true, true);
   // get current chat
   useEffect(() => {
     if (shouldResetMessagesToLoad) {
@@ -45,7 +47,7 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
   }, [selectedFollower, shouldResetMessagesToLoad]);
 
   function loadMessagesFromBackend() {
-    const sender = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
+    const sender = LoggedUser.UserID;
     const receiver = selectedFollower.UserId;
     const payload = {
       SenderID: sender,
@@ -72,12 +74,11 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           document.getElementById("chatstatus").innerHTML = "";
         }
       } else if (eventData.type === "is_typing") {
-        const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
         const chatStatus = document.getElementById("chatstatus");
         if (!chatStatus) {
           return;
         }
-        if (selectedFollower.UserName === currentUser.UserName) {
+        if (selectedFollower.UserName === LoggedUser.UserName) {
           return;
         }
         clearTimeout(timeOut);
@@ -90,7 +91,7 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
         //notification
       }
     };
-  }, [selectedFollower]);
+  }, [selectedFollower, LoggedUser]);
   const handleScroll = () => {
     const chatLogContainer = chatLogRef.current;
     if (

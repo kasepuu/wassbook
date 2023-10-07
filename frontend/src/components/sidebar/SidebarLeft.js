@@ -3,17 +3,21 @@ import { Link } from "react-router-dom";
 import { FaAngry } from "react-icons/fa";
 import Advertisement1 from "../../page-images/advertisement.png";
 import ProfileFollowers from "./ProfileFollowers";
+import { getLoggedUserFromStorage } from "../..";
 const SidebarLeft = () => {
   const pathname = window.location.pathname;
-  const parts = pathname.split('/');
-  const user = JSON.parse(sessionStorage.getItem("CurrentUser"));
+  const parts = pathname.split("/");
+  const user = getLoggedUserFromStorage(true, true);
 
   return (
     <>
-      {parts.length >= 2 && parts[1] === "profile" && parts[2] === user.UserName ? (
+      {parts.length >= 2 &&
+      parts[1] === "profile" &&
+      parts[2] === user.UserName ? (
         <>
           <ProfileFollowers />
-        </>) : (
+        </>
+      ) : (
         <>
           <div className="Sidebar">
             <div className="ad-container">
@@ -28,7 +32,9 @@ const SidebarLeft = () => {
               <FaAngry />
               <Link to="/game-1"> päkapikk ja kuri koll</Link>
             </div>
-          </div></>)}
+          </div>
+        </>
+      )}
     </>
   );
 };

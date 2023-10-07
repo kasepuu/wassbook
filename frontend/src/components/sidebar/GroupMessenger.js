@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { sendEvent } from "../../websocket";
+import { getLoggedUserFromStorage } from "../..";
 import "../../css/Chat.css";
 // import EmojiPicker from "emoji-picker-react";
 const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
@@ -17,6 +18,7 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
   const [shouldResetMessagesToLoad, setShouldResetMessagesToLoad] =
     useState(true);
   const [scrollingEnabled, setScrollingEnabled] = useState(true);
+  const LoggedUser = getLoggedUserFromStorage(true, true);
 
   // get current chat
   useEffect(() => {
@@ -35,10 +37,11 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
       setShouldResetMessagesToLoad(true);
       loadMessagesFromBackend();
     }
+    // eslint-disable-next-line
   }, [selectedChat, shouldResetMessagesToLoad]);
 
   function loadMessagesFromBackend() {
-    const sender = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
+    const sender = getLoggedUserFromStorage(true, true).UserID;
     const openedChatID = selectedChat.GroupID;
     const payload = {
       UserID: sender,
@@ -67,12 +70,11 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
           document.getElementById("chatstatus").innerHTML = "";
         }
       } else if (eventData.type === "is_typing_group") {
-        const currentUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
         const chatStatus = document.getElementById("chatstatus");
         if (!chatStatus) {
           return;
         }
-        if (eventData.payload.UserID === currentUser.UserID) {
+        if (eventData.payload.UserID === LoggedUser.UserID) {
           return;
         }
 
@@ -86,7 +88,7 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
         //notification
       }
     };
-  }, [selectedChat]);
+  }, [selectedChat, LoggedUser]);
 
   const handleScroll = () => {
     const chatLogContainer = chatLogRef.current;
@@ -110,6 +112,7 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
 
   useEffect(() => {
     chatLogRef.current.addEventListener("scroll", handleScroll);
+    // eslint-disable-next-line
   }, [messagesToLoad, totalMessages, scrollingEnabled]);
 
   useEffect(() => {
@@ -120,6 +123,7 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
     if (chatLogRef.current.scrollTop <= 0 && messagesToLoad < totalMessages) {
       loadMessagesFromBackend();
     }
+    // eslint-disable-next-line
   }, [chatLog]);
 
   const sendMessage = (sender, receivers, GroupID) => {
@@ -216,11 +220,9 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
             const response = {
-              SenderID: JSON.parse(sessionStorage.getItem("CurrentUser"))
-                .UserID,
+              SenderID: LoggedUser.UserID,
               ReceiverIDs: selectedChat.OtherMembers,
-              UserName: JSON.parse(sessionStorage.getItem("CurrentUser"))
-                .UserName,
+              UserName: LoggedUser.UserName,
             };
             sendEvent("is_typing_group", response);
 
@@ -229,7 +231,7 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
               e.preventDefault();
 
               sendMessage(
-                JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
+                LoggedUser.UserID,
                 selectedChat.OtherMembers,
                 selectedChat.GroupID
               );
@@ -252,7 +254,7 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
           onClick={() => {
             if (showEmojiPicker) setShowEmojiPicker(!showEmojiPicker);
             sendMessage(
-              JSON.parse(sessionStorage.getItem("CurrentUser")).UserID,
+              LoggedUser.UserID,
               selectedChat.OtherMembers,
               selectedChat.GroupID
             );

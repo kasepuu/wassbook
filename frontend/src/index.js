@@ -11,10 +11,25 @@ import Profile from "./components/pages/Profile.js";
 import Group from "./components/Groups/Group.js";
 import Groups from "./components/Groups";
 import Error from "./components/pages/Error.js";
-import Logout from "./components/pages/Logout.js";
+import Logout, { clearAllCookies } from "./components/pages/Logout.js";
 import Feed from "./components/pages/Feed.js";
 import "./css/Sidepanels.css";
+import { getCookieValue } from "./jwt.js";
 export const backendHost = "http://localhost:8081";
+
+export function getLoggedUserFromStorage(parse = false, forceLogout = false) {
+  const loggedUser = sessionStorage.getItem("CurrentUser");
+  const cookie = getCookieValue("Bearer");
+
+  if ((!loggedUser && forceLogout) || !cookie) {
+    clearAllCookies();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.href = "/login";
+  }
+  if (parse) return JSON.parse(loggedUser);
+  else return loggedUser;
+}
 
 export function connectAndSendEvents() {
   if (!window.socket) {

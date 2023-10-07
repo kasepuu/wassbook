@@ -1,13 +1,12 @@
 import "../../css/Feed.css";
 import React, { useState, useEffect, useCallback } from "react";
-import { backendHost } from "../../index.js";
+import { backendHost, getLoggedUserFromStorage } from "../../index.js";
 import FeedPostForm from "./feedComponents/FeedPostForm";
 import FeedPost from "./feedComponents/FeedPost";
 import { formatDateTime } from "../utils/formatDate";
-
 const Feed = () => {
   const [openedPostId, setOpenedPostId] = useState(null);
-  const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+  const userInfo = getLoggedUserFromStorage(true, true);
   const [posts, setPosts] = useState([]);
   const [comments, setComments] = useState([]);
   const [commentImageName, setCommentImageName] = useState("");

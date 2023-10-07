@@ -1,9 +1,5 @@
 # SOCIAL-NET<img src="https://01.kood.tech/git/kasepuu/social-network/raw/branch/master/frontend/src/logo.svg" alt="Website Icon" width="40" height="40" />ORK
 
-# TODO
-
-- logout -> Vahepeal ei leia UserName üles ja leht lendab õhku -> navbar rida 73
-
 ## ABOUT
 
 - Our social network project is created with React & Golang

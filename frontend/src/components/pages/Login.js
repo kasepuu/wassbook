@@ -17,7 +17,6 @@ const Login = () => {
 
   useEffect(() => {
     if (sessionStorage.getItem("CurrentUser")) {
-      console.log("renavigatitngg to /");
       navigate("/");
     }
   }, [navigate]);

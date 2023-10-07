@@ -1,6 +1,6 @@
 import "../../css/Profile.css";
 import { useParams } from "react-router-dom";
-import { backendHost } from "../..";
+import { backendHost, getLoggedUserFromStorage } from "../..";
 import { useState, useEffect } from "react";
 import PostsByProfile from "../PostsByProfile";
 import { updateToken } from "../../jwt";
@@ -20,7 +20,7 @@ function toTitleCase(str) {
 const Profile = () => {
   let { id } = useParams();
   let isLocalUser = false;
-  const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+  const LoggedUser = getLoggedUserFromStorage(true, true);
   if (id === undefined || !id) id = LoggedUser.UserName;
   if (id === LoggedUser.UserName) isLocalUser = true;
   const [userInfo, setUserInfo] = useState({});
