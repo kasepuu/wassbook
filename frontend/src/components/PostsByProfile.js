@@ -2,6 +2,8 @@ import "../css/Feed.css";
 import React, { useState, useEffect } from "react";
 import profilePicture from "../page-images/blank.png";
 import { backendHost } from "../index.js";
+import { formatDateTime } from "./utils/formatDate";
+
 
 export const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
   const [posts, setPosts] = useState([]);
@@ -23,7 +25,7 @@ export const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
         }
 
         const postsArray = data.map((post) => ({
-          title: `${post.FirstName} ${post.LastName} - ${post.Date}`,
+          title: `${post.FirstName} ${post.LastName} - ${formatDateTime(post.Date)}`,
           body: post.Content,
           id: post.PostID,
           file: post.Filename,

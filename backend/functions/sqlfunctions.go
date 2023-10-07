@@ -417,6 +417,21 @@ func GetGroupOwnerID(GroupID int) (ownerId int) {
 	return ownerId
 }
 
+func AreMutuallyFollowing(UserID int, TargetID int) bool {
+    var status string
+    err := sqlDB.DataBase.QueryRow(`
+        SELECT f1.status
+        FROM followers f1
+        INNER JOIN followers f2 ON f1.userid = f2.targetid AND f1.targetid = f2.userid
+        WHERE f1.status = 'following' AND f2.status = 'following' AND f1.userid = ? AND f2.userid = ?
+    `, UserID, TargetID).Scan(&status)
+    if err != nil {
+        return false
+    }
+
+    return status == "following"
+}
+
 func GetOtherGroupMemebers(GroupID int, UserID int) (MemberIDs []int) {
 	rows, _ := sqlDB.DataBase.Query(`SELECT userId FROM groupMember WHERE groupId = ? AND userId != ?`, GroupID, UserID)
 	defer rows.Close()
@@ -463,7 +478,7 @@ func GetProfileFollowers(userID int) ([]MutualFollower, error) {
 	SELECT DISTINCT followers.userid, users.nickname
 	FROM followers
 	LEFT JOIN users ON followers.userid = users.id
-	WHERE followers.targetid = ?;
+	WHERE followers.targetid = ? AND followers.status = "following";
 	`
 
 	rows, err := sqlDB.DataBase.Query(query, userID)

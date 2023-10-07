@@ -4,13 +4,8 @@
 
 - register -> account already exists errorit ei tule
 - register->uuskasutaja->profile edit->logout viskab errori
-- all posts by account -> ei tööta?! iseenda postitusi ei näe löambist
-- profiilil -> you are following: näitab kasutajaid, kes pole follow requesti vastu võtnud
-- public poste ei näe (oma profiilil)
-- grupi postitust commentida (ilma pildita) siis tekib alla katkine pilt "Post" kirjeldusega
+
 - groups nimekirja groupi nime taga lisada (clan tag)
-- chattimise ajal ühele unfollow paned ,saad edasi chattida
-- chattides 2 kasutajaga, ning 3. kirjutada ühele neist siis näitab user1 või user2 ... istyping (aga sõnum ei jõua kohale :))
 - create group formile validation teha!
 
 ## ABOUT

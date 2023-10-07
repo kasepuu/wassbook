@@ -210,7 +210,7 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 
 		if noFileErr != nil {
 			log.Println(noFileErr)
-			posts, _ = groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Content: content}) // SIIS KUI POLE FAILI
+			posts, _ = groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Filename: "-", Content: content}) // SIIS KUI POLE FAILI
 		} else {
 			posts, _ = groups.SaveComment(groups.Comment{UserId: userInt, GroupId: groupInt, PostId: postInt, Filename: savedFile, Content: content}) // FAIL SALVESTATUD
 		}

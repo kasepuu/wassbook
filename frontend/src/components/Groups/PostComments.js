@@ -21,7 +21,7 @@ const PostComments = ({ comments }) => {
             <div className="post-title">{comment.FirstName} {comment.LastName} - {comment.Date}</div>
           </div>
           <div className="post-body">{comment.Content}</div>
-          {comment.file !== "-" || comment.file === undefined ? (
+          {comment.Filename !== "-" || comment.Filename === undefined ? (
             <img
               src={`${backendHost}/${comment.Filename}`}
               alt="Post"

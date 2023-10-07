@@ -24,6 +24,10 @@ func SendMessageHandler(event Event, c *Client) error {
 	receivingUserID := sendMessage.ReceiverID
 	sendingUserID := sendMessage.SenderID
 
+	if (!function.AreMutuallyFollowing(sendMessage.SenderID, sendMessage.ReceiverID)){
+		return nil
+	}
+
 	function.SaveChat(sendingUserID, receivingUserID, sendMessage.Message)
 
 	type ResponseStruct struct {

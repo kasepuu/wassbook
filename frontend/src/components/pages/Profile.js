@@ -194,7 +194,7 @@ const Profile = () => {
                     />
                   </div>
                 )}
-              {userInfo.FollowStatus === "following" && (
+              {(userInfo.FollowStatus === "following" || userInfo.UserID === LoggedUser.UserID) && (
                 <div className="profile-posts">
                   <PostsByProfile
                     profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}

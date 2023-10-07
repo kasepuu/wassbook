@@ -75,10 +75,9 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
         }
       } else if (eventData.type === "is_typing") {
         const chatStatus = document.getElementById("chatstatus");
-        if (!chatStatus) {
-          return;
-        }
-        if (selectedFollower.UserName === LoggedUser.UserName) {
+        if (!chatStatus ||
+           selectedFollower.UserName === LoggedUser.UserName ||
+           JSON.parse(localStorage.getItem("CurrentChat")).UserId !== eventData.payload.SenderID) {
           return;
         }
         clearTimeout(timeOut);
