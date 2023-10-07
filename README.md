@@ -2,10 +2,8 @@
 
 ### bugid
 
-- register -> account already exists errorit ei tule
 - register->uuskasutaja->profile edit->logout viskab errori
 
-- groups nimekirja groupi nime taga lisada (clan tag)
 - create group formile validation teha!
 
 ## ABOUT

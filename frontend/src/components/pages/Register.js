@@ -123,7 +123,7 @@ const Register = () => {
         if (response.ok) {
           navigate("/login");
         } else {
-          console.log("Registration failed. Please try again.");
+          setErrorMessage("User already exists");
         }
       })
       .catch((error) => {

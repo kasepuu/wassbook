@@ -13,7 +13,6 @@ const Groups = () => {
   const userInfo = getLoggedUserFromStorage(true, true);
   const [posts, setPosts] = useState([]);
   const [groups, setGroups] = useState([]);
-
   useEffect(() => {
     async function fetchData() {
       const response = await getGroups(userInfo.UserID);
@@ -26,6 +25,7 @@ const Groups = () => {
 
   const submitGroup = async (data) => {
     data.append("userId", userInfo.UserID);
+
     let response = await createGroup(data);
 
     setGroups(response);
