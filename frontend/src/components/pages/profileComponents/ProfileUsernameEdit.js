@@ -86,24 +86,39 @@ const ProfileUsernameEdit = ({ userInfo, setUserInfo }) => {
     <>
       {userInfo.UserID === LoggedUser.UserID ? (
         <>
-          <div>
-            Username:
+          <div className="Profile-Username-Edit-Container">
             {isEditingUsername ? (
               <div>
+                <br />
                 <input
                   value={newUsername}
                   placeholder={LoggedUser.UserName}
                   onChange={(e) => setNewUsername(e.target.value)}
                 />
                 <div>
-                  <button onClick={handleUsernameSaveClick}>Save</button>
-                  <button onClick={handleUsernameCancelClick}>Cancel</button>
+                  <button
+                    className="ProfileUsername-Edit-Save"
+                    onClick={handleUsernameSaveClick}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="ProfileUsername-Edit-Cancel"
+                    onClick={handleUsernameCancelClick}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </div>
             ) : (
               <div>
-                <p>{userInfo.UserName}</p>
-                <button onClick={handleUsernameEditClick}>Edit</button>
+                <p>Username: {userInfo.UserName}</p>
+                <button
+                  className="ProfileUsername-Edit"
+                  onClick={handleUsernameEditClick}
+                >
+                  Edit
+                </button>
               </div>
             )}
           </div>

@@ -114,7 +114,6 @@ const Login = () => {
       body: JSON.stringify(data),
     })
       .then((response) => {
-        console.log("on login submit:");
         return loginResponse(response, data.loginID);
       })
       .then((loginResp) => {

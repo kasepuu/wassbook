@@ -145,9 +145,13 @@ const Profile = () => {
               setUserInfo={setUserInfo}
             />
             <ProfileFollow userInfo={userInfo} isLocalUser={isLocalUser} />
+          </div>
+
+          <div className="profile-privacy">
             {userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <button
+                  className="Profile-Edit-Public"
                   onClick={() => {
                     handleToggleClick(userInfo.UserID, userInfo.PrivateStatus);
                     setUserInfo((prevUserInfo) => ({
@@ -158,9 +162,9 @@ const Profile = () => {
                   value={userInfo.UserID}
                 >
                   {userInfo.PrivateStatus === 1 ? (
-                    <>Make Public</>
+                    <>Make profile Public</>
                   ) : (
-                    <>Make Private</>
+                    <>Make profile Private</>
                   )}
                 </button>
               </>
