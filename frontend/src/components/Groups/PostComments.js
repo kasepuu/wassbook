@@ -18,7 +18,7 @@ const PostComments = ({ comments }) => {
               alt="Profile"
               className="profile-picture"
             />
-            <div className="post-title">{comment.Username}</div>
+            <div className="post-title">{comment.FirstName} {comment.LastName} - {comment.Date}</div>
           </div>
           <div className="post-body">{comment.Content}</div>
           {comment.file !== "-" || comment.file === undefined ? (

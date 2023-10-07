@@ -41,15 +41,17 @@ type Post struct {
 }
 
 type Comment struct {
-	Id       int
-	UserId   int
-	GroupId  int
-	PostId   int
-	Date     string
-	Content  string
-	Username string
-	Avatar   string
-	Filename string
+	Id        int
+	UserId    int
+	GroupId   int
+	PostId    int
+	Date      string
+	Content   string
+	Username  string
+	Avatar    string
+	Filename  string
+	FirstName string
+	LastName  string
 }
 
 type User struct {
