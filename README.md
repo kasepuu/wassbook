@@ -3,6 +3,7 @@
 # TODO
 
 - group invited -> 2 tükki tuli korraga (ja real-times ei uuendanud).
+- group invited -> Sain Andrei invite acceptida teise kasutajaga
 - group invited -> ainult followerid panna nimekirja?
 - register&login -> error handling üle vaadata.
 - logout -> Vahepeal ei leia UserName üles ja leht lendab õhku

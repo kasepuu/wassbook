@@ -14,8 +14,6 @@ import { useParams } from "react-router-dom";
 import { Info } from "./Info";
 import { Members } from "./Members";
 import { Events } from "./Events.js";
-import { backendHost } from "../..";
-//import { GroupForm } from "./GroupForm";
 
 const Group = () => {
   const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
@@ -91,7 +89,7 @@ const Group = () => {
   const inviteHandler = async (member) => {
     const formData = new FormData();
     formData.append("receiverId", member.Id);
-    formData.append("senderId", data.OwnerId);
+    formData.append("senderId", userInfo.UserID);
     formData.append("groupId", data.Id);
     formData.append("status", "invited");
 
@@ -147,27 +145,6 @@ const Group = () => {
     });
   };
 
-  const handleJoinf = async () => {
-    const formData = new FormData();
-    formData.append("receiverId", userInfo.UserID);
-    formData.append("senderId", data.OwnerId);
-    formData.append("groupId", data.Id);
-    formData.append("status", "pending");
-
-    // const notificationPayload = {
-    //   TargetID: data.OwnerId,
-    //   SenderID: userInfo.UserID,
-    //   Description: `${userInfo.FirstName} wants to join your group!`,
-    // };
-    // sendEvent("send_notification", notificationPayload);
-
-    const updatedUsers = await inviteMember(formData);
-
-    setData((prevData) => {
-      return { ...prevData, AllUsers: updatedUsers };
-    });
-  };
-
   const handleJoin = () => {
     const payload = {
       ReceiverID: userInfo.UserID,
@@ -192,33 +169,6 @@ const Group = () => {
     };
 
     sendEvent("request_group_leave", payload);
-
-    setRefreshPage(true);
-    setShowConfirmation(false);
-  };
-
-  const handleLeaveGroup2 = () => {
-    const formData = new FormData();
-    formData.append("receiverId", userInfo.UserID);
-    formData.append("senderId", data.OwnerId);
-    formData.append("groupId", data.Id);
-    formData.append("status", "remove");
-
-    fetch(`${backendHost}/cancel-group-request`, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        if (response.ok) {
-          setRefreshPage(true);
-          console.log("Request cancelled successfully.");
-        } else {
-          console.error("Error cancelling group request.");
-        }
-      })
-      .catch((error) => {
-        console.error("Error occurred while cancelling group request:", error);
-      });
 
     setRefreshPage(true);
     setShowConfirmation(false);

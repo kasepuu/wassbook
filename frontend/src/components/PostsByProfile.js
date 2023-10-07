@@ -7,7 +7,7 @@ export const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
   const [posts, setPosts] = useState([]);
   //const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
-  function loadFeed() {
+  useEffect(() => {
     fetch(
       `${backendHost}/getPostByUserId?userID=${userID}&loggedUserID=${loggedUserID}`,
       {}
@@ -35,10 +35,6 @@ export const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
       .catch((error) => {
         console.error("Error loading feed:", error);
       });
-  }
-
-  useEffect(() => {
-    loadFeed(userID, loggedUserID);
   }, [userID, loggedUserID]);
 
   return (
