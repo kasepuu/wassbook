@@ -244,11 +244,13 @@ export const Events = ({ data }) => {
                                 <div>No one attending yet!</div>
                               ) : (
                                 <>
-                                  {event.AttendingMembers.map((member) => (
-                                    <div key={member.UserID}>
-                                      {member.Nickname} {member.Response}
-                                    </div>
-                                  ))}
+                                  {event.AttendingMembers.map(
+                                    (member, index) => (
+                                      <div key={`attendee-${index}`}>
+                                        {member.Nickname} {member.Response}
+                                      </div>
+                                    )
+                                  )}
                                 </>
                               )}
                             </ul>

@@ -105,7 +105,6 @@ const Profile = () => {
     }
   }, [userInfo, refreshProfile]);
 
-  console.log(userInfo)
   return (
     <>
       <div className="profile-container">
@@ -128,8 +127,8 @@ const Profile = () => {
               Lastname: {toTitleCase(userInfo.LastName)}
             </p>
             {userInfo.PrivateStatus === 0 ||
-              userInfo.FollowStatus === "following" ||
-              userInfo.UserID === LoggedUser.UserID ? (
+            userInfo.FollowStatus === "following" ||
+            userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
                   Dateofbirth: {userInfo.DateOfBirth[0]}.
@@ -173,12 +172,11 @@ const Profile = () => {
           {isPublicProfile ? (
             <p>
               {userInfo.PrivateStatus === 0 &&
-                userInfo.FollowStatus !== "following" &&
-                userInfo.UserID !== LoggedUser.UserID
+              userInfo.FollowStatus !== "following" &&
+              userInfo.UserID !== LoggedUser.UserID
                 ? "Public"
                 : "All"}{" "}
               posts by {userInfo.FirstName}:
-
               {userInfo.PrivateStatus === 0 &&
                 userInfo.FollowStatus !== "following" &&
                 userInfo.UserID !== LoggedUser.UserID && (
@@ -190,21 +188,21 @@ const Profile = () => {
                     />
                   </div>
                 )}
-                {userInfo.FollowStatus === "following" && (
+              {userInfo.FollowStatus === "following" && (
                 <div className="profile-posts">
-                    <PostsByProfile
-                      profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
-                      userID={userInfo.UserID}
-                      loggedUserID={LoggedUser.UserID}
-                    />
-                  </div>
-                )}
+                  <PostsByProfile
+                    profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
+                    userID={userInfo.UserID}
+                    loggedUserID={LoggedUser.UserID}
+                  />
+                </div>
+              )}
             </p>
           ) : (
             <p>Public posts by {userInfo.FirstName}:</p>
           )}
         </>
-      </div >
+      </div>
     </>
   );
 };
