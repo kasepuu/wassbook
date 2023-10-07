@@ -7,7 +7,6 @@ function getUserInfoFromToken(tokenStr) {
 
 export function updateToken(usernameChange = false) {
   const userid = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
-  console.log("UPDATING JWT FOR USER:", userid);
   fetch(`${backendHost}/update-jwt-token?UserID=${userid}`)
     .then((response) => {
       if (!response.ok) {
@@ -16,7 +15,6 @@ export function updateToken(usernameChange = false) {
       return response.text();
     })
     .then((updatedToken) => {
-      console.log("new token:", updatedToken);
       // Update the "Bearer" cookie with the updated token
       document.cookie = `Bearer=${updatedToken}; Path=/`;
       loadUser(); // reloading the current user

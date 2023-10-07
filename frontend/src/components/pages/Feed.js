@@ -46,25 +46,25 @@ const Feed = () => {
       });
   }, [userInfo.UserID, setPosts]);
 
-  const getFollowersList = () => {
-    fetch(`${backendHost}/getfollowerslist?UserID=${userInfo.UserID}`, {
-      method: "GET",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json(); // Parse the response as JSON
-      })
-      .then((data) => {
-        setFollowersList(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching followers list:", error);
-      });
-  };
-
   useEffect(() => {
+    const getFollowersList = () => {
+      fetch(`${backendHost}/getfollowerslist?UserID=${userInfo.UserID}`, {
+        method: "GET",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json(); // Parse the response as JSON
+        })
+        .then((data) => {
+          setFollowersList(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching followers list:", error);
+        });
+    };
+
     // Load feed data from the backend on component mount
     loadFeed();
     getFollowersList();
@@ -82,7 +82,7 @@ const Feed = () => {
     return () => {
       document.removeEventListener("click", handleClickOutsidePost);
     };
-  }, [loadFeed]);
+  }, [loadFeed, userInfo.UserID]);
 
   function loadComments(postID) {
     const url = `${backendHost}/getcomments?postID=${postID}`;

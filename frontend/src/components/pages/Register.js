@@ -1,21 +1,24 @@
 import { Link } from "react-router-dom";
-import { Form, FormField } from "semantic-ui-react";
+import { Form } from "semantic-ui-react";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // forms -> https://scrimba.com/scrim/cobc44a7ba60db603359ae530
 import { backendHost } from "../../index.js";
 const Register = () => {
   const navigate = useNavigate(); // Get the navigate function
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const [loading, setLoading] = useState(false); // add loading state
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (sessionStorage.getItem("CurrentUser")) {
+      console.log("renavigatitngg to /");
+      navigate("/");
+    }
+  }, [navigate]);
 
   function onSubmit(data) {
     const { userName, firstName, lastName, email, password, dateofbirth } =
@@ -66,7 +69,8 @@ const Register = () => {
 
     // Validate email
     const emailPattern =
-      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    // /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (!email) {
       setErrorMessage("Email is required.");
       return;
@@ -157,7 +161,11 @@ const Register = () => {
         </Form.Field>
 
         <Form.Field>
-          <input placeholder="E-mail" {...register("email")} />
+          <input
+            placeholder="E-mail"
+            {...register("email")}
+            autoComplete="username"
+          />
         </Form.Field>
 
         <Form.Field>
@@ -165,6 +173,7 @@ const Register = () => {
             placeholder="Password"
             type="password"
             {...register("password")}
+            autoComplete="current-password"
           />
         </Form.Field>
 

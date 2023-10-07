@@ -2,8 +2,6 @@ import "../../css/Feed.css";
 import "../../css/Groups.css";
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-
 import { GroupsMenu } from "./GroupsMenu";
 import { Posts } from "./Posts";
 import { GroupForm } from "./GroupForm";
@@ -23,7 +21,7 @@ const Groups = () => {
     }
 
     fetchData();
-  }, []);
+  }, [userInfo.UserID]);
 
   const submitGroup = async (data) => {
     data.append("userId", userInfo.UserID);
@@ -33,7 +31,6 @@ const Groups = () => {
   };
 
   const submitComment = async (data, post) => {
-
     data.append("userId", userInfo.UserID);
     data.append("postId", post.Id);
     data.append("groupId", post.GroupId);
@@ -44,10 +41,12 @@ const Groups = () => {
   //TODO vaadata kuidas horisontaalselt scroll korda teha
   return (
     <>
-      <div className="Feed feed-container">
-        <GroupsMenu groups={groups} />
-        <Posts posts={posts} handleCommentSubmit={submitComment} />
-        <GroupForm handleSubmit={submitGroup} />
+      <div className="Feed">
+        <div className="feed-container">
+          <GroupsMenu groups={groups} />
+          <Posts posts={posts} handleCommentSubmit={submitComment} />
+          <GroupForm handleSubmit={submitGroup} />
+        </div>
       </div>
     </>
   );

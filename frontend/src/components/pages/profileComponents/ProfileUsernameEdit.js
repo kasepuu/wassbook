@@ -2,7 +2,6 @@ import "../../../css/Profile.css";
 import { backendHost } from "../../..";
 import { useState, useEffect } from "react";
 import { updateToken } from "../../../jwt";
-import { useNavigate } from "react-router-dom";
 
 const ProfileUsernameEdit = ({ userInfo, setUserInfo }) => {
   const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
@@ -10,7 +9,6 @@ const ProfileUsernameEdit = ({ userInfo, setUserInfo }) => {
   const [newUsername, setNewUsername] = useState(userInfo.UserName);
   const [originalUsername] = useState(userInfo.UserName);
   const [refreshProfile, setRefreshProfile] = useState(false);
-  const navigate = useNavigate();
 
   // event listener for updates (new notification or new follower request)
   useEffect(() => {

@@ -3,9 +3,11 @@ import FeedPostForm from "./PostForm";
 
 export const GroupPosts = ({ handlePostForm, handleCommentSubmit, posts }) => {
   return (
-    <>
-      <FeedPostForm handlePostForm={handlePostForm} />
-      <Posts posts={posts} handleCommentSubmit={handleCommentSubmit} />
-    </>
+    <div className="Feed">
+      <div className="feed-container">
+        <FeedPostForm handlePostForm={handlePostForm} />
+        <Posts posts={posts} handleCommentSubmit={handleCommentSubmit} />
+      </div>
+    </div>
   );
 };

@@ -176,42 +176,44 @@ const Group = () => {
 
   return (
     <>
-      <div className="Feed feed-container">
-        <h1>{data.Name}</h1>
+      <div className="Feed">
+        <div className="feed-container">
+          <h1>{data.Name}</h1>
 
-        {isMemberOf() ? (
-          <main>
-            <div className="group-menu">
-              <span onClick={handleMenuClick}>Discussion </span>
-              <span onClick={handleMenuClick}>Info </span>
-              <span onClick={handleMenuClick}>Members </span>
-              <span onClick={handleMenuClick}>Events </span>
-              <span onClick={handleCancelRequest}>Leave Group</span>
-            </div>
-            {renderSwitch(item)}
+          {isMemberOf() ? (
+            <main>
+              <div className="group-menu">
+                <span onClick={handleMenuClick}>Discussion </span>
+                <span onClick={handleMenuClick}>Info </span>
+                <span onClick={handleMenuClick}>Members </span>
+                <span onClick={handleMenuClick}>Events </span>
+                <span onClick={handleCancelRequest}>Leave Group</span>
+              </div>
+              {renderSwitch(item)}
 
-            <ConfirmationDialog
-              open={showConfirmation}
-              onClose={() => setShowConfirmation(false)}
-              onConfirm={handleLeaveGroup}
-            />
-          </main>
-        ) : isPending() ? (
-          <>
-            <h3>Your join request is pending approval.</h3>
-            <button onClick={handleCancelRequest}>Cancel Request</button>
-            <ConfirmationDialog
-              open={showConfirmation}
-              onClose={() => setShowConfirmation(false)}
-              onConfirm={handleLeaveGroup}
-            />
-          </>
-        ) : (
-          <>
-            <h3>To join this group, press button below</h3>
-            <button onClick={handleJoin}>Join</button>
-          </>
-        )}
+              <ConfirmationDialog
+                open={showConfirmation}
+                onClose={() => setShowConfirmation(false)}
+                onConfirm={handleLeaveGroup}
+              />
+            </main>
+          ) : isPending() ? (
+            <>
+              <h3>Your join request is pending approval.</h3>
+              <button onClick={handleCancelRequest}>Cancel Request</button>
+              <ConfirmationDialog
+                open={showConfirmation}
+                onClose={() => setShowConfirmation(false)}
+                onConfirm={handleLeaveGroup}
+              />
+            </>
+          ) : (
+            <>
+              <h3>To join this group, press button below</h3>
+              <button onClick={handleJoin}>Join</button>
+            </>
+          )}
+        </div>
       </div>
     </>
   );

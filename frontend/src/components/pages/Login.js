@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Form } from "semantic-ui-react";
 import { useForm } from "react-hook-form";
 import "../../css/Login.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { backendHost } from "../../index.js";
 import { useNavigate } from "react-router-dom";
 import { loadUser } from "../../jwt";
@@ -10,14 +10,17 @@ import { loadUser } from "../../jwt";
 const Login = () => {
   const navigate = useNavigate(); // Get the navigate function
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit } = useForm();
 
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false); // add loading state
+
+  useEffect(() => {
+    if (sessionStorage.getItem("CurrentUser")) {
+      console.log("renavigatitngg to /");
+      navigate("/");
+    }
+  }, [navigate]);
 
   function loginResponse(response, username) {
     if (response.ok) {
