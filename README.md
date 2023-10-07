@@ -2,7 +2,7 @@
 
 # TODO
 
-- logout -> Vahepeal ei leia UserName üles ja leht lendab õhku
+- logout -> Vahepeal ei leia UserName üles ja leht lendab õhku -> navbar rida 73
 
 ## ABOUT
 
