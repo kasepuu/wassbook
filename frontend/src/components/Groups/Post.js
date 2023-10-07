@@ -26,7 +26,7 @@ const Post = ({ post, handleCommentSubmit }) => {
     <div className="feed-post" key={post.Id}>
       <div onClick={handleOverlay} className="post-header">
         <img
-          src={`${backendHost}/users/${post.userId}/profilepic/profilepic`}
+          src={`${backendHost}/users/${post.UserId}/profilepic/profilepic?timestamp=${Date.now()}`}
           onError={(e) => {
             e.target.onError = null;
             e.target.src = profilePicture;
@@ -35,7 +35,7 @@ const Post = ({ post, handleCommentSubmit }) => {
           className="profile-picture"
         />
         <div className="post-title">
-        {post.FirstName} {post.LastName} In {post.GroupName}
+          {post.FirstName} {post.LastName} In {post.GroupName} - {post.Date}
         </div>
       </div>
 
@@ -54,12 +54,6 @@ const Post = ({ post, handleCommentSubmit }) => {
             userInfo={userInfo}
             handleCommentSubmit={handleCommentSubmit}
             post={post}
-            // commentImageName={commentImageName}
-            // setCommentImageName={setCommentImageName}
-            // commentInputValue={commentInputValue}
-            // setCommentInputValue={setCommentInputValue}
-            // openedPostId={openedPostId}
-            // loadComments={post.Comments}
           />
           <PostComments comments={post.Comments} post={post} />
         </div>

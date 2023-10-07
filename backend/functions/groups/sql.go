@@ -122,7 +122,7 @@ func GetGroupPosts(groupId int) ([]Post, error) {
 	posts := []Post{}
 
 	memberRows, err := sqlDB.DataBase.Query(`
-	select posts.id, posts.userId, posts.date, posts.content, posts.groupId, posts.filename, users.nickname
+	select posts.id, posts.userid, posts.date, posts.content, posts.groupId, posts.filename, users.nickname, groups.name, posts.fname, posts.lname
 	from posts 
 		left join users on posts.userid=users.id
 		left join groups on posts.groupId = groups.id
@@ -130,7 +130,6 @@ func GetGroupPosts(groupId int) ([]Post, error) {
 	if err != nil {
 		return []Post{}, err
 	}
-
 	for memberRows.Next() {
 		var post Post
 		memberRows.Scan(
@@ -141,6 +140,9 @@ func GetGroupPosts(groupId int) ([]Post, error) {
 			&post.GroupId,
 			&post.Filename,
 			&post.Username,
+			&post.GroupName,
+			&post.FirstName,
+			&post.LastName,
 		)
 		comments, err := GetComments(post.Id)
 		if err != nil {
@@ -327,7 +329,7 @@ func GetPosts(userId int) ([]Post, error) {
 			&post.Username,
 			&post.GroupName,
 			&post.FirstName,
-    		&post.LastName,
+			&post.LastName,
 		)
 
 		comments, err := GetComments(post.Id)
@@ -364,7 +366,7 @@ func GetComments(postId int) ([]Comment, error) {
 	comments := []Comment{}
 
 	rows, err := sqlDB.DataBase.Query(
-		`select comments.id, comments.userid, comments.postId, comments.content, comments.date, comments.filename, groupId, users.nickname 
+		`select comments.id, comments.userid, comments.postId, comments.content, comments.date, comments.filename, groupId, users.nickname, users.fname, users.lname
 		from comments 
 			left join users on comments.userId = users.id
 		where postId = ?
@@ -384,6 +386,8 @@ func GetComments(postId int) ([]Comment, error) {
 			&comment.Filename,
 			&comment.GroupId,
 			&comment.Username,
+			&comment.FirstName,
+			&comment.LastName,
 		)
 		comments = append(comments, comment)
 	}
