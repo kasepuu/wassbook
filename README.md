@@ -1,11 +1,5 @@
 # SOCIAL-NET<img src="https://01.kood.tech/git/kasepuu/social-network/raw/branch/master/frontend/src/logo.svg" alt="Website Icon" width="40" height="40" />ORK
 
-### bugid
-
-- register->uuskasutaja->profile edit->logout viskab errori
-
-- create group formile validation teha!
-
 ## ABOUT
 
 - Our social network project is created with React & Golang
