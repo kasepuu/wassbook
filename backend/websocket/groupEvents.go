@@ -124,14 +124,16 @@ func EventResponseHandler(event Event, c *Client) error {
 	return nil
 }
 
+type GroupInvites struct {
+	ReceiverID int    `json:"ReceiverID"`
+	SenderID   int    `json:"SenderID"`
+	GroupID    int    `json:"GroupID"`
+	Status     string `json:"Status"`
+}
+
 func EventGroupJoin(event Event, c *Client) error {
-	type Request struct {
-		ReceiverID int    `json:"ReceiverID"`
-		SenderID   int    `json:"SenderID"`
-		GroupID    int    `json:"GroupID"`
-		Status     string `json:"Status"`
-	}
-	var payload Request
+
+	var payload GroupInvites
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
@@ -168,13 +170,8 @@ func EventGroupJoin(event Event, c *Client) error {
 }
 
 func EventGroupLeave(event Event, c *Client) error {
-	type Request struct {
-		ReceiverID int    `json:"ReceiverID"`
-		SenderID   int    `json:"SenderID"`
-		GroupID    int    `json:"GroupID"`
-		Status     string `json:"Status"`
-	}
-	var payload Request
+
+	var payload GroupInvites
 	if err := json.Unmarshal(event.Payload, &payload); err != nil {
 		return fmt.Errorf("bad payload in request: %v", err)
 	}
@@ -199,4 +196,39 @@ func EventGroupLeave(event Event, c *Client) error {
 		}
 	}
 	return err
+}
+
+func EventGroupInvite(event Event, c *Client) error {
+
+	var payload GroupInvites
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("bad payload in request: %v", err)
+	}
+
+	var invite groups.GroupInvite
+	invite.SenderId = payload.SenderID
+	invite.ReceiverId = payload.ReceiverID
+	invite.GroupId = payload.GroupID
+	invite.Status = payload.Status
+
+	_, err := groups.CreateMember(invite)
+	if err != nil {
+		fmt.Println("err:", err)
+		return err
+	}
+
+	message := function.GetUserName(payload.SenderID) + " invited you to join " + function.GetGroupNameByID(payload.GroupID, "tag")
+	err = function.SaveNotification(payload.ReceiverID, payload.SenderID, message)
+	if err == nil {
+		for client := range c.client.clients {
+			if client.userId == payload.ReceiverID {
+				UpdateRequestsAndNotifications(payload.ReceiverID, client)
+			} else if client.userId == payload.SenderID {
+				sendResponse("", "update_group_page", client)
+				UpdateRequestsAndNotifications(payload.SenderID, client)
+			}
+		}
+	}
+
+	return nil
 }

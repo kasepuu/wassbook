@@ -69,8 +69,8 @@ export const createPost = async (post) => {
   }
 };
 
-export const inviteMember = async (formData) => {
-  const response = await fetch(`${host}/groups/invite`, {
+export const invitedMembers = async (formData) => {
+  const response = await fetch(`${host}/groups/invited`, {
     method: "POST",
     body: formData,
   });
@@ -80,6 +80,6 @@ export const inviteMember = async (formData) => {
       let data = await response.json();
       return data;
     case 401:
-      console.log("ERR");
+      return [];
   }
 };

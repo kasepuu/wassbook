@@ -6,7 +6,7 @@ import {
   getGroup,
   createPost,
   createComment,
-  inviteMember,
+  invitedMembers,
 } from "../utils/groups";
 
 import { useState, useEffect } from "react";
@@ -88,20 +88,20 @@ const Group = () => {
 
   const inviteHandler = async (member) => {
     const formData = new FormData();
-    formData.append("receiverId", member.Id);
-    formData.append("senderId", userInfo.UserID);
     formData.append("groupId", data.Id);
-    formData.append("status", "invited");
 
-    // const notificationPayload = {
-    //   TargetID: member.id,
-    //   SenderID: data.OwnerId,
-    //   Description: "New group Invite!",
-    // };
+    console.log(member);
 
-    // sendEvent("send_notification", notificationPayload);
+    const payload = {
+      ReceiverID: member.Id,
+      SenderID: userInfo.UserID,
+      GroupID: data.Id,
+      Status: "invited",
+    };
 
-    const updatedUsers = await inviteMember(formData);
+    sendEvent("invite_group_join", payload);
+
+    const updatedUsers = await invitedMembers(formData);
 
     setData((prevData) => {
       return { ...prevData, AllUsers: updatedUsers };

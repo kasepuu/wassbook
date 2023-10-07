@@ -48,6 +48,7 @@ func (m *wsManager) setupEventHandlers() {
 	m.handlers["event_response"] = EventResponseHandler
 	m.handlers["request_group_join"] = EventGroupJoin
 	m.handlers["request_group_leave"] = EventGroupLeave
+	m.handlers["invite_group_join"] = EventGroupInvite
 
 	// group chat events
 	m.handlers["send_group_message"] = SendGroupMessageHandler

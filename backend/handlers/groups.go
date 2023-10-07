@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"time"
 
-	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
 	groups "01.kood.tech/git/kasepuu/social-network/backend/functions/groups"
 )
 
@@ -229,31 +228,7 @@ func SaveGroupComment(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CancelGroupJoin(w http.ResponseWriter, r *http.Request) {
-	senderID := r.FormValue("senderId")
-	receiverID := r.FormValue("receiverId")
-	groupID := r.FormValue("groupId")
-
-	sid, _ := strconv.Atoi(senderID)
-	tid, _ := strconv.Atoi(receiverID)
-	gid, _ := strconv.Atoi(groupID)
-
-	err := function.SetGroupStatus(tid, gid, "remove")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	err = function.RemoveNotification(sid, tid, "your group")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-}
-
-func GroupInvite(w http.ResponseWriter, r *http.Request) {
+func GroupInvited(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		err := r.ParseMultipartForm(32 << 20) // maxMemory 32MB
@@ -262,16 +237,9 @@ func GroupInvite(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		senderId := r.MultipartForm.Value["senderId"][0]
-		receiverId := r.MultipartForm.Value["receiverId"][0]
 		groupId := r.MultipartForm.Value["groupId"][0]
-		status := r.MultipartForm.Value["status"][0]
 
-		senderInt, _ := strconv.Atoi(senderId)
 		groupInt, _ := strconv.Atoi(groupId)
-		receiverInt, _ := strconv.Atoi(receiverId)
-
-		groups.CreateMember(groups.GroupInvite{GroupId: groupInt, ReceiverId: receiverInt, SenderId: senderInt, Status: status})
 
 		users, err := groups.GetAllMembers(groupInt)
 		if err != nil {

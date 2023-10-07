@@ -199,7 +199,24 @@ func GetGroup(groupId int) (Group, error) {
 func GetAllMembers(id int) ([]User, error) {
 	users := []User{}
 
-	rows, err := sqlDB.DataBase.Query("select users.id, users.nickname, fname, lname, datejoined, email, ifnull(status, \"null\") as status from users left join groupMember on users.id= groupMember.userId and groupId = ? ", id)
+	query := `SELECT 
+users.id, 
+users.nickname, 
+users.fname, 
+users.lname, 
+users.datejoined, 
+users.email, 
+IFNULL(groupMember.status, 'null') AS status 
+FROM 
+users 
+LEFT JOIN 
+groupMember 
+ON 
+users.id = groupMember.userId 
+AND 
+groupMember.groupId = ?`
+
+	rows, err := sqlDB.DataBase.Query(query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -327,7 +344,7 @@ func GetPosts(userId int) ([]Post, error) {
 			&post.Username,
 			&post.GroupName,
 			&post.FirstName,
-    		&post.LastName,
+			&post.LastName,
 		)
 
 		comments, err := GetComments(post.Id)

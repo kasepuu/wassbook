@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { sendEvent } from "../../websocket";
 import { FaArrowCircleDown } from "react-icons/fa";
 
@@ -21,7 +21,7 @@ export const Events = ({ data }) => {
     const payload = {
       UserID: user,
       EventID: eventID,
-      Response: "Going"
+      Response: "Going",
     };
     sendEvent("event_response", payload);
   };
@@ -30,7 +30,7 @@ export const Events = ({ data }) => {
     const payload = {
       UserID: user,
       EventID: eventID,
-      Response: "Not Going"
+      Response: "Not Going",
     };
     sendEvent("event_response", payload);
   };
@@ -70,7 +70,7 @@ export const Events = ({ data }) => {
     const minDateTimeISO = minDateTime.toISOString().slice(0, 16);
     const eventDateInput = document.querySelector('[name="eventDate"]');
     if (eventDateInput && showPopup) {
-      eventDateInput.setAttribute('min', minDateTimeISO);
+      eventDateInput.setAttribute("min", minDateTimeISO);
     }
 
     const handleUpdateEvents = (payload) => {
@@ -85,12 +85,12 @@ export const Events = ({ data }) => {
             return {
               ...event,
               Response: payload.Response,
-            }
+            };
           }
           return event;
         });
       });
-    }
+    };
 
     window.socket.onmessage = (e) => {
       const eventData = JSON.parse(e.data);
@@ -123,7 +123,6 @@ export const Events = ({ data }) => {
     }
   };
 
-
   return (
     <div>
       <h1>Events</h1>
@@ -142,11 +141,21 @@ export const Events = ({ data }) => {
               </label>
               <label>
                 Event Description:
-                <input type="text" name="eventDescription" required maxLength={150} />
+                <input
+                  type="text"
+                  name="eventDescription"
+                  required
+                  maxLength={150}
+                />
               </label>
               <label>
                 Event Date:
-                <input type="datetime-local" name="eventDate" required min={currentDateTime} />
+                <input
+                  type="datetime-local"
+                  name="eventDate"
+                  required
+                  min={currentDateTime}
+                />
               </label>
               <button type="submit">Create Event</button>
             </form>
@@ -158,7 +167,7 @@ export const Events = ({ data }) => {
           <p>Loading events...</p>
         ) : (
           <div>
-            <table className='eventsTable'>
+            <table className="eventsTable">
               <thead>
                 <tr>
                   <th>Event</th>
@@ -170,60 +179,89 @@ export const Events = ({ data }) => {
                 </tr>
               </thead>
               <tbody>
-                {groupEvents === null ? (<>No events!</>) : (<>{groupEvents.map((event) => (
-                  <tr key={event.EventID}>
-                    <td>{event.EventName}</td>
-                    <td>{event.CreatorNickname}</td>
-                    <td>{event.EventDescription}</td>
-                    <td>{event.EventDate}</td>
+                {groupEvents === null ? (
+                  <>No events!</>
+                ) : (
+                  <>
+                    {groupEvents.map((event, index) => (
+                      <tr key={event.EventID}>
+                        <td>{event.EventName}</td>
+                        <td>{event.CreatorNickname}</td>
+                        <td>{event.EventDescription}</td>
+                        <td>{event.EventDate}</td>
 
-                    {event.Response ? (
-                      <td>
-                        {event.Response === "Going" ? (
-                          <>
-                            {event.Response}
-                            <button onClick={() => handleNotGoingClick(event.EventID)}>Not Going</button>
-                          </>
+                        {event.Response ? (
+                          <td>
+                            {event.Response === "Going" ? (
+                              <>
+                                {event.Response}
+                                <button
+                                  onClick={() =>
+                                    handleNotGoingClick(event.EventID)
+                                  }
+                                >
+                                  Not Going
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() =>
+                                    handleGoingClick(event.EventID)
+                                  }
+                                >
+                                  Going
+                                </button>
+                                {event.Response}
+                              </>
+                            )}
+                          </td>
                         ) : (
-                          <>
-                            <button onClick={() => handleGoingClick(event.EventID)}>Going</button>
-                            {event.Response}
-                          </>
+                          <td>
+                            <button
+                              onClick={() => handleGoingClick(event.EventID)}
+                            >
+                              Going
+                            </button>
+                            <button
+                              onClick={() => handleNotGoingClick(event.EventID)}
+                            >
+                              Not Going
+                            </button>
+                          </td>
                         )}
-                      </td>
-                    ) : (
-                      <td>
-                        <button onClick={() => handleGoingClick(event.EventID)}>Going</button>
-                        <button onClick={() => handleNotGoingClick(event.EventID)}>Not Going</button>
-                      </td>
-                    )}
-                    <td>
-                      {event.Attending}
-                      <dialog id={`dialog-event-${event.EventID}`}>
-                        <button onClick={() => closeDialog(event.EventID)} autoFocus>
-                          Close
-                        </button>
-                        <ul>
-                          {event.AttendingMembers === null ? (
-                            <div>No one attending yet!</div>
-                          ) : (
-                            <>
-                              {event.AttendingMembers.map((member) => (
-                                <div key={member.UserID}>
-                                  {member.Nickname} {member.Response}
-                                </div>
-                              ))}
-                            </>
-                          )}
-                        </ul>
-                        <article></article>
-                      </dialog>
-                      <button onClick={() => showAttending(event.EventID)}>
-                        <FaArrowCircleDown />
-                      </button>
-                    </td>
-                  </tr>
-                ))}</>)}
+                        <td>
+                          {event.Attending}
+                          <dialog id={`dialog-event-${event.EventID}`}>
+                            <button
+                              onClick={() => closeDialog(event.EventID)}
+                              autoFocus
+                            >
+                              Close
+                            </button>
+                            <ul>
+                              {event.AttendingMembers === null ? (
+                                <div>No one attending yet!</div>
+                              ) : (
+                                <>
+                                  {event.AttendingMembers.map((member) => (
+                                    <div key={member.UserID}>
+                                      {member.Nickname} {member.Response}
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                            </ul>
+                            <article></article>
+                          </dialog>
+                          <button onClick={() => showAttending(event.EventID)}>
+                            <FaArrowCircleDown />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </>
+                )}
               </tbody>
             </table>
           </div>

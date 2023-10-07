@@ -177,9 +177,9 @@ func FetchGroupInviteRequests(targetID int) (request []GroupRequest, err error) 
 SELECT gm.userId, gm.groupId
 FROM groupMember AS gm
 JOIN groups AS g ON gm.groupId = g.id
-WHERE gm.status = ?
+WHERE gm.status = ? AND gm.userId = ?
 `
-	rows, queryErr := sqlDB.DataBase.Query(sqlQuery, status)
+	rows, queryErr := sqlDB.DataBase.Query(sqlQuery, status, targetID)
 	if queryErr != nil {
 		log.Println("[Followers] - something went wrong while trying to QUERY:", queryErr)
 		return nil, queryErr
@@ -243,7 +243,7 @@ func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 	User.DateOfBirth = strings.Split(DateOfBirthFormatted, " ")
 
 	inputDate := User.DateJoined
-	
+
 	if len(inputDate) == 10 {
 		inputDate += " 00:00:00"
 	}
