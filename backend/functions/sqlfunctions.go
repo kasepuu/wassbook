@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"sort"
-	"strings"
 	"time"
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
@@ -15,7 +14,7 @@ type UserInfo struct {
 	UserName      string
 	FirstName     string
 	LastName      string
-	DateOfBirth   []string
+	DateOfBirth   string
 	DateJoined    string
 	Email         string
 	Avatar        string
@@ -71,10 +70,8 @@ func GetFirstAndLastName(UserID int) (User UserInfo, err error) {
 	User.UserID = UserID
 	User.UserName = GetUserName(UserID)
 
-	var DateOfBirthFormatted string
-
 	err = sqlDB.DataBase.QueryRow("SELECT fname, lname FROM users WHERE id = ?", UserID).Scan(&User.FirstName, &User.LastName)
-	User.DateOfBirth = strings.Split(DateOfBirthFormatted, ".")
+
 	return User, err
 }
 
@@ -226,37 +223,33 @@ func FetchUserInformation(UserID int, RequesterID int) (User UserInfo, fetchErr 
 	User.UserID = UserID
 	User.UserName = GetUserName(UserID)
 
-	var DateOfBirthFormatted string
-
 	fetchErr = sqlDB.DataBase.QueryRow(`SELECT id, nickname, fname, lname, dateofbirth, datejoined, email, description, private FROM users WHERE id = ?`, UserID).Scan(
 		&User.UserID,
 		&User.UserName,
 		&User.FirstName,
 		&User.LastName,
-		&DateOfBirthFormatted,
+		&User.DateOfBirth,
 		&User.DateJoined,
 		&User.Email,
 		&User.Description,
 		&User.PrivateStatus,
 	)
 	User.FollowStatus = FollowStatus(RequesterID, User.UserID)
-	User.DateOfBirth = strings.Split(DateOfBirthFormatted, " ")
 
-	inputDate := User.DateJoined
+	if User.DateJoined != "" {
+		inputDate := User.DateJoined
 
-	if len(inputDate) == 10 {
-		inputDate += " 00:00:00"
+		// parse RFC3339Nano time format
+		parsedTime, err := time.Parse(time.RFC3339Nano, inputDate)
+		if err != nil {
+			log.Println("Error parsing date:", err)
+			return
+		}
+
+		formattedDate := parsedTime.Format("2006-01-02 15:04:05")
+
+		User.DateJoined = formattedDate
 	}
-
-	parsedTime, err := time.Parse("2006-01-02 15:04:05", inputDate)
-	if err != nil {
-		log.Println("Error parsing date:", err)
-		return
-	}
-
-	estonianLocation, _ := time.LoadLocation("Europe/Tallinn")
-	formattedDate := parsedTime.In(estonianLocation).Format("02.01.2006 15:04:05")
-	User.DateJoined = formattedDate
 
 	return User, fetchErr
 }

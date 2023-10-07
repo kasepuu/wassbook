@@ -48,7 +48,7 @@ func Savepost(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Bad Request"))
 		return
 	}
-	PostData.Date = time.Now().Format("02.01.2006 15:04")
+	PostData.Date = time.Now().Format(time.RFC3339Nano)
 	file, handler, err := r.FormFile("file")
 	if err != nil {
 		PostData.Filename = "-"

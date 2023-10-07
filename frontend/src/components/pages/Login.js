@@ -16,11 +16,93 @@ const Login = () => {
     formState: { errors },
   } = useForm();
 
+  const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false); // add loading state
 
+  function loginResponse(response, username) {
+    if (response.ok) {
+      return getTokenJWT(username)
+        .then((validation) => {
+          if (validation) {
+            console.log("You are authorized, welcome!");
+            return true;
+          } else {
+            console.log("You are not authorized!");
+            return false;
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          return false;
+        });
+    } else {
+      console.log(response);
+
+      return response
+        .text()
+        .then((message) => {
+          setErrorMessage(message);
+          return false;
+        })
+        .catch((error) => {
+          console.error(error);
+          return false;
+        });
+    }
+  }
+
+  function getTokenJWT(username) {
+    console.log("username- ", username);
+
+    return fetch(`${backendHost}/jwt?User=${username}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Access: "MegaTurvaline123",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error("Network response was not ok.");
+        }
+      })
+      .then((token) => {
+        document.cookie = `Bearer=${token}; Path=/`;
+        loadUser();
+        return true;
+      })
+      .catch((error) => {
+        console.error(error);
+        return false;
+      });
+  }
+
   function onSubmit(data) {
-    console.log("Login attempt requested!");
-    console.log(data);
+    const { loginID, password } = data;
+
+    // Validate loginID
+    if (!loginID) {
+      setErrorMessage("Username or email is required.");
+      return;
+    } else if (loginID.length < 3) {
+      setErrorMessage("Username or email cannot be this short!");
+      return;
+    } else {
+      setErrorMessage("");
+    }
+
+    // Validate password
+    if (!password) {
+      setErrorMessage("Password is required.");
+      return;
+    } else if (password.length < 3) {
+      setErrorMessage("Password must be at least 3 characters long.");
+      return;
+    } else {
+      setErrorMessage("");
+    }
 
     setLoading(true);
 
@@ -39,11 +121,10 @@ const Login = () => {
         if (loginResp) {
           console.log("navigating to: /");
           navigate("/");
-        } else {
-          console.log("something went wrong at loginResponse!");
         }
       })
       .catch((error) => {
+        setErrorMessage("Internal issue, please try again later.");
         console.error("Login error:", error);
       })
       .finally(() => {
@@ -61,39 +142,23 @@ const Login = () => {
             <input
               placeholder="Username or email"
               type="text"
-              {...register("loginID", {
-                required: true,
-                maxLength: 20,
-                minLength: 3,
-              })}
+              {...register("loginID")}
+              autoComplete="username"
             />
-            {
-              <p className="ErrorMessage">
-                {errors.loginID && (
-                  <>First name must be longer than 3 characters!</>
-                )}
-              </p>
-            }
           </Form.Field>
+
+          <br></br>
 
           <Form.Field>
             <input
               placeholder="Password"
               type="password"
-              {...register("password", {
-                required: true,
-                maxLength: 20,
-                minLength: 3,
-              })}
+              {...register("password")}
+              autoComplete="current-password"
             />
-            <p className="ErrorMessage">
-              {errors.password && (
-                <>Password is required and must be longer than 3 characters!</>
-              )}
-            </p>
           </Form.Field>
 
-          <div id="LoginMessage"></div>
+          <div className="ErrorMessage">{errorMessage}</div>
 
           <Link to="/register" className="ReferLink">
             Create a new Account!
@@ -108,65 +173,3 @@ const Login = () => {
 };
 
 export default Login;
-
-function loginResponse(response, username) {
-  if (response.ok) {
-    document.getElementById("LoginMessage").innerHTML = "";
-
-    return getTokenJWT(username)
-      .then((validation) => {
-        if (validation) {
-          console.log("You are authorized, welcome!");
-          return true;
-        } else {
-          console.log("You are not authorized!");
-          return false;
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        return false;
-      });
-  } else {
-    console.log(response);
-
-    return response
-      .text()
-      .then((message) => {
-        document.getElementById("LoginMessage").innerHTML = message;
-        return false;
-      })
-      .catch((error) => {
-        console.error(error);
-        return false;
-      });
-  }
-}
-
-function getTokenJWT(username) {
-  console.log("username- ", username);
-
-  return fetch(`${backendHost}/jwt?User=${username}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Access: "MegaTurvaline123",
-    },
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.text();
-      } else {
-        throw new Error("Network response was not ok.");
-      }
-    })
-    .then((token) => {
-      document.cookie = `Bearer=${token}; Path=/`;
-      loadUser();
-      return true;
-    })
-    .catch((error) => {
-      console.error(error);
-      return false;
-    });
-}

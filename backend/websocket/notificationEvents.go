@@ -27,9 +27,6 @@ func SendNotificationHandler(event Event, c *Client) error {
 	TargetID := payload.TargetID
 	SenderID := payload.SenderID
 
-	fmt.Println("notification target:", function.GetUserName(TargetID))
-	fmt.Println("notification sender:", function.GetUserName(SenderID))
-
 	for client := range c.client.clients {
 		if client.userId == TargetID {
 			UpdateRequestsAndNotifications(TargetID, client)

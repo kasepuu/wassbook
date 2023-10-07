@@ -102,8 +102,6 @@ func UpdateRequestsAndNotifications(UserID int, client *Client) {
 
 	if err == nil && err2 == nil && err3 == nil {
 		sendResponse(len(users)+len(users2)+len(users3), "update_requests", client)
-	} else {
-		fmt.Println("unable to update_requests", err, err2, err3)
 	}
 
 	usersMutual, errMut := function.GetMutualFollowers(UserID)

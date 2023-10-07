@@ -131,8 +131,7 @@ const Profile = () => {
             userInfo.UserID === LoggedUser.UserID ? (
               <>
                 <p className="dateofbirth">
-                  Dateofbirth: {userInfo.DateOfBirth[0]}.
-                  {userInfo.DateOfBirth[1]}.{userInfo.DateOfBirth[2]}
+                  Dateofbirth: {userInfo.DateOfBirth}
                 </p>
                 <p className="email">Email: {userInfo.Email}</p>
                 <p className="dateJoined">Date joined: {userInfo.DateJoined}</p>
@@ -170,13 +169,16 @@ const Profile = () => {
         </div>
         <>
           {isPublicProfile ? (
-            <p>
-              {userInfo.PrivateStatus === 0 &&
-              userInfo.FollowStatus !== "following" &&
-              userInfo.UserID !== LoggedUser.UserID
-                ? "Public"
-                : "All"}{" "}
-              posts by {userInfo.FirstName}:
+            <>
+              <p>
+                {userInfo.PrivateStatus === 0 &&
+                userInfo.FollowStatus !== "following" &&
+                userInfo.UserID !== LoggedUser.UserID
+                  ? "Public"
+                  : "All"}{" "}
+                posts by {userInfo.FirstName}:
+              </p>
+
               {userInfo.PrivateStatus === 0 &&
                 userInfo.FollowStatus !== "following" &&
                 userInfo.UserID !== LoggedUser.UserID && (
@@ -197,7 +199,7 @@ const Profile = () => {
                   />
                 </div>
               )}
-            </p>
+            </>
           ) : (
             <p>Public posts by {userInfo.FirstName}:</p>
           )}

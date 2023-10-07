@@ -48,7 +48,7 @@ func SaveComment(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Bad Request"))
 		return
 	}
-	CommentData.Date = time.Now().Format("02.01.2006 15:04")
+	CommentData.Date = time.Now().Format(time.RFC3339Nano)
 
 	// Extract the image file
 	file, handler, err := r.FormFile("file")

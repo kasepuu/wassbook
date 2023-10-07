@@ -198,6 +198,7 @@ WHERE
 			&post.Filename,
 			&post.Privacy,
 		)
+
 		if err != nil {
 			log.Fatalf("Err: %s", err)
 		}

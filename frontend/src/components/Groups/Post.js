@@ -1,7 +1,7 @@
-
 import "../../css/Feed.css";
 import { backendHost } from "../../index.js";
 import profilePicture from "../../page-images/blank.png";
+import { formatDateTime } from "../utils/formatDate";
 import CommentForm from "./CommentForm";
 import PostComments from "./PostComments";
 
@@ -26,7 +26,9 @@ const Post = ({ post, handleCommentSubmit }) => {
     <div className="feed-post" key={post.Id}>
       <div onClick={handleOverlay} className="post-header">
         <img
-          src={`${backendHost}/users/${post.UserId}/profilepic/profilepic?timestamp=${Date.now()}`}
+          src={`${backendHost}/users/${
+            post.UserId
+          }/profilepic/profilepic?timestamp=${Date.now()}`}
           onError={(e) => {
             e.target.onError = null;
             e.target.src = profilePicture;
@@ -35,7 +37,8 @@ const Post = ({ post, handleCommentSubmit }) => {
           className="profile-picture"
         />
         <div className="post-title">
-          {post.FirstName} {post.LastName} In {post.GroupName} - {post.Date}
+          {post.FirstName} {post.LastName} In {post.GroupName} -{" "}
+          {formatDateTime(post.Date)}
         </div>
       </div>
 
