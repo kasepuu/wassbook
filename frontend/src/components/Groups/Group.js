@@ -14,9 +14,10 @@ import { useParams } from "react-router-dom";
 import { Info } from "./Info";
 import { Members } from "./Members";
 import { Events } from "./Events.js";
+import { getLoggedUserFromStorage } from "../..";
 
 const Group = () => {
-  const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+  const userInfo = getLoggedUserFromStorage(true, true);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [refreshPage, setRefreshPage] = useState(false);
 

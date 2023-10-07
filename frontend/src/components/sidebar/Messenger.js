@@ -192,9 +192,9 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           ))
         )}
       </div>
-      {/*other chat elements*/}
+
       <div id="chatstatus" className="chat-status">
-        {/*status -> is typing etc...*/}
+        {/*status -> is typing...*/}
       </div>
       <div className="chat-close" onClick={closeMessenger}>
         X

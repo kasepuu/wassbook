@@ -70,11 +70,20 @@
 .chat-log {
   position: relative;
   padding-top: 5px;
-  height: 80%;
+  height: 300px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.chat-status {
+  margin-top: 5px;
+  position: relative;
+  height: 20px;
+  color: black;
+  text-align: center;
+  background-color: #bebebe;
 }
 
 /* messages sent by the user */
@@ -132,13 +141,14 @@
   flex: 1;
   margin-top: 5px;
   margin-right: 0px;
-  padding: 5px;
+  padding: 6px;
 }
 
 .send-button {
   background-color: #007bff;
   color: white;
-  border: none;
+  margin-top: 5px;
+
   padding: 6px 10px;
   border: 1px solid black;
   cursor: pointer;

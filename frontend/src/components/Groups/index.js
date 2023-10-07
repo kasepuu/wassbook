@@ -7,9 +7,10 @@ import { Posts } from "./Posts";
 import { GroupForm } from "./GroupForm";
 import { getGroups, createGroup } from "../utils/groups";
 import { createComment } from "../utils/groups";
+import { getLoggedUserFromStorage } from "../..";
 
 const Groups = () => {
-  const userInfo = JSON.parse(sessionStorage.getItem("CurrentUser"));
+  const userInfo = getLoggedUserFromStorage(true, true);
   const [posts, setPosts] = useState([]);
   const [groups, setGroups] = useState([]);
 

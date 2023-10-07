@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { sendEvent } from "../../websocket";
 import { FaArrowCircleDown } from "react-icons/fa";
+import { getLoggedUserFromStorage } from "../..";
 
 export const Events = ({ data }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [groupEvents, setGroupEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentDateTime = new Date().toISOString().slice(0, 16);
-  const user = JSON.parse(sessionStorage.getItem("CurrentUser")).UserID;
+  const user = getLoggedUserFromStorage(true, true).UserID;
 
   const handleNewEventClick = () => {
     setShowPopup(true);
