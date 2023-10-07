@@ -2,6 +2,7 @@ import "../css/Navbar.css";
 import logo from "../logo.svg";
 import { Link, useNavigate } from "react-router-dom";
 import SearchContainer from "./SearchContainer";
+import { getLoggedUserFromStorage } from "..";
 
 // react icons: https://react-icons.github.io/react-icons/icons?name=fa
 import {
@@ -68,13 +69,13 @@ const Navbar = () => {
         <Link to="/">
           <FaHome /> Home
         </Link>
-        <Link
-          to={`/profile/${
-            JSON.parse(sessionStorage.getItem("CurrentUser")).UserName
-          }`}
-        >
-          <FaUserCircle /> Profile
-        </Link>
+        {sessionStorage.getItem("CurrentUser") && (
+          <Link
+            to={`/profile/${getLoggedUserFromStorage(true, true).UserName}`}
+          >
+            <FaUserCircle /> Profile
+          </Link>
+        )}
         <Link to="/groups">
           <FaUsers /> Groups
         </Link>

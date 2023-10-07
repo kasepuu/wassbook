@@ -2,6 +2,7 @@ package function
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"sort"
 	"time"
@@ -418,18 +419,18 @@ func GetGroupOwnerID(GroupID int) (ownerId int) {
 }
 
 func AreMutuallyFollowing(UserID int, TargetID int) bool {
-    var status string
-    err := sqlDB.DataBase.QueryRow(`
+	var status string
+	err := sqlDB.DataBase.QueryRow(`
         SELECT f1.status
         FROM followers f1
         INNER JOIN followers f2 ON f1.userid = f2.targetid AND f1.targetid = f2.userid
         WHERE f1.status = 'following' AND f2.status = 'following' AND f1.userid = ? AND f2.userid = ?
     `, UserID, TargetID).Scan(&status)
-    if err != nil {
-        return false
-    }
+	if err != nil {
+		return false
+	}
 
-    return status == "following"
+	return status == "following"
 }
 
 func GetOtherGroupMemebers(GroupID int, UserID int) (MemberIDs []int) {
@@ -627,4 +628,13 @@ func LoadNotifications(TargetID int) ([]Notification, error) {
 	}
 
 	return notifications, nil
+}
+
+func DeleteSession(UserID int) error {
+	fmt.Println("Deleting session for user:", UserID, GetUserName(UserID))
+
+	query := "DELETE FROM sessions WHERE userid = ?"
+	_, err := sqlDB.DataBase.Exec(query, UserID)
+
+	return err
 }

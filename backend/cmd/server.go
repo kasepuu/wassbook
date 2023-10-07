@@ -56,6 +56,7 @@ func StartServer(port string) {
 	// api stuff
 	corsMux.HandleFunc("/login-attempt", handler.Login)
 	corsMux.HandleFunc("/register-attempt", handler.Register)
+	corsMux.HandleFunc("/logout-attempt", handler.LogoutHandler)
 	corsMux.HandleFunc("/jwt", handler.GetJwt)                 // for generating jwt token
 	corsMux.HandleFunc("/api", handler.ValidateJWT)            // for validating jwt token
 	corsMux.HandleFunc("/update-jwt-token", handler.UpdateJwt) // for updating the jwt token

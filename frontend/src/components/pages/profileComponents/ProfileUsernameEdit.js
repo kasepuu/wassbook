@@ -6,7 +6,7 @@ import { updateToken } from "../../../jwt";
 const ProfileUsernameEdit = ({ userInfo, setUserInfo }) => {
   const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
   const [isEditingUsername, setIsEditingUsername] = useState(false);
-  const [newUsername, setNewUsername] = useState(userInfo.UserName);
+  const [newUsername, setNewUsername] = useState(userInfo.UserName || "");
   const [originalUsername] = useState(userInfo.UserName);
   const [refreshProfile, setRefreshProfile] = useState(false);
 

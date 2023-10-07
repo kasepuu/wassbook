@@ -10,6 +10,7 @@ import { sendEvent, wsAddConnection } from "../websocket";
 function Router() {
   const [isAuthorized, setIsAuthorized] = useState(null);
   const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
+  const [hasRedirectedToLogin, setHasRedirectedToLogin] = useState(false)
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,13 +49,12 @@ function Router() {
             });
         }
 
-        if (
-          !AuthorizedStatus &&
-          location.pathname !== "/login" &&
-          location.pathname !== "/register"
-        ) {
-          console.log("You are not authorized, redirecting to login...");
-          navigate("/login");
+        if (!AuthorizedStatus && location.pathname !== "/login" && location.pathname !== "/register") {
+          if (!hasRedirectedToLogin) {
+            console.log("You are not authorized, redirecting to login...");
+            setHasRedirectedToLogin(true); 
+            navigate("/login");
+          }
           return;
         }
       } catch (error) {
@@ -63,7 +63,7 @@ function Router() {
     };
 
     checkAuthorization();
-  }, [navigate, location]);
+  }, [navigate, location, hasRedirectedToLogin]);
 
   if (isAuthorized === null) {
     return <div>Loading...</div>;

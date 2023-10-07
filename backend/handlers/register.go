@@ -81,6 +81,31 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	// sqlDB.DataBase.Query("INSERT INTO users")
 }
 
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+    type LogoutRequest struct {
+        UserID int    `json:"UserID"`
+        Token  string `json:"Token"`
+    }
+
+    var request LogoutRequest
+    err := json.NewDecoder(r.Body).Decode(&request)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    userID := request.UserID
+
+    errDelete := function.DeleteSession(userID)
+
+    if errDelete != nil {
+        log.Println("There was an error deleting session for user:", function.GetUserName(userID))
+        w.WriteHeader(http.StatusInternalServerError)
+    }
+
+    w.WriteHeader(http.StatusOK)
+}
+
 func fieldVerification(details RegisterForm) bool {
 	regex := regexp.MustCompile("[0-9]")
 	containsNumbersInFirstName := regex.MatchString(details.FirstName)

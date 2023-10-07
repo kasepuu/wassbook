@@ -1,9 +1,39 @@
+import { useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import { backendHost } from "../..";
+import { getCookieValue } from "../../jwt";
 const Logout = () => {
-  localStorage.clear();
-  sessionStorage.clear();
-  clearAllCookies();
-  window.socket = null;
+  useEffect(() => {
+    const LoggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));
+
+    // if there is a current user
+    if (LoggedUser) {
+      fetch(`${backendHost}/logout-attempt`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          UserID: LoggedUser.UserID,
+          Token: getCookieValue("Bearer"),
+        }),
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("logout went smooth");
+          } else {
+            console.log("logout did not go so smooth:", response);
+          }
+        })
+        .catch((error) => {
+          console.error("Error during logout attempt:", error);
+        });
+    }
+    localStorage.clear();
+    sessionStorage.clear();
+    clearAllCookies();
+    window.socket = null;
+  }, []);
   return <Navigate to="/login" />;
 };
 
