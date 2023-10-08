@@ -104,6 +104,7 @@ func LoadGroupMessagesHandler(event Event, c *Client) error {
 type isTypingGroupFormat struct {
 	SenderID    int    `json:"SenderID"`
 	ReceiverIDs []int  `json:"ReceiverIDs"`
+	GroupID     int    `json:"GroupID"`
 	UserName    string `json:"UserName"`
 }
 

@@ -1,5 +1,6 @@
 import { backendHost } from "../../index.js";
 import profilePicture from "../../page-images/blank.png";
+import { formatDateTime } from "../utils/formatDate";
 
 const PostComments = ({ comments }) => {
   return (
@@ -20,7 +21,7 @@ const PostComments = ({ comments }) => {
             />
             <div className="post-title">
               {comment.FirstName} {comment.LastName} ({comment.Username}) -{" "}
-              {comment.Date}
+              {formatDateTime(comment.Date)}
             </div>
           </div>
           <div className="post-body">{comment.Content}</div>

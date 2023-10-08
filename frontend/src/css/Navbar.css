@@ -98,13 +98,13 @@ a {
 
   position: absolute; /* Make it an absolute positioned element */
   top: 100%; /* Position it below the parent container */
-  left: 50%; /* Align it with the left edge of the parent container */
+  left: 30%; /* Align it with the left edge of the parent container */
 
   transform: translateX(-50%); /* Center horizontally */
 
   margin-top: 10px;
 
-  width: 280px;
+  width: 300px;
   height: 250px;
   border: 2px solid #b6b6b6;
   overflow-y: auto;
@@ -121,12 +121,23 @@ a {
   flex-direction: column;
 }
 
+.dropdown-desc {
+  position: absolute;
+  left: 30px;
+}
+
+.btn-accept {
+  position: absolute;
+  left: 0;
+  color: green;
+}
+
 .dropdown-result {
-  padding-top: 10px;
-  text-align: center;
+  margin-bottom: 25px;
 }
 
 .clearNotifications {
+  margin-top: 10px;
   position: relative;
   bottom: 0;
   left: 0;
@@ -141,12 +152,6 @@ a {
   height: 15px;
   border-radius: 100%;
   border: 1px solid black;
-}
-
-.btn-accept {
-  position: absolute;
-  left: 0;
-  color: green;
 }
 
 .btn-decline {

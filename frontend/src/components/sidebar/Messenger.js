@@ -61,14 +61,13 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
     // event listener to existing ws connection
     window.socket.onmessage = (e) => {
       const eventData = JSON.parse(e.data);
+      if (!localStorage.getItem("CurrentChat")) return
       if (eventData.type === "update_messages") {
         // update the chat log with the received message, only if chat is opened with the right person.
-        if (
-          eventData.payload &&
-          JSON.parse(localStorage.getItem("CurrentChat")).UserId ===
-            eventData.payload.CurrentChat &&
-          eventData.payload.ChatLog
-        ) {
+        if (eventData.payload &&
+          JSON.parse(localStorage.getItem("CurrentChat")).UserId === eventData.payload.CurrentChat &&
+          eventData.payload.ChatLog) {
+
           setTotalMessages(eventData.payload.TotalCount);
           setChatLog(eventData.payload.ChatLog);
           document.getElementById("chatstatus").innerHTML = "";

@@ -57,11 +57,12 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
     // event listener to existing ws connection
     window.socket.onmessage = (e) => {
       const eventData = JSON.parse(e.data);
+      if (!localStorage.getItem("CurrentChat")) return
       if (eventData.type === "update_group_messages") {
         // update the chat log with the received message, only if chat is opened with the right person.
         if (
           eventData.payload &&
-          JSON.parse(localStorage.getItem("CurrentChat")).GroupID ===
+          selectedChat.GroupID ===
             eventData.payload.CurrentChat &&
           eventData.payload.ChatLog
         ) {
@@ -71,12 +72,9 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
         }
       } else if (eventData.type === "is_typing_group") {
         const chatStatus = document.getElementById("chatstatus");
-        if (!chatStatus) {
-          return;
-        }
-        if (eventData.payload.UserID === LoggedUser.UserID) {
-          return;
-        }
+        if (!chatStatus ||
+          eventData.payload.UserID === LoggedUser.UserID ||
+          eventData.payload.GroupID !== selectedChat.GroupID) return
 
         clearTimeout(timeOut);
         let messageformat = `📱${eventData.payload.UserName} is typing...`;
@@ -223,6 +221,7 @@ const GroupMessenger = ({ selectedChat, closeGroupMessenger }) => {
               SenderID: LoggedUser.UserID,
               ReceiverIDs: selectedChat.OtherMembers,
               UserName: LoggedUser.UserName,
+              GroupID: selectedChat.GroupID
             };
             sendEvent("is_typing_group", response);
 

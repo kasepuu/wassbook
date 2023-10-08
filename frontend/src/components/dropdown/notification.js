@@ -23,7 +23,7 @@ const Notification = ({ notifications, isLoading }) => {
         <>
           {notifications.map((notification) => (
             <div key={notification.ID} className="dropdown-result">
-              {notification.Description}
+              <div className="dropdown-desc">{notification.Description}</div>
               <button
                 type="button"
                 className="btn-accept"
