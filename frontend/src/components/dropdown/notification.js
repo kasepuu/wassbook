@@ -21,21 +21,22 @@ const Notification = ({ notifications, isLoading }) => {
         <p>Loading notifications...</p>
       ) : notifications && notifications.length > 0 ? (
         <>
-          {notifications.map((notification) => (
-            <div key={notification.ID} className="dropdown-result">
-              <div className="dropdown-desc">{notification.Description}</div>
-              <button
-                type="button"
-                className="btn-accept"
-                onClick={() => {
-                  handleOnClear(notification);
-                }}
-              >
-                <FaTimes />
-              </button>
-            </div>
-          ))}
-
+          <div className="notifications-container">
+            {notifications.map((notification) => (
+              <div key={notification.ID} className="dropdown-result">
+                <div className="dropdown-desc">{notification.Description}</div>
+                <button
+                  type="button"
+                  className="btn-accept"
+                  onClick={() => {
+                    handleOnClear(notification);
+                  }}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            ))}
+          </div>
           <div
             className="clearNotifications"
             onClick={(e) => {

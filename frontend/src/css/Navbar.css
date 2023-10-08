@@ -42,7 +42,7 @@ a {
   height: 100%;
   right: 20px;
   display: flex;
-  justify-content: flex-end; 
+  justify-content: flex-end;
   align-items: center;
 }
 
@@ -107,7 +107,6 @@ a {
   width: 250px;
   height: 250px;
   border: 2px solid #b6b6b6;
-  overflow-y: auto;
 
   display: flex;
   justify-content: center;
@@ -117,7 +116,9 @@ a {
 .dropdown-contents {
   color: black;
   display: flex;
+  width: 100%;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .dropdown-result {
@@ -146,18 +147,20 @@ a {
   color: red;
 }
 
+.notifications-container {
+  position: relative;
+}
+
 .clearNotifications {
   margin-top: 10px;
-  position: relative;
+  position: absolute;
   bottom: 0;
-  left: 0;
   color: black;
   background-color: #b6b6b6;
   width: 100%;
 }
 
-
 .notification-design {
-  color: lightcoral; 
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
+  color: lightcoral;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
