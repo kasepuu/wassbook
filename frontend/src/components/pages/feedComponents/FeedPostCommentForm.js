@@ -15,6 +15,7 @@ const FeedPostCommentForm = ({
   const commentFileInputRef = useRef(null);
   let firstName = userInfo.FirstName;
   let lastName = userInfo.LastName;
+  let userName = userInfo.UserName;
 
   const handleCommentFormSubmit = (event) => {
     event.preventDefault();
@@ -24,6 +25,7 @@ const FeedPostCommentForm = ({
         userID: userInfo.UserID,
         firstName,
         lastName,
+        userName,
         content: commentInputValue,
         PostID: openedPostId,
       };

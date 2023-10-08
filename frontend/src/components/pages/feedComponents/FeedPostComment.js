@@ -8,8 +8,9 @@ const FeedPostComment = ({ comments }) => {
         <div key={index} id={`comment-${comment.id}`} className="feed-post">
           <div className="post-header">
             <img
-              src={`${backendHost}/users/${comment.userID
-                }/profilepic/profilepic?timestamp=${Date.now()}`}
+              src={`${backendHost}/users/${
+                comment.userID
+              }/profilepic/profilepic?timestamp=${Date.now()}`}
               onError={(e) => {
                 e.target.onError = null;
                 e.target.src = profilePicture;

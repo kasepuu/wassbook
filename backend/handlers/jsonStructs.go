@@ -34,6 +34,7 @@ type PostForm struct {
 	OriginalPosterID  int    `json:"UserID"`
 	FirstName         string `json:"FirstName"`
 	LastName          string `json:"LastName"`
+	UserName          string
 	Date              string
 	Content           string   `json:"Content"`
 	GroupID           int      `json:"GroupID"`
@@ -48,6 +49,7 @@ type CommentForm struct {
 	UserID    int    `json:"UserID"`
 	FirstName string `json:"FirstName"`
 	LastName  string `json:"LastName"`
+	UserName  string
 	Date      string
 	Content   string `json:"Content"`
 	Filename  string

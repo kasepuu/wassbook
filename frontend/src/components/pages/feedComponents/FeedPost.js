@@ -26,8 +26,9 @@ const FeedPost = ({
         >
           <div className="post-header">
             <img
-              src={`${backendHost}/users/${post.userID
-                }/profilepic/profilepic?timestamp=${Date.now()}`}
+              src={`${backendHost}/users/${
+                post.userID
+              }/profilepic/profilepic?timestamp=${Date.now()}`}
               onError={(e) => {
                 e.target.onError = null;
                 e.target.src = profilePicture;

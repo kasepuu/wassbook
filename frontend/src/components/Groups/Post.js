@@ -37,8 +37,8 @@ const Post = ({ post, handleCommentSubmit }) => {
           className="profile-picture"
         />
         <div className="post-title">
-          {post.FirstName} {post.LastName} In {post.GroupName} -{" "}
-          {formatDateTime(post.Date)}
+          {post.FirstName} {post.LastName} ({post.Username}) In {post.GroupName}{" "}
+          - {formatDateTime(post.Date)}
         </div>
       </div>
 

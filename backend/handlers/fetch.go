@@ -198,12 +198,15 @@ WHERE
 			&post.Filename,
 			&post.Privacy,
 		)
-
 		if err != nil {
 			log.Fatalf("Err: %s", err)
 		}
+
+		post.UserName = function.GetUserName(post.OriginalPosterID)
+
 		posts = append(posts, post)
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(posts)
 }
@@ -249,12 +252,18 @@ func FetchComments(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing 'postID' query parameter", http.StatusBadRequest)
 		return
 	}
-	rows, err := sqlDB.DataBase.Query(`SELECT id, postId, userId,
-	(SELECT fname FROM users WHERE id = userid) AS fname,
-	(SELECT lname FROM users WHERE id = userid) AS lname,
-	content, date, filename
-FROM comments
-WHERE postId = ?`, postID) // Adjust the query according to your table structure
+
+	/*query := `SELECT id, postId, userId,
+		(SELECT fname FROM users WHERE id = userid) AS fname,
+		(SELECT lname FROM users WHERE id = userid) AS lname,
+		content, date, filename
+	FROM comments
+	WHERE postId = ?`*/ // old query
+
+	rows, err := sqlDB.DataBase.Query(`SELECT c.id, c.postId, c.userId, u.fname, u.lname, c.content, c.date, c.filename, u.nickname
+	FROM comments c
+	INNER JOIN users u ON c.userId = u.id
+	WHERE c.postId = ?`, postID) // Adjust the query according to your table structure
 	if err != nil {
 		log.Println("Error querying posts:", err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -275,11 +284,15 @@ WHERE postId = ?`, postID) // Adjust the query according to your table structure
 			&comment.Content,
 			&comment.Date,
 			&comment.Filename,
+			&comment.UserName,
 		)
 		if err != nil {
 			log.Println("Error scanning row:", err)
 			continue
 		}
+
+		// comment.UserName = function.GetUserName(comment.UserID)
+
 		comments = append(comments, comment)
 	}
 

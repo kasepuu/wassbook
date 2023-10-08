@@ -29,9 +29,9 @@ const Feed = () => {
         }
 
         const postsArray = data.map((post) => ({
-          title: `${post.FirstName} ${post.LastName} - ${formatDateTime(
-            post.Date
-          )}`,
+          title: `${post.FirstName} ${post.LastName} (${
+            post.UserName
+          }) - ${formatDateTime(post.Date)}`,
           body: post.Content,
           id: post.PostID,
           file: post.Filename,
@@ -101,9 +101,9 @@ const Feed = () => {
         }
 
         const commentsArray = data.map((comment) => ({
-          title: `${comment.FirstName} ${comment.LastName} - ${formatDateTime(
-            comment.Date
-          )}`,
+          title: `${comment.FirstName} ${comment.LastName} (${
+            comment.UserName
+          }) - ${formatDateTime(comment.Date)}`,
           body: comment.Content,
           id: comment.CommentID,
           postID: comment.PostID,

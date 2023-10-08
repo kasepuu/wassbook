@@ -8,6 +8,7 @@ import ProfilePictureEdit from "./profileComponents/ProfilePictureEdit";
 import ProfileUsernameEdit from "./profileComponents/ProfileUsernameEdit";
 import ProfileDescriptionEdit from "./profileComponents/ProfileDescriptionEdit";
 import ProfileFollow from "./profileComponents/ProfileFollow";
+import { sendEvent } from "../../websocket";
 
 function toTitleCase(str) {
   if (str) {
@@ -69,6 +70,12 @@ const Profile = () => {
       })
       .catch((error) => {
         console.error("Error updating private status:", error);
+      })
+      .finally(() => {
+        const payload = {
+          UserID: userID,
+        };
+        sendEvent("request_profile_refresh", payload);
       });
   };
 
@@ -194,7 +201,8 @@ const Profile = () => {
                     />
                   </div>
                 )}
-              {(userInfo.FollowStatus === "following" || userInfo.UserID === LoggedUser.UserID) && (
+              {(userInfo.FollowStatus === "following" ||
+                userInfo.UserID === LoggedUser.UserID) && (
                 <div className="profile-posts">
                   <PostsByProfile
                     profilepic={`${profilePicUrl}?timestamp=${Date.now()}`}
@@ -205,7 +213,9 @@ const Profile = () => {
               )}
             </>
           ) : (
-            <p>Public posts by {userInfo.FirstName}:</p>
+            userInfo.PrivateStatus === 0 && (
+              <p>Public posts by {userInfo.FirstName}:</p>
+            )
           )}
         </>
       </div>

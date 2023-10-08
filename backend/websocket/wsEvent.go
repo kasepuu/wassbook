@@ -21,6 +21,7 @@ func (m *wsManager) setupEventHandlers() {
 	m.handlers["on_connection"] = OnConnectionHandler
 	m.handlers["request_mutualfollowers"] = LoadMutualFollowersHandler
 	m.handlers["request_profile_followerslist"] = LoadProfileFollowersHandler
+	m.handlers["request_profile_refresh"] = SendResponseRefreshProfile
 
 	// chat events
 	m.handlers["send_message"] = SendMessageHandler

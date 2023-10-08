@@ -192,6 +192,23 @@ func LoadProfileFollowersHandler(event Event, c *Client) error {
 	return nil
 }
 
+func SendResponseRefreshProfile(event Event, c *Client) error {
+	type Request struct {
+		UserID int `JSON:"UserID"`
+	}
+	var payload Request
+
+	if err := json.Unmarshal(event.Payload, &payload); err != nil {
+		return fmt.Errorf("[follow_decline] bad payload in request: %v", err)
+	}
+
+	for client := range c.client.clients {
+		sendResponse(function.GetUserName(payload.UserID), "reload_profile_page", client)
+	}
+
+	return nil
+}
+
 // group requests
 func AcceptGroupRequestHandler(event Event, c *Client) error {
 	var payload Request
