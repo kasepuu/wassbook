@@ -12,7 +12,6 @@ type Group struct {
 	Membercount int     `json:"Membercount"`
 	Posts       []Post  `json:"Posts"`
 	AllUsers    []User  `json:"AllUsers"`
-	// TODO mõelda kuidas päringus saada arvu
 }
 
 type Event struct {

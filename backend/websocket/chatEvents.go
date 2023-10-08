@@ -55,7 +55,6 @@ func SendMessageHandler(event Event, c *Client) error {
 			TotalCount:  totalCount,
 		}
 		sendResponse(payload, "update_messages", client)
-		// sendResponse(payload, "update_notifications", client)
 	}
 	return nil
 }

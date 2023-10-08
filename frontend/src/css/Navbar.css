@@ -42,7 +42,7 @@ a {
   height: 100%;
   right: 20px;
   display: flex;
-  justify-content: flex-end; /* Align all links to the right */
+  justify-content: flex-end; 
   align-items: center;
 }
 
@@ -96,11 +96,11 @@ a {
 .dropdown {
   background-color: #ddd;
 
-  position: absolute; /* Make it an absolute positioned element */
-  top: 100%; /* Position it below the parent container */
-  left: 30%; /* Align it with the left edge of the parent container */
+  position: absolute; 
+  top: 100%; 
+  left: 30%; 
 
-  transform: translateX(-50%); /* Center horizontally */
+  transform: translateX(-50%); 
 
   margin-top: 10px;
 
@@ -146,13 +146,6 @@ a {
   width: 100%;
 }
 
-.follower-requests-image {
-  /* ei ole kasutusel praegu */
-  width: 15px;
-  height: 15px;
-  border-radius: 100%;
-  border: 1px solid black;
-}
 
 .btn-decline {
   position: absolute;
@@ -161,6 +154,6 @@ a {
 }
 
 .notification-design {
-  color: lightcoral; /* Dark gray or your preferred gray shade */
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Add a slight text shadow */
+  color: lightcoral; 
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); 
 }

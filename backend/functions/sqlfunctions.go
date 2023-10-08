@@ -41,7 +41,6 @@ func GetUserCredential(UserID int, column string) (credential string) {
 }
 
 func GetGroupNameByID(GroupID int, Type string) (GroupName string) {
-	// name || tag
 	query := "SELECT " + Type + " FROM groups WHERE id = ?"
 	sqlDB.DataBase.QueryRow(query, GroupID).Scan(&GroupName)
 	return GroupName
@@ -107,10 +106,6 @@ func UpdateUsername(UserID int, newUsername string) error {
 }
 
 func FetchFollowRequests(targetID int, status string) (Users []int, err error) {
-	// two types of status: following, pending
-	// if status != "following" && status != "pending" {
-	// 	return nil, errors.New("invalid status")
-	// }
 
 	sqlQuery := "SELECT userid FROM followers WHERE status = ? AND targetid = ?"
 	rows, queryErr := sqlDB.DataBase.Query(sqlQuery, status, targetID)
@@ -267,7 +262,6 @@ func FetchAllUsers(filter string) (users []UserInfo, returnErr error) {
 		rows, sqlErr = sqlDB.DataBase.Query(query, filterValue, filterValue, filterValue)
 	} else {
 		return users, returnErr
-		// rows, sqlErr = sqlDB.DataBase.Query(query)
 	}
 	if sqlErr != nil {
 		log.Println("sql error at fetchAllUsers:", sqlErr)
@@ -528,8 +522,6 @@ func GetProfileFollowing(userID int) ([]MutualFollower, error) {
 }
 
 func SetFollowStatus(RequesterID int, TargetID int, changeStatusTo string, changeStatusFrom string) error {
-	// SetFollowStatus(RequesterID, TargetID, "following", "pending")
-	// SetFollowStatus(RequesterID, TargetID, "remove", "pending")
 	query := "UPDATE followers SET status = ? WHERE userid = ? AND targetid = ? AND status = ?"
 
 	if changeStatusTo == "remove" {

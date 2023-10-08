@@ -44,9 +44,9 @@
 }
 
 .search-result {
-  display: flex; /* Use flexbox */
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
+  display: flex; 
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
   padding: 10px 20px;
 }

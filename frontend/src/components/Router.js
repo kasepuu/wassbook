@@ -5,11 +5,9 @@ import { Outlet } from "react-router-dom";
 import { useNavigate, useLocation } from "react-router-dom";
 import SidebarLeft from "./sidebar/SidebarLeft";
 import SidebarRight from "./sidebar/SidebarRight";
-import { connectAndSendEvents } from "..";
 import { sendEvent, wsAddConnection } from "../websocket";
 function Router() {
   const [isAuthorized, setIsAuthorized] = useState(null);
-  const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
   const [hasRedirectedToLogin, setHasRedirectedToLogin] = useState(false)
 
   const navigate = useNavigate();
@@ -24,8 +22,6 @@ function Router() {
         if (AuthorizedStatus && !window.socket) {
           wsAddConnection()
             .then(() => {
-              setIsWebSocketConnected(true);
-
               const LoggedUser = JSON.parse(
                 sessionStorage.getItem("CurrentUser")
               );
@@ -45,7 +41,6 @@ function Router() {
             })
             .catch((e) => {
               console.error(e);
-              setIsWebSocketConnected(false);
             });
         }
 

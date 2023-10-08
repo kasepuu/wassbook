@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import { clearAllCookies } from "./Logout";
 
 const Error = () => {
   const navigate = useNavigate();

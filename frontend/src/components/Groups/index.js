@@ -39,7 +39,6 @@ const Groups = () => {
     setPosts(response);
   };
 
-  //TODO vaadata kuidas horisontaalselt scroll korda teha
   return (
     <>
       <div className="Feed">

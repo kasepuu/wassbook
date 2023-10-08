@@ -33,7 +33,6 @@ func GetUsers() ([]User, error) {
 func CreateGroup(group Group) ([]Group, error) {
 	var err error
 	statement, err := sqlDB.DataBase.Prepare("INSERT INTO groups (name, tag, ownerId, description) VALUES (?,?,?,?)")
-	// currentTime := time.Now().Format(time.RFC3339)
 	if err != nil {
 		return nil, err
 	}

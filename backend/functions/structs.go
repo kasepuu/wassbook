@@ -116,10 +116,9 @@ type Notification struct {
 	Description string
 }
 
-// struct used for fetching group requests
 type GroupRequest struct {
 	UserInfo  UserInfo
-	IsInvite  bool // true=invite  false=request
+	IsInvite  bool
 	GroupInfo GroupRequestInfo
 }
 type GroupRequestInfo struct {

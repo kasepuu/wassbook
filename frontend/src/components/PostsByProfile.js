@@ -7,7 +7,6 @@ import { formatDateTime } from "./utils/formatDate";
 
 export const PostsByProfile = ({ profilepic, userID, loggedUserID }) => {
   const [posts, setPosts] = useState([]);
-  //const userInfo = JSON.parse(localStorage.getItem("CurrentUser"));
 
   useEffect(() => {
     fetch(

@@ -10,7 +10,6 @@ import (
 
 	sqlDB "01.kood.tech/git/kasepuu/social-network/backend/database"
 	function "01.kood.tech/git/kasepuu/social-network/backend/functions"
-	// sqlDB "01.kood.tech/git/kasepuu/social-network/database"
 )
 
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +77,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Registration was a success!"))
-	// sqlDB.DataBase.Query("INSERT INTO users")
 }
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {

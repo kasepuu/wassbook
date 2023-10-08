@@ -1,5 +1,4 @@
-import React, { useState, useRef } from "react";
-import { backendHost } from "../../index.js";
+import React from "react";
 
 const FeedPostForm = ({ handlePostForm }) => {
   const loggedUser = JSON.parse(sessionStorage.getItem("CurrentUser"));

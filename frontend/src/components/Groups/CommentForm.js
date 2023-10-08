@@ -1,8 +1,6 @@
 import "../../css/Feed.css";
-import React, { useState } from "react";
+import React from "react";
 const CommentForm = ({ userInfo, handleCommentSubmit, post }) => {
-  const [selectedCommentFile, setSelectedCommentFile] = useState(null);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     let data = new FormData(e.target);
@@ -22,9 +20,6 @@ const CommentForm = ({ userInfo, handleCommentSubmit, post }) => {
             name="content"
           />
           <input type="file" accept="image/*" name="file" />
-          {/* {commentImageName
-                        ? `Selected image: ${commentImageName}`
-                        : "Click here to select image."} */}
         </div>
         <button type="submit" className="comment-input-button">
           Post comment

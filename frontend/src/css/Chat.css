@@ -7,13 +7,12 @@
 
 .FollowersList,
 .GroupsList {
-  /* background-color: red; */
   overflow-y: auto;
   overflow-x: hidden;
   box-sizing: border-box;
 
-  margin: 0; /* Reset margin */
-  padding: 0; /* Reset padding */
+  margin: 0;
+  padding: 0;
 }
 .GroupsList {
   height: calc(40vh - 30px);
@@ -32,8 +31,8 @@
   border-radius: 10px;
   background-color: darkgray;
   bottom: 5px;
-  width: 300px; /* Set an appropriate width for your messenger */
-  height: 400px; /* Make it the same height as the parent container */
+  width: 300px;
+  height: 400px;
 }
 
 .chat-title {
@@ -42,8 +41,8 @@
   background-color: lightgray;
   font-size: large;
   display: flex;
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
+  align-items: center; 
+  justify-content: center;
 }
 
 .chat-close {
@@ -56,8 +55,8 @@
   border: 1px solid black;
   color: black;
   display: flex;
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
+  align-items: center; 
+  justify-content: center; 
   cursor: pointer;
 }
 

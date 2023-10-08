@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { sendEvent } from "../../websocket";
 import "../../css/Chat.css";
 import { getLoggedUserFromStorage } from "../..";
-// import EmojiPicker from "emoji-picker-react";
 const LazyEmojiPicker = lazy(() => import("emoji-picker-react"));
 let timeOut;
 const Messenger = ({ selectedFollower, closeMessenger }) => {
@@ -244,7 +243,6 @@ const Messenger = ({ selectedFollower, closeMessenger }) => {
           Send
         </button>
         {showEmojiPicker && (
-          //   style={{ display: showEmojiPicker ? "block" : "none" }}
           <div className="emoticon-picker">
             <Suspense fallback={<div>Loading...</div>}>
               {/* Lazy load the EmojiPicker component */}

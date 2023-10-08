@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Check if an argument is provided
-# if [ -z "$1" ]; then
-#   echo "Usage: sh upload.sh <commit_message>"
-#   exit 1
-# fi
-
 # Default commit message if no argument is provided
 default_commit_message="upload"
 

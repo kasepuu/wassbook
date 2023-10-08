@@ -130,7 +130,6 @@ func FetchUserRequests(w http.ResponseWriter, r *http.Request) {
 }
 
 func FetchCurrentProfile(w http.ResponseWriter, r *http.Request) {
-	// fetch-current-profile/?ProfileName=${id}&RequestedBy
 	openedProfile := r.URL.Query().Get("ProfileName")
 	requestedBy := r.URL.Query().Get("RequestedBy")
 	loggedUserId := function.GetUserID(requestedBy)
@@ -247,19 +246,10 @@ func FetchFollowersList(w http.ResponseWriter, r *http.Request) {
 func FetchComments(w http.ResponseWriter, r *http.Request) {
 	postID := r.URL.Query().Get("postID")
 
-	// Check if the "postID" parameter is empty or not provided
 	if postID == "" {
 		http.Error(w, "Missing 'postID' query parameter", http.StatusBadRequest)
 		return
 	}
-
-	/*query := `SELECT id, postId, userId,
-		(SELECT fname FROM users WHERE id = userid) AS fname,
-		(SELECT lname FROM users WHERE id = userid) AS lname,
-		content, date, filename
-	FROM comments
-	WHERE postId = ?`*/ // old query
-
 	rows, err := sqlDB.DataBase.Query(`SELECT c.id, c.postId, c.userId, u.fname, u.lname, c.content, c.date, c.filename, u.nickname
 	FROM comments c
 	INNER JOIN users u ON c.userId = u.id
@@ -290,8 +280,6 @@ func FetchComments(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error scanning row:", err)
 			continue
 		}
-
-		// comment.UserName = function.GetUserName(comment.UserID)
 
 		comments = append(comments, comment)
 	}
