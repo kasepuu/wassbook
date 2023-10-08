@@ -20,11 +20,13 @@ const Request = ({ requests, isLoading }) => {
         <>
           {requests.FollowerRequests &&
             requests.FollowerRequests.length > 0 && (
-              <div className="group-requests">
+              <div className="follower-requests">
                 {requests.FollowerRequests.map((user) => (
                   <div key={user.UserID} className="dropdown-result">
-                    <span className="coloredMessage">{user.FirstName}</span>{" "}
-                    wants to follow you
+                    <div className="dropdown-request-description ">
+                      <span className="coloredMessage">{user.FirstName}</span>{" "}
+                      wants to follow you
+                    </div>
                     <button
                       type="button"
                       className="btn-accept"
@@ -55,19 +57,22 @@ const Request = ({ requests, isLoading }) => {
               </div>
             )}
           {requests.GroupRequests && requests.GroupRequests.length > 0 && (
-            <div className="follower-requests">
+            <div className="group-requests">
               {requests.GroupRequests.map((request, index) => (
                 <div
                   key={`${request.UserInfo.UserID}-${index}`}
                   className="dropdown-result"
                 >
-                  <span className="coloredMessage">
-                    {request.UserInfo.FirstName}
-                  </span>{" "}
-                  wants to join{" "}
-                  <span className="coloredMessage">
-                    {request.GroupInfo.Name}
-                  </span>{" "}
+                  <div className="dropdown-request-description">
+                    <span className="coloredMessage">
+                      {request.UserInfo.FirstName}
+                    </span>{" "}
+                    wants to join{" "}
+                    <span className="coloredMessage">
+                      {request.GroupInfo.Name}
+                    </span>{" "}
+                  </div>
+
                   <button
                     type="button"
                     className="btn-accept"
@@ -104,10 +109,12 @@ const Request = ({ requests, isLoading }) => {
                   key={`${request.UserInfo.UserID}-${index}`}
                   className="dropdown-result"
                 >
-                  Invited to join{" "}
-                  <span className="coloredMessage">
-                    {request.GroupInfo.Name}
-                  </span>{" "}
+                  <div className="dropdown-request-description">
+                    Invited to join{" "}
+                    <span className="coloredMessage">
+                      {request.GroupInfo.Name}
+                    </span>{" "}
+                  </div>
                   <button
                     type="button"
                     className="btn-accept"
