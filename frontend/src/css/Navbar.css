@@ -96,20 +96,19 @@ a {
 .dropdown {
   background-color: #ddd;
 
-  position: absolute; 
-  top: 100%; 
-  left: 30%; 
+  position: absolute;
+  top: 100%;
 
-  transform: translateX(-50%); 
+  left: 50%;
+  transform: translateX(-50%);
 
-  margin-top: 10px;
+  margin-top: 20px;
 
-  width: 300px;
+  width: 250px;
   height: 250px;
   border: 2px solid #b6b6b6;
   overflow-y: auto;
 
-  /* Center vertically */
   display: flex;
   justify-content: center;
   text-align: center;
@@ -121,19 +120,30 @@ a {
   flex-direction: column;
 }
 
+.dropdown-result {
+  position: relative;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.dropdown-request-description,
 .dropdown-desc {
-  position: absolute;
-  left: 30px;
+  width: 75%;
+  margin-left: 30px;
 }
 
 .btn-accept {
   position: absolute;
   left: 0;
+  top: 0;
   color: green;
 }
 
-.dropdown-result {
-  margin-bottom: 25px;
+.btn-decline {
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: red;
 }
 
 .clearNotifications {
@@ -146,12 +156,6 @@ a {
   width: 100%;
 }
 
-
-.btn-decline {
-  position: absolute;
-  right: 0;
-  color: red;
-}
 
 .notification-design {
   color: lightcoral; 
