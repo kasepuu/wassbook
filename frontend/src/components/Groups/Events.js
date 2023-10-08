@@ -98,7 +98,7 @@ export const Events = ({ data }) => {
       if (eventData.type === "update_events") {
         if (eventData.payload) {
           handleUpdateEvents(eventData.payload);
-        }
+        } else setLoading(false);
       } else if (eventData.type === "update_eventResponse") {
         handleUpdateEventResponse(eventData.payload);
       }
