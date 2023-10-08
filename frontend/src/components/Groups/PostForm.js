@@ -10,7 +10,9 @@ const FeedPostForm = ({ handlePostForm }) => {
           placeholder={`What's on your mind, ${loggedUser.FirstName}?`}
           className="NewPost"
           name="content"
-        ></input>
+          pattern=".*\S+.*"
+          required
+        />
         <input
           name="file"
           type="file"
