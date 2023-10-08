@@ -500,7 +500,7 @@ func GetProfileFollowing(userID int) ([]MutualFollower, error) {
 	SELECT DISTINCT followers.targetid, users.nickname
 	FROM followers
 	LEFT JOIN users ON followers.targetid = users.id
-	WHERE followers.userid = ?;
+	WHERE followers.userid = ? AND followers.status = "following";
 	`
 
 	rows, err := sqlDB.DataBase.Query(query, userID)
