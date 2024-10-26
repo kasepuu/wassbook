@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/kasepuu/wassbook/01b010a341b3d4bf59863f391d40e24fd25f0e5b/frontend/src/logo.svg" alt="Website Icon" width="40" height="40" /> ASSBOOK - A Facebook-like Social Network built with **React** and **Go**
+# <img src="https://raw.githubusercontent.com/kasepuu/wassbook/01b010a341b3d4bf59863f391d40e24fd25f0e5b/frontend/src/logo.svg" alt="Website Icon" width="40" height="40" />**ASSBOOK** - *A Facebook-like Social Network built with **React** and **Go***
 
 #### 🔴 This Project is our solution to [Kood/Jõhvi](https://kood.tech/)'s javascript task [social-network](https://github.com/01-edu/public/tree/master/subjects/social-network)
 
