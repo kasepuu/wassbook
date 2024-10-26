@@ -56,6 +56,8 @@
 ![](https://raw.githubusercontent.com/kasepuu/wassbook/refs/heads/master/examples/game.png)
 *A fun game made in JavaScript that users can play directly on the social network page.*
 
+#
+
 <details> 
 <summary>Usage & Information</summary>
 
